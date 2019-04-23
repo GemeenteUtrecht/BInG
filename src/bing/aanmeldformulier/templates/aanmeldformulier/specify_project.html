@@ -45,21 +45,25 @@
 
             <h2>Om welk project gaat het?</h2>
 
-            {% load_widgets form='snippets/forms.html' %}
+            <form action="." method="post">
+                {% csrf_token %}
 
-            <fieldset class="fieldset">
-                {% form_field form.project_id %}
-                {% form_field form.name %}
+                {% load_widgets form='snippets/forms.html' %}
 
-                <p class="fieldset_note">
-                    Velden met een<span aria-hidden="true" class="label_required"> * </span>zijn verplicht!
-                </p>
-            </fieldset>
+                <fieldset class="fieldset">
+                    {% form_field form.project_id %}
+                    {% form_field form.name %}
 
-            <div class="navigation_buttons">
-                {% widget 'form:submit' text=_("Doorgaan") %}
-            </div>
+                    <p class="fieldset_note">
+                        Velden met een<span aria-hidden="true" class="label_required"> * </span>zijn verplicht!
+                    </p>
+                </fieldset>
 
+                <div class="navigation_buttons">
+                    {% widget 'form:submit' text=_("Doorgaan") %}
+                </div>
+
+            </form>
         </div>
 
 

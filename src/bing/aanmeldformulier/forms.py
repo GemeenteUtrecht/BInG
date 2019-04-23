@@ -9,3 +9,13 @@ class ProjectGetOrCreateForm(forms.ModelForm):
         model = Project
         fields = ("project_id", "name")
         labels = {"project_id": _("Project-ID"), "name": _("Projectnaam")}
+
+    def save(self, *args, **kwargs):
+        # look up the project if it already exists
+        project = Project.objects.filter(
+            project_id=self.cleaned_data["project_id"]
+        ).first()
+        if project is not None:
+            return project
+
+        return super().save(*args, **kwargs)
