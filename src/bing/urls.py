@@ -11,7 +11,6 @@ admin.site.site_title = "bing admin"
 admin.site.index_title = "Welcome to the bing admin"
 
 urlpatterns = [
-    # path(r'^admin_tools/', include('admin_tools.urls')),
     path(
         "admin/password_reset/",
         auth_views.PasswordResetView.as_view(),
@@ -34,7 +33,6 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
-    # Simply show the master template.
     path("", include("bing.aanmeldformulier.urls")),
 ]
 

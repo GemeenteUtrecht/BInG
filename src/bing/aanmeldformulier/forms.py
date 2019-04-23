@@ -36,4 +36,4 @@ class ProjectToetswijzeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['toetswijze'].choices = Toetswijzen.choices
+        self.fields["toetswijze"].choices = Toetswijzen.choices
