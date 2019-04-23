@@ -5,10 +5,15 @@ from bing.projects.models import Project
 
 
 class ProjectGetOrCreateForm(forms.ModelForm):
+    project_id = forms.CharField(
+        label=_("Project-ID"),
+        max_length=Project._meta.get_field("project_id").max_length,
+    )
+
     class Meta:
         model = Project
-        fields = ("project_id", "name")
-        labels = {"project_id": _("Project-ID"), "name": _("Projectnaam")}
+        fields = ("name",)
+        labels = {"name": _("Projectnaam")}
 
     def save(self, *args, **kwargs):
         # look up the project if it already exists
@@ -26,3 +31,4 @@ class ProjectToetswijzeForm(forms.ModelForm):
         model = Project
         fields = ("toetswijze",)
         labels = {"toetswijze": _("Voor welke wijze van toetsen doet u het verzoek?")}
+        widgets = {"toetswijze": forms.RadioSelect}

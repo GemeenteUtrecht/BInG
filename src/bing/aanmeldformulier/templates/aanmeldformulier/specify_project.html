@@ -1,74 +1,41 @@
-{% extends "master.html" %}
+{% extends "aanmeldformulier/base.html" %}
 {% load sniplates %}
 
+{% block page-content %}
 
-{% block breadcrumbs %}
-{% load_widgets crumbs='snippets/breadcrumbs.html' %}
-{% nested_widget 'crumbs:crumbs' %}
-    {% widget 'crumbs:crumb' label=_("BInG") %}
-    {% widget 'crumbs:crumb' label=_("Aanmelden") %}
-{% endnested %}
-{% endblock breadcrumbs %}
+<div>
 
-{% block page-class %}{% endblock %}
-
-
-{% block content %}
-
-<div class="page-heading">
-
-    <!-- START grid wrap -->
-    <div class="grid-wrap">
-        <h1>
-            <span>Beheer Inrichting Gebruik</span>
-            Project Aanmelden
-        </h1>
-    </div>
-    <!-- END grid wrap -->
-</div>
-
-<div class="bodycopy">
-
-    <div class="grid-wrap">
-
-        <div>
-
-            {% load_widgets steps='snippets/form-steps.html' %}
-            {% nested_widget 'steps:container' amount=5 %}
-                {% widget 'steps:step' label=_("Projectinfo") step_nr=1 %}
-                {% widget 'steps:inactive' label=_("Toetswijze") %}
-                {% widget 'steps:inactive' label=_("Planfase") %}
-                {% widget 'steps:inactive' label=_("Upload") %}
-                {% widget 'steps:total' label=_("Vergadering") amount=5 %}
-            {% endnested %}
+    {% load_widgets steps='snippets/form-steps.html' %}
+    {% nested_widget 'steps:container' amount=5 %}
+        {% widget 'steps:step' label=_("Projectinfo") step_nr=1 %}
+        {% widget 'steps:inactive' label=_("Toetswijze") %}
+        {% widget 'steps:inactive' label=_("Planfase") %}
+        {% widget 'steps:inactive' label=_("Upload") %}
+        {% widget 'steps:total' label=_("Vergadering") amount=5 %}
+    {% endnested %}
 
 
-            <h2>Om welk project gaat het?</h2>
+    <h2>Om welk project gaat het?</h2>
 
-            <form action="." method="post">
-                {% csrf_token %}
+    <form action="." method="post">
+        {% csrf_token %}
 
-                {% load_widgets form='snippets/forms.html' %}
+        {% load_widgets form='snippets/forms.html' %}
 
-                <fieldset class="fieldset">
-                    {% form_field form.project_id %}
-                    {% form_field form.name %}
+        <fieldset class="fieldset">
+            {% form_field form.project_id %}
+            {% form_field form.name %}
 
-                    <p class="fieldset_note">
-                        Velden met een<span aria-hidden="true" class="label_required"> * </span>zijn verplicht!
-                    </p>
-                </fieldset>
+            <p class="fieldset_note">
+                Velden met een<span aria-hidden="true" class="label_required"> * </span>zijn verplicht!
+            </p>
+        </fieldset>
 
-                <div class="navigation_buttons">
-                    {% widget 'form:submit' text=_("Doorgaan") %}
-                </div>
-
-            </form>
+        <div class="navigation_buttons">
+            {% widget 'form:submit' text=_("Doorgaan") %}
         </div>
 
-
-    </div>
-
+    </form>
 </div>
 
 {% endblock %}
