@@ -22,9 +22,7 @@
         <fieldset class="fieldset">
             {% form_field form.toetswijze %}
 
-            <p class="fieldset_note">
-                Velden met een<span aria-hidden="true" class="label_required"> * </span>zijn verplicht!
-            </p>
+            {% widget 'form:required-fields' %}
         </fieldset>
 
         <div class="navigation_buttons">

@@ -50,6 +50,13 @@
 {% endblock %}
 
 
+{% block required-fields %}
+<p class="fieldset_note">
+    Velden met een<span aria-hidden="true" class="label_required"> * </span>zijn verplicht!
+</p>
+{% endblock required-fields %}
+
+
 {% block submit %}
 <div class="navigation_button">
     <button type="submit" class="button-icon icon-arrow_right submit-button">{{ text }}</button>
