@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     "hijack_admin",
     # Project applications.
     "bing.accounts",
+    "bing.aanmeldformulier",
+    "bing.projects",
     "bing.utils",
 ]
 

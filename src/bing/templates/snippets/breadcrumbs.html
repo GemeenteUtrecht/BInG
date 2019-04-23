@@ -1,0 +1,28 @@
+{% load sniplates %}
+
+{% block crumbs %}
+<div class="crumb rs_skip">
+
+    <!-- START grid wrap -->
+    <div class="grid-wrap">
+
+        <!-- START cutoff div, hides left part of all crumbs that start a new line -->
+        <div class="cutoff">
+
+            <ol>
+                {{ content }}
+
+            </ol>
+
+        </div>
+        <!-- END cutoff -->
+
+    </div>
+    <!-- END grid wrap -->
+
+</div>
+{% endblock %}
+
+{% block crumb %}
+    <li><a href="{{ url }}" class="{{ active|yesno:'active,' }}">{{ label }}</a></li>
+{% endblock crumb %}

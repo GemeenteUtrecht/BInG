@@ -77,8 +77,10 @@
                 <!-- START container for centering -->
                 <div class="container">
 
+                    {% block breadcrumbs %}{% endblock breadcrumbs %}
+
                     <!-- START actual page content -->
-                    <article id="page-content" class="landing home">
+                    <article id="page-content" class="{% block page-class %}landing home{% endblock %}">
                         {% block content %}
                             Override <code>{% verbatim %}{% block content %}{% endverbatim %}</code>
                             to get some actual content.

@@ -1,0 +1,39 @@
+{% extends "aanmeldformulier/base.html" %}
+{% load sniplates %}
+
+{% block page-content %}
+
+<div>
+
+    {% load_widgets steps='snippets/form-steps.html' %}
+    {% nested_widget 'steps:container' amount=5 %}
+        {% widget 'steps:step' label=_("Projectinfo") step_nr=1 %}
+        {% widget 'steps:inactive' label=_("Toetswijze") %}
+        {% widget 'steps:inactive' label=_("Planfase") %}
+        {% widget 'steps:inactive' label=_("Upload") %}
+        {% widget 'steps:total' label=_("Vergadering") amount=5 %}
+    {% endnested %}
+
+
+    <h2>Om welk project gaat het?</h2>
+
+    <form action="." method="post">
+        {% csrf_token %}
+
+        {% load_widgets form='snippets/forms.html' %}
+
+        <fieldset class="fieldset">
+            {% form_field form.project_id %}
+            {% form_field form.name %}
+
+            {% widget 'form:required-fields' %}
+        </fieldset>
+
+        <div class="navigation_buttons">
+            {% widget 'form:submit' text=_("Doorgaan") %}
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

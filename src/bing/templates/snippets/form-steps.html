@@ -1,0 +1,31 @@
+{% block container %}
+<div class="stepcounter">
+    <p class="formsteps steps-{{ amount }}">
+        {{ content }}
+    </p>
+</div>
+{% endblock container %}
+
+
+{% block inactive %}
+<span>
+    <span class="steplabel">{{ label }}</span>
+    <strong></strong>
+</span>
+{% endblock inactive %}
+
+
+{% block step %}
+<span class="current">
+    <span class="steplabel">{{ label }}</span>
+    <strong>{{ step_nr }}</strong>
+</span>
+{% endblock step %}
+
+
+{% block total %}
+<span class="total">
+    <span class="steplabel {#assistive#}">{{ label }}</span>
+    <strong>{{ amount }}</strong>
+</span>
+{% endblock total %}

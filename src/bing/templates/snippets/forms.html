@@ -1,0 +1,64 @@
+{% extends "sniplates/django.html" %}
+{% load sniplates %}
+
+
+{% block _label %}
+{% if label %}
+<label for="{{ id_for_label }}">
+    {{ label }}
+    <span aria-hidden="true" class="label_required" id="name_required"> * </span>
+</label>
+{% endif %}
+{% endblock _label %}
+
+
+{% block TextInput %}
+<div>
+    {% reuse "_label" %}
+    {% reuse "input" %}
+    {% reuse "_help" %}
+    {{ errors }}
+</div>
+{% endblock %}
+
+
+{% block RadioSelect %}
+<fieldset class="fieldset_CheckRadio fieldset_RadioButton">
+
+    <legend class="legend_RadioButton">
+        {{ label|default:_("NO_LABEL_SET") }}
+        <span class="label_required"> * </span>
+    </legend>
+
+    <div class="inputfield_container">
+
+        {% for val, display in choices %}
+
+            <span class="radio_container">
+                <input type="radio" class="radio" name="{{ html_name }}"
+                       value="{{ val }}" id="{{ id }}_{{ forloop.counter0 }}" {% if val == raw_value|default:"" %}checked{% endif %}>
+                <label for="{{ id }}_{{ forloop.counter0 }}">{{ display }}</label>
+            </span>
+
+        {% endfor %}
+
+    </div>
+    {% reuse "_help" %}
+    {{ errors }}
+
+</fieldset>
+{% endblock %}
+
+
+{% block required-fields %}
+<p class="fieldset_note">
+    Velden met een<span aria-hidden="true" class="label_required"> * </span>zijn verplicht!
+</p>
+{% endblock required-fields %}
+
+
+{% block submit %}
+<div class="navigation_button">
+    <button type="submit" class="button-icon icon-arrow_right submit-button">{{ text }}</button>
+</div>
+{% endblock submit %}
