@@ -19,3 +19,10 @@ class ProjectGetOrCreateForm(forms.ModelForm):
             return project
 
         return super().save(*args, **kwargs)
+
+
+class ProjectToetswijzeForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ("toetswijze",)
+        labels = {"toetswijze": _("Voor welke wijze van toetsen doet u het verzoek?")}
