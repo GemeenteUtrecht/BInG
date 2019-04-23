@@ -1,4 +1,3 @@
-import os
 import warnings
 
 from .base import *
@@ -10,31 +9,6 @@ from .base import *
 DEBUG = False
 
 ADMINS = ()
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "bing",
-        # The database account jenkins/jenkins is always present for testing.
-        "USER": "jenkins",
-        "PASSWORD": "jenkins",
-        # Empty for localhost through domain sockets or '127.0.0.1' for
-        # localhost through TCP.
-        "HOST": "",
-        # Empty for the default port. For testing, we use the following ports
-        # for different databases. The default port is set to the latest
-        # Debian stable database version.
-        #
-        # PostgreSQL 9.6: 5432 (default for Jenkins)
-        "PORT": "",
-        "TEST": {
-            "NAME": "test_bing_{}_{}".format(
-                os.getenv("JOB_NAME", default="").lower().rsplit("/", 1)[-1],
-                os.getenv("BUILD_NUMBER", default="0"),
-            )
-        },
-    }
-}
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = "for-testing-purposes-only"
