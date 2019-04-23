@@ -1,0 +1,28 @@
+{% extends "sniplates/django.html" %}
+{% load sniplates %}
+
+
+{% block _label %}
+{% if label %}
+<label for="{{ id_for_label }}">
+    {{ label }}
+    <span aria-hidden="true" class="label_required" id="name_required"> * </span>
+</label>
+{% endif %}
+{% endblock _label %}
+
+
+{% block TextInput %}
+<div>
+    {% reuse "_label" %}
+    {% reuse "input" %}
+    {% reuse "_help" %}
+</div>
+{% endblock %}
+
+
+{% block submit %}
+<div class="navigation_button">
+    <button type="submit" class="button-icon icon-arrow_right submit-button">{{ text }}</button>
+</div>
+{% endblock submit %}

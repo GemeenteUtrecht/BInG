@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     # Project applications.
     "bing.accounts",
     "bing.aanmeldformulier",
+    "bing.projects",
     "bing.utils",
 ]
 

@@ -24,5 +24,5 @@
 {% endblock %}
 
 {% block crumb %}
-    <li><a href="{{ url }}">{{ label }}</a></li>
+    <li><a href="{{ url }}" class="{{ active|yesno:'active,' }}">{{ label }}</a></li>
 {% endblock crumb %}
