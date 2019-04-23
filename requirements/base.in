@@ -1,0 +1,17 @@
+pip-tools
+psycopg2
+Pillow
+pytz
+raven
+python-dotenv
+
+Django
+django-hijack
+django-hijack-admin
+django-axes
+django-choices
+django-rosetta
+django-sniplates
+django-redis
+
+# djangorestframework
