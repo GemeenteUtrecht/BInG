@@ -2,6 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from bing.projects.models import Project
+from bing.projects.constants import Toetswijzen
 
 
 class ProjectGetOrCreateForm(forms.ModelForm):
@@ -32,3 +33,7 @@ class ProjectToetswijzeForm(forms.ModelForm):
         fields = ("toetswijze",)
         labels = {"toetswijze": _("Voor welke wijze van toetsen doet u het verzoek?")}
         widgets = {"toetswijze": forms.RadioSelect}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['toetswijze'].choices = Toetswijzen.choices
