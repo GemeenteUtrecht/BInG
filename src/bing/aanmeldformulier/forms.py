@@ -24,6 +24,7 @@ class ProjectGetOrCreateForm(forms.ModelForm):
         if project is not None:
             return project
 
+        self.instance.project_id = self.cleaned_data['project_id']
         return super().save(*args, **kwargs)
 
 
