@@ -22,6 +22,34 @@
 {% endblock %}
 
 
+{% block RadioSelect %}
+<fieldset class="fieldset_CheckRadio fieldset_RadioButton">
+
+    <legend class="legend_RadioButton">
+        {{ label|default:_("NO_LABEL_SET") }}
+        <span class="label_required"> * </span>
+    </legend>
+
+    <div class="inputfield_container">
+
+        {% for val, display in choices %}
+
+            <span class="radio_container">
+                <input type="radio" class="radio" name="{{ html_name }}"
+                       value="{{ val }}" id="{{ id }}_{{ forloop.counter0 }}" {% if val == raw_value|default:"" %}checked{% endif %}>
+                <label for="{{ id }}_{{ forloop.counter0 }}">{{ display }}</label>
+            </span>
+
+        {% endfor %}
+
+    </div>
+    {% reuse "_help" %}
+    {{ errors }}
+
+</fieldset>
+{% endblock %}
+
+
 {% block submit %}
 <div class="navigation_button">
     <button type="submit" class="button-icon icon-arrow_right submit-button">{{ text }}</button>
