@@ -1,8 +1,14 @@
+import base64
+import os
+
 from django.db import transaction
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, FormView, TemplateView, UpdateView
 
+from bing.config.models import RSIN
+from bing.config.service import get_drc_client
 from bing.projects.models import Project
 
 from .constants import PROJECT_SESSION_KEY
@@ -55,5 +61,27 @@ class UploadView(ProjectMixin, CreateView):
     @transaction.atomic()
     def form_valid(self, form):
         form.instance.project = self.get_project()
-        # TODO: save document to DRC
+
+        io_type = form.cleaned_data["io_type"]
+        content = form.cleaned_data["attachment"].read()
+        filename = form.cleaned_data["attachment"].name
+
+        client = get_drc_client(scopes=[])
+        eio = client.create(
+            "enkelvoudiginformatieobject",
+            {
+                "bronorganisatie": RSIN,
+                "informatieobjecttype": io_type,
+                "creatiedatum": timezone.now().date().isoformat(),
+                "bestandsnaam": filename,
+                "titel": os.path.splitext(filename)[0],
+                "auteur": "BInG formulier",
+                "taal": "dut",
+                "inhoud": base64.b64encode(content).decode("ascii"),
+            },
+        )
+
+        form.instance.io_type = io_type
+        form.instance.eio_url = eio["url"]
+
         return super().form_valid(form)

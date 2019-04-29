@@ -8,6 +8,8 @@ from django.utils.translation import ugettext_lazy as _
 from solo.models import SingletonModel
 from zds_client import Client, ClientAuth
 
+RSIN = "002220647"
+
 
 def get_client(api_root: str) -> Client:
     dummy_resource = f"dummy/{uuid.uuid4()}"
