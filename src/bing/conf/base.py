@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "compat",  # Part of hijack
     "hijack_admin",
     # Project applications.
+    "bing.config",
     "bing.accounts",
     "bing.aanmeldformulier",
     "bing.projects",
