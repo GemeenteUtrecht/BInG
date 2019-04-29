@@ -5,6 +5,8 @@ pytz
 raven
 python-dotenv
 
+gemma-zds-client
+
 Django
 django-hijack
 django-hijack-admin

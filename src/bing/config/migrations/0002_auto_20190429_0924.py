@@ -5,19 +5,19 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('config', '0001_initial'),
-    ]
+    dependencies = [("config", "0001_initial")]
 
     operations = [
         migrations.AlterField(
-            model_name='apiconfig',
-            name='drc_client_id',
-            field=models.CharField(blank=True, max_length=100, verbose_name='client id'),
+            model_name="apiconfig",
+            name="drc_client_id",
+            field=models.CharField(
+                blank=True, max_length=100, verbose_name="client id"
+            ),
         ),
         migrations.AlterField(
-            model_name='apiconfig',
-            name='drc_secret',
-            field=models.CharField(blank=True, max_length=100, verbose_name='secret'),
+            model_name="apiconfig",
+            name="drc_secret",
+            field=models.CharField(blank=True, max_length=100, verbose_name="secret"),
         ),
     ]
