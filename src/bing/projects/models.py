@@ -20,3 +20,14 @@ class Project(models.Model):
 
     def __str__(self):
         return f"{self.project_id} | {self.name}"
+
+
+class ProjectAttachment(models.Model):
+    project = models.ForeignKey("Project", on_delete=models.CASCADE)
+
+    io_type = models.URLField(_("document type"), blank=True)
+    eio_url = models.URLField(_("enkelvoudig informatieobject URL"), blank=True)
+
+    class Meta:
+        verbose_name = _("project attachment")
+        verbose_name_plural = _("project attachments")

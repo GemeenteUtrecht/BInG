@@ -1,8 +1,8 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from bing.projects.models import Project
 from bing.projects.constants import Toetswijzen
+from bing.projects.models import Project, ProjectAttachment
 
 
 class ProjectGetOrCreateForm(forms.ModelForm):
@@ -24,7 +24,7 @@ class ProjectGetOrCreateForm(forms.ModelForm):
         if project is not None:
             return project
 
-        self.instance.project_id = self.cleaned_data['project_id']
+        self.instance.project_id = self.cleaned_data["project_id"]
         return super().save(*args, **kwargs)
 
 
@@ -38,3 +38,11 @@ class ProjectToetswijzeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["toetswijze"].choices = Toetswijzen.choices
+
+
+class ProjectAttachmentForm(forms.ModelForm):
+    attachment = forms.FileField(label=_("bestand"), required=False)
+
+    class Meta:
+        model = ProjectAttachment
+        fields = ("io_type",)

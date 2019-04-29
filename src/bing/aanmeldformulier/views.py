@@ -1,19 +1,19 @@
 from django.db import transaction
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import FormView, TemplateView, UpdateView
+from django.views.generic import CreateView, FormView, TemplateView, UpdateView
 
 from bing.projects.models import Project
 
 from .constants import PROJECT_SESSION_KEY
 from .decorators import project_required
-from .forms import ProjectGetOrCreateForm, ProjectToetswijzeForm
+from .forms import ProjectAttachmentForm, ProjectGetOrCreateForm, ProjectToetswijzeForm
 
 
 class ProjectMixin:
-    def get_object(self, queryset=None):
+    def get_project(self, queryset=None):
         if queryset is None:
-            queryset = self.get_queryset()
+            queryset = Project.objects.all()
 
         project_id = self.request.session[PROJECT_SESSION_KEY]
         return queryset.get(id=project_id)
@@ -40,4 +40,20 @@ class ToetswijzeView(ProjectMixin, UpdateView):
     model = Project
     form_class = ProjectToetswijzeForm
     template_name = "aanmeldformulier/toetswijze.html"
+    success_url = reverse_lazy("aanmeldformulier:upload")
+
+    def get_object(self, queryset=None):
+        return self.get_project(queryset=queryset)
+
+
+@method_decorator(project_required, name="dispatch")
+class UploadView(ProjectMixin, CreateView):
+    form_class = ProjectAttachmentForm
+    template_name = "aanmeldformulier/upload.html"
     success_url = reverse_lazy("aanmeldformulier:info")
+
+    @transaction.atomic()
+    def form_valid(self, form):
+        form.instance.project = self.get_project()
+        # TODO: save document to DRC
+        return super().form_valid(form)

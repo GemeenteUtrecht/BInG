@@ -21,6 +21,15 @@
 </div>
 {% endblock %}
 
+{% block URLInput %}
+<div>
+    {% reuse "_label" %}
+    {% reuse "input" type="url" %}
+    {% reuse "_help" %}
+    {{ errors }}
+</div>
+{% endblock %}
+
 
 {% block RadioSelect %}
 <fieldset class="fieldset_CheckRadio fieldset_RadioButton">
