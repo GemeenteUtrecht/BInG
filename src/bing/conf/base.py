@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     # External applications.
     "axes",
     "sniplates",
+    "solo",
     "hijack",
     "compat",  # Part of hijack
     "hijack_admin",

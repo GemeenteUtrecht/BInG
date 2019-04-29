@@ -12,6 +12,5 @@ django-axes
 django-choices
 django-rosetta
 django-sniplates
+django-solo
 django-redis
-
-# djangorestframework
