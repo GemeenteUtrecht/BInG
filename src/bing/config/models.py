@@ -34,3 +34,18 @@ class APIConfig(SingletonModel):
         client = get_client(self.drc_api_root)
         client.auth = ClientAuth(client_id=self.drc_client_id, secret=self.drc_secret)
         return client
+
+
+class BInGConfig(SingletonModel):
+    """
+    BInG-specific configuration
+    """
+
+    zaaktype_aanvraag = models.URLField(_("Zaaktype aanvraag"))
+    zaaktype_vergadering = models.URLField(_("Zaaktype vergadering"))
+
+    class Meta:
+        verbose_name = _("BInG configuratie")
+
+    def __str__(self):
+        return force_text(self._meta.verbose_name)
