@@ -6,7 +6,7 @@ from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from solo.models import SingletonModel
-from zds_client import Client, ClientAuth
+from zds_client import Client
 
 RSIN = "002220647"
 
@@ -18,11 +18,34 @@ def get_client(api_root: str) -> Client:
 
 
 class APIConfig(SingletonModel):
-    drc_api_root = models.URLField(
-        _("API root"), default="https://ref.tst.vng.cloud/drc/api/v1/"
+    zrc = models.ForeignKey(
+        "zgw_consumers.Service",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
     )
-    drc_client_id = models.CharField(_("client id"), max_length=100, blank=True)
-    drc_secret = models.CharField(_("secret"), max_length=100, blank=True)
+    ztc = models.ForeignKey(
+        "zgw_consumers.Service",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    drc = models.ForeignKey(
+        "zgw_consumers.Service",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    brc = models.ForeignKey(
+        "zgw_consumers.Service",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
 
     class Meta:
         verbose_name = _("APIs configuration")
@@ -31,15 +54,20 @@ class APIConfig(SingletonModel):
         return force_text(self._meta.verbose_name)
 
     def get_drc_client(self) -> Client:
-        client = get_client(self.drc_api_root)
-        client.auth = ClientAuth(client_id=self.drc_client_id, secret=self.drc_secret)
-        return client
+        if not self.drc:
+            raise ValueError("No DRC configured!")
+        return self.drc.build_client()
 
 
 class BInGConfig(SingletonModel):
     """
     BInG-specific configuration
     """
+
+    # TODO: add validator
+    organisatie_rsin = models.CharField(
+        _("RSIN organisatie"), max_length=9, default="002220647"
+    )
 
     zaaktype_aanvraag = models.URLField(_("Zaaktype aanvraag"))
     zaaktype_vergadering = models.URLField(_("Zaaktype vergadering"))
