@@ -5,9 +5,9 @@ from .models import Project, ProjectAttachment
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ("project_id", "name")
+    list_display = ("project_id", "name", "zaak")
     list_filter = ("created",)
-    search_fields = ("project_id", "name")
+    search_fields = ("project_id", "name", "zaak")
 
 
 @admin.register(ProjectAttachment)

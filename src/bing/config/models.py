@@ -53,11 +53,6 @@ class APIConfig(SingletonModel):
     def __str__(self):
         return force_text(self._meta.verbose_name)
 
-    def get_drc_client(self) -> Client:
-        if not self.drc:
-            raise ValueError("No DRC configured!")
-        return self.drc.build_client()
-
 
 class BInGConfig(SingletonModel):
     """

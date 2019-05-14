@@ -21,11 +21,13 @@ class ProjectGetOrCreateForm(forms.ModelForm):
         project = Project.objects.filter(
             project_id=self.cleaned_data["project_id"]
         ).first()
-        if project is not None:
-            return project
+        if project is None:
+            self.instance.project_id = self.cleaned_data["project_id"]
+            project = super().save(*args, **kwargs)
 
-        self.instance.project_id = self.cleaned_data["project_id"]
-        return super().save(*args, **kwargs)
+        project.ensure_zaak()
+
+        return project
 
 
 class ProjectToetswijzeForm(forms.ModelForm):
