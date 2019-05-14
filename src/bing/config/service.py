@@ -17,5 +17,6 @@ def get_client(type: str, **claims) -> Client:
     return client
 
 
-get_drc_client = partial(get_client, "drc")
 get_zrc_client = partial(get_client, "zrc")
+get_ztc_client = partial(get_client, "ztc")
+get_drc_client = partial(get_client, "drc")

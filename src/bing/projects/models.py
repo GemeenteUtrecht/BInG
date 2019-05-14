@@ -1,11 +1,15 @@
+import logging
+
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from bing.config.models import BInGConfig
-from bing.config.service import get_zrc_client
+from bing.config.service import get_zrc_client, get_ztc_client
 
 from .constants import Toetswijzen
+
+logger = logging.getLogger(__name__)
 
 
 class Project(models.Model):
@@ -36,24 +40,45 @@ class Project(models.Model):
             return
 
         config = BInGConfig.get_solo()
-        client = get_zrc_client(scopes=["zds.scopes.zaken.aanmaken"])
+        zrc_client = get_zrc_client(scopes=["zds.scopes.zaken.aanmaken"])
+        ztc_client = get_ztc_client(scopes=["zds.scopes.zaaktypes.lezen"])
 
         # TODO: fill in einddatumGepland etc.
 
-        zaak = client.create(
+        zaaktype_url = config.zaaktype_aanvraag
+        startdatum = timezone.localdate(self.created).isoformat()
+
+        zaak = zrc_client.create(
             "zaak",
             {
                 "bronorganisatie": config.organisatie_rsin,
                 "identificatie": f"BING-{self.project_id}",
-                "zaaktype": config.zaaktype_aanvraag,
+                "zaaktype": zaaktype_url,
                 "verantwoordelijkeOrganisatie": config.organisatie_rsin,
-                "startdatum": timezone.localdate(self.created).isoformat(),
+                "startdatum": startdatum,
                 "omschrijving": f"BInG aanvraag voor {self.name}",
             },
         )
 
         self.zaak = zaak["url"]
         self.save(update_fields=("zaak",))
+
+        # set the initial status
+        zaaktype = ztc_client.retrieve("zaaktype", url=zaaktype_url)
+        if not zaaktype["statustypen"]:
+            logger.warning("Zaaktype %s has no statustypen!", zaaktype_url)
+            return
+
+        status_type = zaaktype["statustypen"][0]
+        zrc_client.create(
+            "status",
+            {
+                "zaak": self.zaak,
+                "statusType": status_type,
+                "datumStatusGezet": timezone.localtime().isoformat(),
+                "statustoelichting": "Aanvraag ingediend",
+            },
+        )
 
 
 class ProjectAttachment(models.Model):

@@ -25,6 +25,7 @@ class ProjectGetOrCreateForm(forms.ModelForm):
             self.instance.project_id = self.cleaned_data["project_id"]
             project = super().save(*args, **kwargs)
 
+        # FIXME: should only happen after final submission!
         project.ensure_zaak()
 
         return project
