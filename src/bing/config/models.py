@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from solo.models import SingletonModel
 from zds_client import Client
+from zgw_consumers.constants import APITypes
 
 RSIN = "002220647"
 
@@ -24,6 +25,7 @@ class APIConfig(SingletonModel):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="+",
+        limit_choices_to={"api_type": APITypes.zrc},
     )
     ztc = models.ForeignKey(
         "zgw_consumers.Service",
@@ -31,6 +33,7 @@ class APIConfig(SingletonModel):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="+",
+        limit_choices_to={"api_type": APITypes.ztc},
     )
     drc = models.ForeignKey(
         "zgw_consumers.Service",
@@ -38,6 +41,7 @@ class APIConfig(SingletonModel):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="+",
+        limit_choices_to={"api_type": APITypes.drc},
     )
     brc = models.ForeignKey(
         "zgw_consumers.Service",
@@ -45,6 +49,7 @@ class APIConfig(SingletonModel):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="+",
+        limit_choices_to={"api_type": APITypes.brc},
     )
 
     class Meta:

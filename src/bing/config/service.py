@@ -18,5 +18,5 @@ def get_client(type: str, **claims) -> Client:
 
 
 get_zrc_client = partial(get_client, "zrc")
-get_ztc_client = partial(get_client, "ztc")
+get_ztc_client = partial(get_client, "ztc", scopes=["zds.scopes.zaaktypes.lezen"])
 get_drc_client = partial(get_client, "drc")

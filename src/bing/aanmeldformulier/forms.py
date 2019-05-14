@@ -1,6 +1,8 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from bing.config.models import APIConfig, BInGConfig
+from bing.config.service import get_ztc_client
 from bing.projects.constants import Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 
@@ -49,3 +51,29 @@ class ProjectAttachmentForm(forms.ModelForm):
     class Meta:
         model = ProjectAttachment
         fields = ("io_type",)
+        widgets = {"io_type": forms.RadioSelect}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        config = BInGConfig.get_solo()
+        api_config = APIConfig.get_solo()
+        ztc_client = get_ztc_client()
+
+        # fetch informatieobjecttypen efficiently
+        zaaktype = ztc_client.retrieve("zaaktype", url=config.zaaktype_aanvraag)
+        main_catalogus_uuid = api_config.ztc.extra["main_catalogus_uuid"]
+        informatieobjecttypen = ztc_client.list(
+            "informatieobjecttype", catalogus_uuid=main_catalogus_uuid
+        )
+        informatieobjecttypen = [
+            iot
+            for iot in informatieobjecttypen
+            if iot["url"] in zaaktype["informatieobjecttypen"]
+        ]
+
+        iot_choices = [
+            (iot["url"], iot["omschrijving"]) for iot in informatieobjecttypen
+        ]
+
+        self.fields["io_type"].choices = iot_choices
