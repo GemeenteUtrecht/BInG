@@ -1,8 +1,12 @@
+import base64
+import os
+
 from django import forms
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from bing.config.models import APIConfig, BInGConfig
-from bing.config.service import get_ztc_client
+from bing.config.service import get_drc_client, get_ztc_client
 from bing.projects.constants import Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 
@@ -77,3 +81,42 @@ class ProjectAttachmentForm(forms.ModelForm):
         ]
 
         self.fields["io_type"].choices = iot_choices
+
+    def save(self, *args, **kwargs):
+        config = BInGConfig.get_solo()
+
+        io_type = self.cleaned_data["io_type"]
+        content = self.cleaned_data["attachment"].read()
+        filename = self.cleaned_data["attachment"].name
+
+        # create informatieobject
+        drc_client = get_drc_client(scopes=[])
+        eio = drc_client.create(
+            "enkelvoudiginformatieobject",
+            {
+                "bronorganisatie": config.organisatie_rsin,
+                "informatieobjecttype": io_type,
+                "creatiedatum": timezone.now().date().isoformat(),
+                "bestandsnaam": filename,
+                "titel": os.path.splitext(filename)[0],
+                "auteur": "BInG formulier",
+                "taal": "dut",
+                "inhoud": base64.b64encode(content).decode("ascii"),
+            },
+        )
+
+        self.instance.io_type = io_type
+        self.instance.eio_url = eio["url"]
+
+        # connect io and zaak
+        drc_client.create(
+            "objectinformatieobject",
+            {
+                "informatieobject": eio["url"],
+                "object": self.instance.project.zaak,
+                "objectType": "zaak",
+                "beschrijving": "Aangeleverd stuk door aanvrager",
+            },
+        )
+
+        return super().save(*args, **kwargs)
