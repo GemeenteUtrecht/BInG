@@ -35,4 +35,4 @@ requests==2.21.0          # via django-rosetta, gemma-zds-client
 six==1.12.0               # via django-appconf, django-compat, django-rosetta, pip-tools
 sqlparse==0.3.0           # via django
 urllib3==1.24.2           # via requests
-zgw-consumers==0.2
+zgw-consumers==0.2.1
