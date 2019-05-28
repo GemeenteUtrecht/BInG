@@ -47,3 +47,4 @@ class ProductUpdateView(UpdateView):
     queryset = Project.objects.exclude(zaak="").annotate(num_meetings=Count("meeting"))
     template_name = "medewerkers/project_form.html"
     form_class = ProjectUpdateForm
+    success_url = reverse_lazy("medewerkers:kalender")
