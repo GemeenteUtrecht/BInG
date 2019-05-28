@@ -35,7 +35,11 @@ def add_project_to_meeting(meeting_id: int, project_id: int) -> None:
     project.ensure_zaak()
 
     zrc_client = get_zrc_client(
-        scopes=["zds.scopes.zaken.aanmaken", "zds.scopes.zaken.bijwerken"]
+        scopes=[
+            "zds.scopes.zaken.lezen",
+            "zds.scopes.zaken.aanmaken",
+            "zds.scopes.zaken.bijwerken",
+        ]
     )
 
     # fetch the current zaak so we can add gerelateerde zaken
