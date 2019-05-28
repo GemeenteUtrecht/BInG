@@ -15,8 +15,22 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=bing.conf.docker
       - SECRET_KEY=${SECRET_KEY:-v1zy5$p*a5s^9_7r!z9d30jyvpa6oj6j(ie#gpt*z=$&ojkwd0}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     ports:
       - 8000:8000
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    build: .
+    command: /celery_worker.sh
+    environment:
+      - DJANGO_SETTINGS_MODULE=bing.conf.docker
+      - SECRET_KEY=${SECRET_KEY:-v1zy5$p*a5s^9_7r!z9d30jyvpa6oj6j(ie#gpt*z=$&ojkwd0}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - db
       - redis

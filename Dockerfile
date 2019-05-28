@@ -76,11 +76,13 @@ RUN apk --no-cache add \
 
 WORKDIR /app
 COPY ./bin/docker_start.sh /start.sh
+COPY ./bin/celery_worker.sh /celery_worker.sh
 RUN mkdir /app/log
 
 # copy backend build deps
 COPY --from=backend-build /usr/local/lib/python3.7 /usr/local/lib/python3.7
 COPY --from=backend-build /usr/local/bin/uwsgi /usr/local/bin/uwsgi
+COPY --from=backend-build /usr/local/bin/celery /usr/local/bin/celery
 
 # copy build statics
 COPY --from=frontend-build /app/src/bing/static /app/src/bing/static

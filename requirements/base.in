@@ -3,6 +3,7 @@ psycopg2
 Pillow
 pytz
 raven
+python-dateutil
 python-dotenv
 
 gemma-zds-client
