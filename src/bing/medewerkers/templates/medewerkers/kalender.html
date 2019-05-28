@@ -20,9 +20,33 @@
 
 
 {% block page-content %}
+<div>
+    <h2>Geplande vergaderingen</h2>
 
-<div> {{ object_list }} </div>
+    <div> {{ object_list }} </div>
+</div>
 
-<div> Next meeting: {{ next_meeting.0 }} - {{ next_meeting.1 }} </div>
+<div>
+    <h2>Leg een vergadering vast</h2>
 
+    <p>
+        Na het vastleggen van een vergadering is het mogelijk om projecten in
+        te plannen bij de vergadering.
+    </p>
+
+    <form action="." method="post">
+        {% csrf_token %}
+        {% load_widgets form='snippets/forms.html' %}
+        <fieldset class="fieldset">
+            {% form_field form.start %}
+            {% form_field form.end %}
+
+            {% widget 'form:required-fields' %}
+        </fieldset>
+
+        <div class="navigation_buttons">
+            {% widget 'form:submit' text=_("Bevestig") %}
+        </div>
+    </form>
+</div>
 {% endblock page-content %}

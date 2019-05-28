@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "bing.aanmeldformulier",
     "bing.projects",
     "bing.medewerkers",
+    "bing.meetings",
     "bing.utils",
 ]
 
