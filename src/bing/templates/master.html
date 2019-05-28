@@ -87,6 +87,12 @@
                         {% endblock %}
                     </article>
                     <!-- END page content -->
+
+                    {% if user.is_authenticated %}
+                        <section class="user-details">
+                            Ingelogd als <strong>{{ user.get_full_name|default:user.username }}</strong>
+                        </section>
+                    {% endif %}
                 </div>
                 <!-- END container -->
             </div>
