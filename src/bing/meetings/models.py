@@ -39,7 +39,9 @@ class Meeting(models.Model):
             return
 
         config = BInGConfig.get_solo()
-        zrc_client = get_zrc_client(scopes=["zds.scopes.zaken.aanmaken"])
+        zrc_client = get_zrc_client(
+            scopes=["zds.scopes.zaken.aanmaken", "zds.scopes.zaken.bijwerken"]
+        )
         ztc_client = get_ztc_client()
 
         zaaktype_url = config.zaaktype_vergadering
