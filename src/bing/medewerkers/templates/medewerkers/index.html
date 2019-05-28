@@ -1,0 +1,26 @@
+{% extends "medewerkers/base.html" %}
+{% load sniplates %}
+
+{% block subtitle %}Dashboard{% endblock subtitle %}
+
+
+{% block page-content %}
+    <div class="toptaken">
+        <ul>
+            <li>
+                <a href="{% url 'medewerkers:kalender' %}" class="topTasksButton">
+                    <i class="fa fa-calendar fa-2x"></i>
+                    <span>Kalender</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#TODO"  class="topTasksButton">
+                    <i class="fa fa-building-o fa-2x"></i>
+                    <span>Projecten</span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+{% endblock page-content %}

@@ -1,0 +1,41 @@
+.vergadering-list {
+  border: solid 1px $rood;
+  list-style-type: none;
+
+  width: 24em;
+
+  &--first {
+    margin-top: 1em !important;
+  }
+
+  & &__item {
+    background: none;
+    padding: 0 1em 0.5em;
+    border-bottom: solid 1px $rood;
+
+    > a {
+      display: block;
+      text-decoration: none;
+    }
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+
+  & &__datum {
+    display: block;
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 121%;
+    color: $rood;
+  }
+
+  & &__info {
+    display: block;
+    text-decoration: none;
+    color: $asfalt;
+    text-align: right;
+  }
+}

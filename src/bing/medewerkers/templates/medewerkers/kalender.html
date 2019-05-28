@@ -1,0 +1,61 @@
+{% extends "medewerkers/base.html" %}
+{% load sniplates %}
+
+
+{% block subtitle %}Kalender{% endblock subtitle %}
+
+{% block breadcrumbs %}
+{% load_widgets crumbs='snippets/breadcrumbs.html' %}
+{% nested_widget 'crumbs:crumbs' %}
+    {% widget 'crumbs:crumb' label=_("BInG") url='/' %}
+
+    {% url 'medewerkers:index' as index_url %}
+    {% widget 'crumbs:crumb' label=_("Medewerkers") url=index_url %}
+
+    {% url 'medewerkers:kalender' as kalender_url %}
+    {% widget 'crumbs:crumb' label=_("Kalender") url=kalender_url %}
+
+{% endnested %}
+{% endblock breadcrumbs %}
+
+
+{% block page-content %}
+<div>
+    <h2>Geplande vergaderingen</h2>
+
+    <ul class="vergadering-list vergadering-list--first">
+        {% for zaak in object_list %}
+            <li class="vergadering-list__item">
+                <a href="#">
+                    <span class="vergadering-list__datum">{{ zaak.startdatum }}</span>
+                    <span class="vergadering-list__info">{{ zaak.relevantAndereZaken|length }} aanvragen gepland</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div>
+    <h2>Leg een vergadering vast</h2>
+
+    <p>
+        Na het vastleggen van een vergadering is het mogelijk om projecten in
+        te plannen bij de vergadering.
+    </p>
+
+    <form action="." method="post">
+        {% csrf_token %}
+        {% load_widgets form='snippets/forms.html' %}
+        <fieldset class="fieldset">
+            {% form_field form.start %}
+            {% form_field form.end %}
+
+            {% widget 'form:required-fields' %}
+        </fieldset>
+
+        <div class="navigation_buttons">
+            {% widget 'form:submit' text=_("Bevestig") %}
+        </div>
+    </form>
+</div>
+{% endblock page-content %}

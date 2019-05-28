@@ -34,6 +34,7 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("", include("bing.aanmeldformulier.urls")),
+    path("medewerkers/", include("bing.medewerkers.urls")),
 ]
 
 # NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static

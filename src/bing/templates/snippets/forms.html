@@ -30,6 +30,15 @@
 </div>
 {% endblock %}
 
+{% block DateTimeInput %}
+<div>
+    {% reuse "_label" %}
+    {% reuse "input" input_type="text" raw_value=value %}
+    {% reuse "_help" %}
+    {{ errors }}
+</div>
+{% endblock %}
+
 
 {% block RadioSelect %}
 <fieldset class="fieldset_CheckRadio fieldset_RadioButton">
