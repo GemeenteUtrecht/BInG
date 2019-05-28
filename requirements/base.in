@@ -17,3 +17,5 @@ django-rosetta
 django-sniplates
 django-solo
 django-redis
+
+celery
