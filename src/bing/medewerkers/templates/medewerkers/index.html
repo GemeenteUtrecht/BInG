@@ -1,59 +1,26 @@
-{% extends "master.html" %}
+{% extends "medewerkers/base.html" %}
 {% load sniplates %}
 
-
-{% block breadcrumbs %}
-{% load_widgets crumbs='snippets/breadcrumbs.html' %}
-{% nested_widget 'crumbs:crumbs' %}
-    {% widget 'crumbs:crumb' label=_("BInG") url='/' %}
-
-    {% url 'aanmeldformulier:info' as info_url %}
-    {% widget 'crumbs:crumb' label=_("Medewerkers") url=info_url %}
-{% endnested %}
-{% endblock breadcrumbs %}
-
-{% block page-class %}{% endblock %}
+{% block subtitle %}Dashboard{% endblock subtitle %}
 
 
-{% block content %}
+{% block page-content %}
+    <div class="toptaken">
+        <ul>
+            <li>
+                <a href="{% url 'medewerkers:kalender' %}" class="topTasksButton">
+                    <i class="fa fa-calendar fa-2x"></i>
+                    <span>Kalender</span>
+                </a>
+            </li>
 
-<div class="page-heading">
+            <li>
+                <a href="#TODO"  class="topTasksButton">
+                    <i class="fa fa-building-o fa-2x"></i>
+                    <span>Projecten</span>
+                </a>
+            </li>
 
-    <!-- START grid wrap -->
-    <div class="grid-wrap">
-        <h1>
-            <span>Beheer Inrichting Gebruik</span>
-            Dashboard
-        </h1>
+        </ul>
     </div>
-    <!-- END grid wrap -->
-</div>
-
-<div class="bodycopy">
-
-    <div class="grid-wrap">
-        {% block page-content %}
-            <div class="toptaken">
-                <ul>
-                    <li>
-                        <a href="#TODO" class="topTasksButton">
-                            <i class="fa fa-calendar fa-2x"></i>
-                            <span>Kalender</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="#TODO"  class="topTasksButton">
-                            <i class="fa fa-building-o fa-2x"></i>
-                            <span>Projecten</span>
-                        </a>
-                    </li>
-
-                </ul>
-            </div>
-        {% endblock page-content %}
-    </div>
-
-</div>
-
-{% endblock %}
+{% endblock page-content %}
