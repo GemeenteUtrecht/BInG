@@ -40,6 +40,16 @@
 {% endblock %}
 
 
+{% block Select %}
+<div>
+    {% reuse "_label" %}
+    {{ block.super }}
+    <div>{% reuse "_help" %}</div>
+    {{ errors }}
+</div>
+{% endblock Select %}
+
+
 {% block RadioSelect %}
 <fieldset class="fieldset_CheckRadio fieldset_RadioButton">
 

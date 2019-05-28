@@ -7,4 +7,3 @@ from .models import Meeting
 class MeetingAdmin(admin.ModelAdmin):
     list_display = ("start", "zaak")
     list_filter = ("start", "created")
-    filter_horizontal = ("projects",)

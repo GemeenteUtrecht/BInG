@@ -17,8 +17,6 @@ class Meeting(models.Model):
     start = models.DateTimeField(_("start"))
     end = models.DateTimeField(_("start"))
 
-    projects = models.ManyToManyField("projects.Project", blank=True)
-
     created = models.DateTimeField(_("created"), auto_now_add=True)
 
     # cross-tracking of case-information

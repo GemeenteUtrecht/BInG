@@ -1,11 +1,11 @@
 from django.db.models import Count, Max
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, TemplateView
+from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from bing.meetings.models import Meeting
 from bing.projects.models import Project
 
-from .forms import MeetingForm
+from .forms import MeetingForm, ProjectUpdateForm
 from .utils import fetch_vergadering_zaken, get_next_meeting
 
 
@@ -35,5 +35,15 @@ class KalenderView(CreateView):
 
 
 class ProjectsView(ListView):
-    queryset = Project.objects.exclude(zaak="").annotate(num_meetings=Count("meeting"))
+    queryset = (
+        Project.objects.exclude(zaak="")
+        .annotate(num_meetings=Count("meeting"))
+        .order_by("-pk")
+    )
     template_name = "medewerkers/projects.html"
+
+
+class ProductUpdateView(UpdateView):
+    queryset = Project.objects.exclude(zaak="").annotate(num_meetings=Count("meeting"))
+    template_name = "medewerkers/project_form.html"
+    form_class = ProjectUpdateForm

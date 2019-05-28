@@ -26,7 +26,10 @@
     <ul class="project-list project-list--first">
         {% for project in object_list %}
             <li class="project-list__item">
-                <strong>{{ project.name }}</strong> ({{ project.created|timesince }} geleden)
+                <a href="{% url 'medewerkers:project-update' pk=project.pk %}">
+                    <strong>{{ project.name }}</strong>
+                </a>
+                ({{ project.created|timesince }} geleden)
                 <br>
                 Ingepland in {{ project.num_meetings }} vergaderingen
             </li>

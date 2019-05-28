@@ -25,6 +25,17 @@ class Project(models.Model):
     # cross-tracking of case-information
     zaak = models.URLField(_("zaak"), blank=True, max_length=1000, editable=False)
 
+    # which meeting is it planned on?
+    meeting = models.ForeignKey(
+        "meetings.Meeting",
+        on_delete=models.PROTECT,
+        related_name="projects",
+        null=True,
+        blank=True,
+        verbose_name=_("meeting"),
+        help_text=_("Specify during which meeting the project will be discussed."),
+    )
+
     class Meta:
         verbose_name = _("project")
         verbose_name_plural = _("projects")
