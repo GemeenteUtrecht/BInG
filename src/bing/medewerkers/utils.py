@@ -28,20 +28,21 @@ def fetch_vergadering_zaken() -> List[dict]:
         "zaak", query_params={"zaaktype": config.zaaktype_vergadering}
     )["results"]
     today = timezone.make_naive(timezone.now()).date().isoformat()
-    zaken = [zaak for zaak in zaken if zaak['startdatum'] >= today]
+    zaken = [zaak for zaak in zaken if zaak["startdatum"] >= today]
     return sorted(zaken, key=lambda zaak: zaak["startdatum"])
 
 
-def get_next_meeting() -> Tuple[datetime, datetime]:
+def get_next_meeting(after=None) -> Tuple[datetime, datetime]:
     """
     Calculates the first upcoming meeting datetimes (start, end).
 
     Meetings are in odd weeks, biweekly.
     """
-    now = timezone.make_naive(timezone.now())
-    (year, week, day) = now.isocalendar()
+    _after = after or timezone.now()
+    after = timezone.make_naive(_after)
+    (year, week, day) = after.isocalendar()
 
-    meeting_date = now.date()
+    meeting_date = after.date()
 
     if day < MEETING_DAY:
         meeting_date += relativedelta(days=MEETING_DAY - day)
