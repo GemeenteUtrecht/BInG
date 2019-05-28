@@ -16,12 +16,20 @@ MEETING_END_TIME = time(12, 0)
 
 
 def fetch_vergadering_zaken() -> List[dict]:
+    """
+    Retrieve all Zaken from vergadering-zaaktype.
+
+    TODO: sort on API level
+    TODO: include/exclude past zaken based on startdatum
+    """
     config = BInGConfig.get_solo()
     zrc_client = get_zrc_client()
     zaken = zrc_client.list(
         "zaak", query_params={"zaaktype": config.zaaktype_vergadering}
-    )
-    return zaken["results"]
+    )["results"]
+    today = timezone.make_naive(timezone.now()).date().isoformat()
+    zaken = [zaak for zaak in zaken if zaak['startdatum'] >= today]
+    return sorted(zaken, key=lambda zaak: zaak["startdatum"])
 
 
 def get_next_meeting() -> Tuple[datetime, datetime]:

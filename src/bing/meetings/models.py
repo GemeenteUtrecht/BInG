@@ -28,6 +28,9 @@ class Meeting(models.Model):
         verbose_name = _("meeting")
         verbose_name_plural = _("meetings")
 
+    def __str__(self):
+        return f"{self.start} - {self.end}"
+
     def ensure_zaak(self):
         """
         Ensure a 'Zaak' is created for this project.

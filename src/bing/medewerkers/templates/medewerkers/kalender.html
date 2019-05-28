@@ -23,7 +23,16 @@
 <div>
     <h2>Geplande vergaderingen</h2>
 
-    <div> {{ object_list }} </div>
+    <ul class="vergadering-list vergadering-list--first">
+        {% for zaak in object_list %}
+            <li class="vergadering-list__item">
+                <a href="#">
+                    <span class="vergadering-list__datum">{{ zaak.startdatum }}</span>
+                    <span class="vergadering-list__info">{{ zaak.relevantAndereZaken|length }} aanvragen gepland</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
 </div>
 
 <div>
