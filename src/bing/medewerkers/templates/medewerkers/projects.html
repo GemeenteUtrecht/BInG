@@ -1,0 +1,39 @@
+{% extends "medewerkers/base.html" %}
+{% load sniplates %}
+
+
+{% block subtitle %}Kalender{% endblock subtitle %}
+
+{% block breadcrumbs %}
+{% load_widgets crumbs='snippets/breadcrumbs.html' %}
+{% nested_widget 'crumbs:crumbs' %}
+    {% widget 'crumbs:crumb' label=_("BInG") url='/' %}
+
+    {% url 'medewerkers:index' as index_url %}
+    {% widget 'crumbs:crumb' label=_("Medewerkers") url=index_url %}
+
+    {% url 'medewerkers:projects' as projects_url %}
+    {% widget 'crumbs:crumb' label=_("Projecten") url=projects_url %}
+
+{% endnested %}
+{% endblock breadcrumbs %}
+
+
+{% block page-content %}
+<div>
+    <h2>Aangemelde projecten</h2>
+
+    <ul class="project-list project-list--first">
+        {% for project in object_list %}
+            <li class="project-list__item">
+                <a href="{% url 'medewerkers:project-update' pk=project.pk %}">
+                    <strong>{{ project.name }}</strong>
+                </a>
+                ({{ project.created|timesince }} geleden)
+                <br>
+                Ingepland in {{ project.num_meetings }} vergaderingen
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock page-content %}
