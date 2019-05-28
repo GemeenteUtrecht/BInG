@@ -21,6 +21,8 @@
 
 {% block page-content %}
 
-{{ object_list }}
+<div> {{ object_list }} </div>
+
+<div> Next meeting: {{ next_meeting.0 }} - {{ next_meeting.1 }} </div>
 
 {% endblock page-content %}

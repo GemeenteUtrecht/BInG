@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 
-from .utils import fetch_vergadering_zaken
+from .utils import fetch_vergadering_zaken, get_next_meeting
 
 
 class IndexView(TemplateView):
@@ -16,5 +16,6 @@ class KalenderView(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
+        context["next_meeting"] = get_next_meeting()
         context["object_list"] = fetch_vergadering_zaken()
         return context
