@@ -5,7 +5,8 @@
 {% block breadcrumbs %}
 {% load_widgets crumbs='snippets/breadcrumbs.html' %}
 {% nested_widget 'crumbs:crumbs' %}
-    {% widget 'crumbs:crumb' label=_("BInG") url='/' %}
+    {% url 'index' as index_url %}
+    {% widget 'crumbs:crumb' label=_("BInG") url=index_url %}
 
     {% url 'aanmeldformulier:info' as info_url %}
     {% widget 'crumbs:crumb' label=_("Aanmelden") url=info_url %}

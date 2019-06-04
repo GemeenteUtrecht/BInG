@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
+from django.views.generic import TemplateView
 
 handler500 = "bing.utils.views.server_error"
 admin.site.site_header = "bing admin"
@@ -33,7 +34,8 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
-    path("", include("bing.aanmeldformulier.urls")),
+    path("", TemplateView.as_view(template_name="index.html"), name="index"),
+    path("aanmelden/", include("bing.aanmeldformulier.urls")),
     path("medewerkers/", include("bing.medewerkers.urls")),
 ]
 
