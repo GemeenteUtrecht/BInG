@@ -1,0 +1,32 @@
+$border-color: #EEEEEE !default;
+
+.zaak {
+
+  &__box {
+    border: solid 1px $border-color;
+    padding: 0.5em;
+
+    &--statussen {
+      width: 40%;
+    }
+
+    & > table {
+      margin: 0;
+
+      tr:last-child {
+        td, th {
+          border-bottom: none;
+        }
+      }
+    }
+  }
+
+  &__box-title {
+    margin-top: 0.5em;
+    border-bottom: solid 1px $rood;
+
+    &--space-bottom {
+      margin-bottom: 1em;
+    }
+  }
+}

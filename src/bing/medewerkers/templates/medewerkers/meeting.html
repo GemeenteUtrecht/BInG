@@ -1,0 +1,53 @@
+{% extends "medewerkers/base.html" %}
+{% load sniplates %}
+
+
+{% block subtitle %}
+    Vergadering {{ meeting.start|date }}
+    <span class="times">
+        {{ meeting.start|time }} &mdash; {{ meeting.end|time }}
+    </span>
+{% endblock subtitle %}
+
+{% block breadcrumbs %}
+{% load_widgets crumbs='snippets/breadcrumbs.html' %}
+{% nested_widget 'crumbs:crumbs' %}
+    {% widget 'crumbs:crumb' label=_("BInG") url='/' %}
+
+    {% url 'medewerkers:index' as index_url %}
+    {% widget 'crumbs:crumb' label=_("Medewerkers") url=index_url %}
+
+    {% url 'medewerkers:kalender' as kalender_url %}
+    {% widget 'crumbs:crumb' label=_("Kalender") url=kalender_url %}
+
+{% endnested %}
+{% endblock breadcrumbs %}
+
+
+{% block page-content %}
+{% load_widgets key_value='snippets/key-value.html' %}
+
+<article class="meeting zaak">
+
+    {# <h2>Zaakgegevens</h2> #}
+
+    <section class="zaak__box">
+        <table>
+            <tbody>
+                {% widget 'key_value:label-value' label=_("Identificatie") value=zaak.identificatie %}
+                {% widget 'key_value:label-value' label=_("Bronorganisatie") value=zaak.bronorganisatie %}
+                {% widget 'key_value:label-value' label=_("Toelichting") value=zaak.toelichting %}
+                {% widget 'key_value:label-value' label=_("Startdatum") value=zaak.startdatum %}
+                {% widget 'key_value:label-value' label=_("Geplande einddatum") value=zaak.einddatum_gepland|default:"onbekend" %}
+            </tbody>
+        </table>
+    </section>
+
+</article>
+
+<div>
+
+    <h2>Geplande projecten</h2>
+
+</div>
+{% endblock page-content %}

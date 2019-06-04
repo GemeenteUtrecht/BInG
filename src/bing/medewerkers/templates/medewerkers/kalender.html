@@ -24,9 +24,9 @@
     <h2>Geplande vergaderingen</h2>
 
     <ul class="vergadering-list vergadering-list--first">
-        {% for zaak in object_list %}
+        {% for meeting, zaak in object_list %}
             <li class="vergadering-list__item">
-                <a href="#">
+                <a href="{% url 'medewerkers:meeting-detail' pk=meeting.pk %}">
                     <span class="vergadering-list__datum">{{ zaak.startdatum }}</span>
                     <span class="vergadering-list__info">{{ zaak.relevanteAndereZaken|length }} aanvragen gepland</span>
                 </a>

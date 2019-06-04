@@ -2,13 +2,19 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.db.models import Count, Max
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, TemplateView, UpdateView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 
 from bing.meetings.models import Meeting
 from bing.projects.models import Project
 
 from .forms import MeetingForm, ProjectUpdateForm
-from .utils import fetch_vergadering_zaken, get_next_meeting
+from .utils import fetch_vergadering_zaken, fetch_zaak, get_next_meeting
 
 
 class LoginView(LoginView):
@@ -36,7 +42,22 @@ class KalenderView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        context["object_list"] = fetch_vergadering_zaken()
+        zaken = {zaak["url"]: zaak for zaak in fetch_vergadering_zaken()}
+        qs = Meeting.objects.filter(zaak__in=zaken)
+        meetings = {meeting.zaak: meeting for meeting in qs}
+
+        context["object_list"] = [(meetings[url], zaak) for url, zaak in zaken.items()]
+        return context
+
+
+class MeetingDetailView(LoginRequiredMixin, DetailView):
+    queryset = Meeting.objects.exclude(zaak="")
+    template_name = "medewerkers/meeting.html"
+    context_object_name = "meeting"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["zaak"] = fetch_zaak(self.object.zaak)
         return context
 
 
