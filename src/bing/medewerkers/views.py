@@ -41,11 +41,7 @@ class KalenderView(LoginRequiredMixin, CreateView):
 
 
 class ProjectsView(LoginRequiredMixin, ListView):
-    queryset = (
-        Project.objects.exclude(zaak="")
-        .annotate(num_meetings=Count("meeting"))
-        .order_by("-pk")
-    )
+    queryset = Project.objects.exclude(zaak="").order_by("-pk")
     template_name = "medewerkers/projects.html"
 
 

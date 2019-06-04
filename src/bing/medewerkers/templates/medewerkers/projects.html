@@ -2,7 +2,7 @@
 {% load sniplates %}
 
 
-{% block subtitle %}Kalender{% endblock subtitle %}
+{% block subtitle %}Aangemelde projecten{% endblock subtitle %}
 
 {% block breadcrumbs %}
 {% load_widgets crumbs='snippets/breadcrumbs.html' %}
@@ -20,20 +20,16 @@
 
 
 {% block page-content %}
-<div>
-    <h2>Aangemelde projecten</h2>
-
-    <ul class="project-list project-list--first">
-        {% for project in object_list %}
-            <li class="project-list__item">
-                <a href="{% url 'medewerkers:project-update' pk=project.pk %}">
-                    <strong>{{ project.name }}</strong>
-                </a>
-                ({{ project.created|timesince }} geleden)
-                <br>
-                Ingepland in {{ project.num_meetings }} vergaderingen
-            </li>
-        {% endfor %}
-    </ul>
-</div>
+<ul>
+    {% for project in object_list %}
+        <li>
+            <a href="{% url 'medewerkers:project-update' pk=project.pk %}">
+                <strong>{{ project.name }}</strong>
+            </a>
+            ({{ project.created|timesince }} geleden)
+            <br>
+            Ingepland: {% if project.meeting and project.meeting.zaak %}{{ project.meeting.start|date }}{% else %}-{% endif %}
+        </li>
+    {% endfor %}
+</ul>
 {% endblock page-content %}
