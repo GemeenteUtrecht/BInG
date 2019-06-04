@@ -49,5 +49,13 @@
 
     <h2>Geplande projecten</h2>
 
+    <ul>
+        {% for zaak in projects %}
+            <li>
+                <a href="#">{{ zaak.omschrijving }}</a> ({{ zaak.identificatie }})
+            </li>
+        {% endfor %}
+    </ul>
+
 </div>
 {% endblock page-content %}

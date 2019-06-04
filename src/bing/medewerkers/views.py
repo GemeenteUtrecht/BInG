@@ -14,7 +14,7 @@ from bing.meetings.models import Meeting
 from bing.projects.models import Project
 
 from .forms import MeetingForm, ProjectUpdateForm
-from .utils import fetch_vergadering_zaken, fetch_zaak, get_next_meeting
+from .utils import fetch_vergadering_zaken, fetch_zaak, fetch_zaken, get_next_meeting
 
 
 class LoginView(LoginView):
@@ -57,7 +57,9 @@ class MeetingDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["zaak"] = fetch_zaak(self.object.zaak)
+        zaak = fetch_zaak(self.object.zaak)
+        context["zaak"] = zaak
+        context["projects"] = fetch_zaken(zaak["relevanteAndereZaken"])
         return context
 
 
