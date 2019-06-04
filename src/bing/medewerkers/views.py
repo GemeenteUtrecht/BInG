@@ -51,6 +51,10 @@ class KalenderView(LoginRequiredMixin, CreateView):
 
 
 class MeetingDetailView(LoginRequiredMixin, DetailView):
+    """
+    Display the information of a single meeting.
+    """
+
     queryset = Meeting.objects.exclude(zaak="")
     template_name = "medewerkers/meeting.html"
     context_object_name = "meeting"
@@ -59,7 +63,32 @@ class MeetingDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         zaak = fetch_zaak(self.object.zaak)
         context["zaak"] = zaak
-        context["projects"] = fetch_zaken(zaak["relevanteAndereZaken"])
+
+        project_zaken = {
+            zaak["url"]: zaak for zaak in fetch_zaken(zaak["relevanteAndereZaken"])
+        }
+        projects = {
+            project.zaak: project
+            for project in Project.objects.filter(zaak__in=project_zaken)
+        }
+
+        context["projects"] = [
+            (projects[url], zaak) for url, zaak in project_zaken.items()
+        ]
+        return context
+
+
+class ProjectDetailView(LoginRequiredMixin, DetailView):
+    """
+    Display all the project information.
+    """
+
+    queryset = Project.objects.exclude(zaak="")
+    template_name = "medewerkers/project.html"
+    context_object_name = "project"
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
         return context
 
 

@@ -6,6 +6,7 @@ from .views import (
     LoginView,
     MeetingDetailView,
     ProductUpdateView,
+    ProjectDetailView,
     ProjectsView,
 )
 
@@ -17,5 +18,6 @@ urlpatterns = [
     path("kalender/", KalenderView.as_view(), name="kalender"),
     path("kalender/<pk>/", MeetingDetailView.as_view(), name="meeting-detail"),
     path("projects/", ProjectsView.as_view(), name="projects"),
-    path("projects/<pk>/", ProductUpdateView.as_view(), name="project-update"),
+    path("projects/<pk>/", ProjectDetailView.as_view(), name="project-detail"),
+    path("projects/<pk>/update/", ProductUpdateView.as_view(), name="project-update"),
 ]
