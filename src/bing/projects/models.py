@@ -52,7 +52,7 @@ class Project(models.Model):
 
         config = BInGConfig.get_solo()
         zrc_client = get_zrc_client(
-            scopes=["zds.scopes.zaken.aanmaken"], zaaktypen=[config.zaaktype_aanvraag]
+            scopes=["zds.scopes.zaken.aanmaken"], zaaktypes=[config.zaaktype_aanvraag]
         )
         ztc_client = get_ztc_client()
 

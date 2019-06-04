@@ -42,7 +42,7 @@ def add_project_to_meeting(meeting_id: int, project_id: int) -> None:
             "zds.scopes.zaken.aanmaken",
             "zds.scopes.zaken.bijwerken",
         ],
-        zaaktypen=[config.zaaktype_vergadering],
+        zaaktypes=[config.zaaktype_vergadering],
     )
 
     # fetch the current zaak so we can add gerelateerde zaken

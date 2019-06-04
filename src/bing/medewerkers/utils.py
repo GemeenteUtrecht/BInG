@@ -24,7 +24,7 @@ def fetch_vergadering_zaken() -> List[dict]:
     """
     config = BInGConfig.get_solo()
     zrc_client = get_zrc_client(
-        scopes=["zds.scopes.zaken.lezen"], zaaktypen=[config.zaaktype_vergadering]
+        scopes=["zds.scopes.zaken.lezen"], zaaktypes=[config.zaaktype_vergadering]
     )
     zaken = zrc_client.list(
         "zaak", query_params={"zaaktype": config.zaaktype_vergadering}
