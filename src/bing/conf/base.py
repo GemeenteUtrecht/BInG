@@ -248,6 +248,8 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+LOGIN_URL = "medewerkers:login"
+
 #
 # Custom settings
 #

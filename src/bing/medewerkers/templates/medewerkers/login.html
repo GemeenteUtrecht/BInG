@@ -1,0 +1,42 @@
+{% extends "medewerkers/base.html" %}
+{% load sniplates %}
+
+
+{% block subtitle %}Inloggen{% endblock subtitle %}
+
+{% block breadcrumbs %}
+{% load_widgets crumbs='snippets/breadcrumbs.html' %}
+{% nested_widget 'crumbs:crumbs' %}
+    {% url 'index' as index_url %}
+    {% widget 'crumbs:crumb' label=_("BInG") url=index_url %}
+
+    {% url 'medewerkers:index' as index_url %}
+    {% widget 'crumbs:crumb' label=_("Medewerkers") url=index_url %}
+
+    {% url 'medewerkers:login' as login_url %}
+    {% widget 'crumbs:crumb' label=_("Inloggen") url=login_url %}
+
+{% endnested %}
+{% endblock breadcrumbs %}
+
+
+{% block page-content %}
+<div>
+    <form action="." method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.GET.next }}">
+
+        {% load_widgets form='snippets/forms.html' %}
+        <fieldset class="fieldset">
+            {% form_field form.username %}
+            {% form_field form.password %}
+
+            {% widget 'form:required-fields' %}
+        </fieldset>
+
+        <div class="navigation_buttons">
+            {% widget 'form:submit' text=_("Inloggen") %}
+        </div>
+    </form>
+</div>
+{% endblock page-content %}

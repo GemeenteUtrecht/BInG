@@ -1,3 +1,5 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
 from django.db.models import Count, Max
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
@@ -9,11 +11,15 @@ from .forms import MeetingForm, ProjectUpdateForm
 from .utils import fetch_vergadering_zaken, get_next_meeting
 
 
-class IndexView(TemplateView):
+class LoginView(LoginView):
+    template_name = "medewerkers/login.html"
+
+
+class IndexView(LoginRequiredMixin, TemplateView):
     template_name = "medewerkers/index.html"
 
 
-class KalenderView(CreateView):
+class KalenderView(LoginRequiredMixin, CreateView):
     """
     View to list (upcoming) BiNG sessions.
     """
@@ -34,7 +40,7 @@ class KalenderView(CreateView):
         return context
 
 
-class ProjectsView(ListView):
+class ProjectsView(LoginRequiredMixin, ListView):
     queryset = (
         Project.objects.exclude(zaak="")
         .annotate(num_meetings=Count("meeting"))
@@ -43,7 +49,7 @@ class ProjectsView(ListView):
     template_name = "medewerkers/projects.html"
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     queryset = Project.objects.exclude(zaak="").annotate(num_meetings=Count("meeting"))
     template_name = "medewerkers/project_form.html"
     form_class = ProjectUpdateForm
