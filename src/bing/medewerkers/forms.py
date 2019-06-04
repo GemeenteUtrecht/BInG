@@ -1,5 +1,6 @@
 from django import forms
 from django.db import transaction
+from django.template.defaultfilters import date
 
 from bing.meetings.models import Meeting
 from bing.meetings.tasks import add_project_to_meeting, ensure_meeting_zaak
@@ -20,11 +21,17 @@ class MeetingForm(forms.ModelForm):
         return meeting
 
 
+class MeetingField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return date(obj.start)
+
+
 class ProjectUpdateForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ("toetswijze", "meeting")
         widgets = {"toetswijze": forms.RadioSelect}
+        field_classes = {"meeting": MeetingField}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
