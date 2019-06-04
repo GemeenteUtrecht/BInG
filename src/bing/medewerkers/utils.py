@@ -23,7 +23,9 @@ def fetch_vergadering_zaken() -> List[dict]:
     TODO: include/exclude past zaken based on startdatum
     """
     config = BInGConfig.get_solo()
-    zrc_client = get_zrc_client(scopes=["zds.scopes.zaken.lezen"])
+    zrc_client = get_zrc_client(
+        scopes=["zds.scopes.zaken.lezen"], zaaktypen=[config.zaaktype_vergadering]
+    )
     zaken = zrc_client.list(
         "zaak", query_params={"zaaktype": config.zaaktype_vergadering}
     )["results"]

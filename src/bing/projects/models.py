@@ -51,7 +51,9 @@ class Project(models.Model):
             return
 
         config = BInGConfig.get_solo()
-        zrc_client = get_zrc_client(scopes=["zds.scopes.zaken.aanmaken"])
+        zrc_client = get_zrc_client(
+            scopes=["zds.scopes.zaken.aanmaken"], zaaktypen=[config.zaaktype_aanvraag]
+        )
         ztc_client = get_ztc_client()
 
         # TODO: fill in einddatumGepland etc.

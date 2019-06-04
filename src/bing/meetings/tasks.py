@@ -1,6 +1,7 @@
 import logging
 
 from bing.celery import app
+from bing.config.models import BInGConfig
 from bing.config.service import get_zrc_client
 from bing.projects.models import Project
 
@@ -34,12 +35,14 @@ def add_project_to_meeting(meeting_id: int, project_id: int) -> None:
 
     project.ensure_zaak()
 
+    config = BInGConfig.get_solo()
     zrc_client = get_zrc_client(
         scopes=[
             "zds.scopes.zaken.lezen",
             "zds.scopes.zaken.aanmaken",
             "zds.scopes.zaken.bijwerken",
-        ]
+        ],
+        zaaktypen=[config.zaaktype_vergadering],
     )
 
     # fetch the current zaak so we can add gerelateerde zaken
