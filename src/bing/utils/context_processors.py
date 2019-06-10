@@ -1,4 +1,9 @@
+from typing import Dict
+
 from django.conf import settings as django_settings
+
+from zds_client import Client
+from zds_client.log import Log
 
 
 def settings(request):
@@ -19,3 +24,8 @@ def settings(request):
         context.update(dsn=django_settings.RAVEN_CONFIG.get("public_dsn", ""))
 
     return context
+
+
+def client_log(request) -> Dict[str, Log]:
+    log = Client._log
+    return {"client_log": log}

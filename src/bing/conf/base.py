@@ -101,6 +101,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "bing.utils.context_processors.settings",
+                "bing.utils.context_processors.client_log",
             ],
             "loaders": RAW_TEMPLATE_LOADERS,
         },
