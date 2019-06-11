@@ -1,11 +1,14 @@
+import concurrent.futures
 import logging
+from typing import Any, Dict, List
 
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from bing.config.models import BInGConfig
-from bing.config.service import get_zrc_client, get_ztc_client
+from bing.config.service import get_drc_client, get_zrc_client, get_ztc_client
+from bing.service.ztc import get_aanvraag_iot
 
 from .constants import PlanFases, Toetswijzen
 
@@ -93,6 +96,28 @@ class Project(models.Model):
                 "statustoelichting": "Aanvraag ingediend",
             },
         )
+
+    def get_documents(self) -> List[Dict[str, Any]]:
+        """
+        Retrieve a list of attachments
+        """
+        attachments = self.projectattachment_set.exclude(io_type="").exclude(eio_url="")
+
+        # fetch existing files to display
+        document_types = dict(get_aanvraag_iot())
+        drc_client = get_drc_client(scopes=["zds.scopes.documenten.lezen"])
+
+        def _get_document(attachment: ProjectAttachment) -> Dict[str, Any]:
+            document = drc_client.retrieve(
+                "enkelvoudiginformatieobject", url=attachment.eio_url
+            )
+            return {
+                "document_type": document_types[attachment.io_type],
+                "informatieobject": document,
+            }
+
+        pool = concurrent.futures.ThreadPoolExecutor(max_workers=len(attachments))
+        return list(pool.map(_get_document, attachments))
 
 
 class ProjectAttachment(models.Model):

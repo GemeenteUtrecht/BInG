@@ -72,3 +72,9 @@ class UploadView(ProjectMixin, CreateView):
     def form_valid(self, form):
         form.instance.project = self.get_project()
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        project = self.get_project()
+        context["attachments"] = project.get_documents()
+        return context
