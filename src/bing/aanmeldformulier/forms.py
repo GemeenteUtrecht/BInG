@@ -101,6 +101,7 @@ class ProjectAttachmentForm(forms.ModelForm):
         self.fields["io_type"].choices = io_types
 
     def save(self, *args, **kwargs):
+        self.instance.project = self.project
         config = BInGConfig.get_solo()
 
         io_type = self.cleaned_data["io_type"]
@@ -151,3 +152,9 @@ class ProjectAttachmentForm(forms.ModelForm):
             )
 
         return super().save(*args, **kwargs)
+
+
+class ProjectAttachmentFormSet(forms.BaseModelFormSet):
+    def __init__(self, project: Project, *args, **kwargs):
+        kwargs["form_kwargs"] = {"project": project}
+        super().__init__(*args, **kwargs)

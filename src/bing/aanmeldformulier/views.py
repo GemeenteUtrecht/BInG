@@ -1,14 +1,17 @@
 from django.db import transaction
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, FormView, TemplateView, UpdateView
+from django.views.generic import FormView, TemplateView, UpdateView
 
-from bing.projects.models import Project
+from extra_views import ModelFormSetView
+
+from bing.projects.models import Project, ProjectAttachment
 
 from .constants import PROJECT_SESSION_KEY
 from .decorators import project_required
 from .forms import (
     ProjectAttachmentForm,
+    ProjectAttachmentFormSet,
     ProjectGetOrCreateForm,
     ProjectPlanfaseForm,
     ProjectToetswijzeForm,
@@ -63,20 +66,19 @@ class PlanfaseView(ProjectMixin, UpdateView):
 
 
 @method_decorator(project_required, name="dispatch")
-class UploadView(ProjectMixin, CreateView):
+class UploadView(ProjectMixin, ModelFormSetView):
+    model = ProjectAttachment
+    queryset = ProjectAttachment.objects.none()
     form_class = ProjectAttachmentForm
+    formset_class = ProjectAttachmentFormSet
+    factory_kwargs = {"extra": 3}
     template_name = "aanmeldformulier/upload.html"
     success_url = reverse_lazy("aanmeldformulier:info")
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
+    def get_formset_kwargs(self):
+        kwargs = super().get_formset_kwargs()
         kwargs["project"] = self.get_project()
         return kwargs
-
-    @transaction.atomic()
-    def form_valid(self, form):
-        form.instance.project = self.get_project()
-        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
