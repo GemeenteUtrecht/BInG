@@ -4,7 +4,7 @@ from django.template.defaultfilters import date
 
 from bing.meetings.models import Meeting
 from bing.meetings.tasks import add_project_to_meeting, ensure_meeting_zaak
-from bing.projects.constants import Toetswijzen, PlanFases
+from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project
 
 

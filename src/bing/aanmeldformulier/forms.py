@@ -1,14 +1,19 @@
 import base64
+import logging
 import os
 
 from django import forms
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from zds_client import ClientError
+
 from bing.config.models import APIConfig, BInGConfig
-from bing.config.service import get_drc_client, get_ztc_client
+from bing.config.service import get_drc_client, get_zrc_client, get_ztc_client
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
+
+logger = logging.getLogger(__name__)
 
 
 class ProjectGetOrCreateForm(forms.ModelForm):
@@ -102,7 +107,7 @@ class ProjectAttachmentForm(forms.ModelForm):
         filename = self.cleaned_data["attachment"].name
 
         # create informatieobject
-        drc_client = get_drc_client(scopes=[])
+        drc_client = get_drc_client(scopes=["zds.scopes.documenten.aanmaken"])
         eio = drc_client.create(
             "enkelvoudiginformatieobject",
             {
@@ -121,14 +126,27 @@ class ProjectAttachmentForm(forms.ModelForm):
         self.instance.eio_url = eio["url"]
 
         # connect io and zaak
-        drc_client.create(
-            "objectinformatieobject",
-            {
-                "informatieobject": eio["url"],
-                "object": self.instance.project.zaak,
-                "objectType": "zaak",
-                "beschrijving": "Aangeleverd stuk door aanvrager",
-            },
-        )
+        try:
+            drc_client.create(
+                "objectinformatieobject",
+                {
+                    "informatieobject": eio["url"],
+                    "object": self.instance.project.zaak,
+                    "objectType": "zaak",
+                    "beschrijving": "Aangeleverd stuk door aanvrager",
+                },
+            )
+        except ClientError as exc:
+            logger.info("Trying new setup, got %s", exc)
+            # try the new setup, with reversal of relation direction
+            zrc_client = get_zrc_client()
+            zrc_client.create(
+                "zaakinformatieobject",
+                {
+                    "zaak": self.instance.project.zaak,
+                    "informatieobject": eio["url"],
+                    "beschrijving": "Aangeleverd stuk door aanvrager",
+                },
+            )
 
         return super().save(*args, **kwargs)
