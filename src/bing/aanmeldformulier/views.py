@@ -68,6 +68,11 @@ class UploadView(ProjectMixin, CreateView):
     template_name = "aanmeldformulier/upload.html"
     success_url = reverse_lazy("aanmeldformulier:info")
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["project"] = self.get_project()
+        return kwargs
+
     @transaction.atomic()
     def form_valid(self, form):
         form.instance.project = self.get_project()

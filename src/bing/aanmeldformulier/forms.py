@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from zds_client import ClientError
 
-from bing.config.models import BInGConfig
+from bing.config.models import BInGConfig, RequiredDocuments
 from bing.config.service import get_drc_client, get_zrc_client
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
@@ -75,9 +75,30 @@ class ProjectAttachmentForm(forms.ModelForm):
         fields = ("io_type",)
         widgets = {"io_type": forms.RadioSelect}
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, project: Project, *args, **kwargs):
+        self.project = project
+
         super().__init__(*args, **kwargs)
-        self.fields["io_type"].choices = get_aanvraag_iot()
+
+        io_types = get_aanvraag_iot()
+
+        try:
+            io_types_config = RequiredDocuments.objects.get(
+                toetswijze=project.toetswijze
+            )
+        except RequiredDocuments.DoesNotExist:
+            logger.warning(
+                "No RequiredDocuments for toetswijze '%s' configured",
+                project.toetswijze,
+            )
+        else:
+            io_types = [
+                (io_type, label)
+                for io_type, label in io_types
+                if io_type in io_types_config.informatieobjecttypen
+            ]
+
+        self.fields["io_type"].choices = io_types
 
     def save(self, *args, **kwargs):
         config = BInGConfig.get_solo()
