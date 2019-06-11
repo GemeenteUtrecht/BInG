@@ -2,6 +2,7 @@ from django import forms
 from django.db import transaction
 from django.template.defaultfilters import date
 
+from bing.config.models import RequiredDocuments
 from bing.meetings.models import Meeting
 from bing.meetings.tasks import (
     add_project_to_meeting,
@@ -10,6 +11,7 @@ from bing.meetings.tasks import (
 )
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project
+from bing.service.ztc import get_aanvraag_iot
 
 
 class MeetingForm(forms.ModelForm):
@@ -53,12 +55,15 @@ class ProjectUpdateForm(forms.ModelForm):
 
     @transaction.atomic
     def save(self, commit=True, *args, **kwargs):
-        current_meeting = self.instance.meeting
+        project = Project.objects.select_related("meeting").get(pk=self.instance.pk)
+        current_meeting = project.meeting
+
+        toetswijze_changed = project.toetswijze != self.cleaned_data["toetswijze"]
 
         # notify toetswijze
-        if self.instance.toetswijze != self.cleaned_data["toetswijze"]:
+        if commit and toetswijze_changed:
             msg = "De BInG secretaris heeft de toetswijze aangepast van {oud} naar {nieuw}".format(
-                oud=self.instance.get_toetswijze_display(),
+                oud=project.get_toetswijze_display(),
                 nieuw=Toetswijzen.labels[self.cleaned_data["toetswijze"]],
             )
             transaction.on_commit(lambda: project.notify(msg))
@@ -69,6 +74,31 @@ class ProjectUpdateForm(forms.ModelForm):
         if should_clear_meeting:
             self.cleaned_data["meeting"] = None
 
+        if (
+            commit
+            and toetswijze_changed
+            and self.cleaned_data["toetswijze"] == Toetswijzen.regulier
+        ):
+            # check for missing documents
+            io_types = project.projectattachment_set.values_list(
+                "io_type", flat=True
+            ).distinct()
+            io_types_config = RequiredDocuments.objects.get(
+                toetswijze=Toetswijzen.regulier
+            )
+            missing = set(io_types_config.informatieobjecttypen) - set(io_types)
+            if missing:
+                io_types = get_aanvraag_iot()
+                document_types = [label for url, label in io_types if url in missing]
+                msg = (
+                    "De toetswijze is gewijzigd naar '{toetswijze}'. Hierdoor dient u "
+                    "ook nog de volgende documenttypen aan te leveren: {document_types}"
+                ).format(
+                    toetswijze=Toetswijzen.labels[Toetswijzen.regulier],
+                    document_types=", ".join(sorted(document_types)),
+                )
+                transaction.on_commit(lambda: project.notify(msg))
+
         project = super().save(commit=commit, *args, **kwargs)
 
         meeting = self.cleaned_data["meeting"]
@@ -77,7 +107,7 @@ class ProjectUpdateForm(forms.ModelForm):
 
         if meeting:
             transaction.on_commit(
-                lambda: add_project_to_meeting.delay(meeting.id, self.instance.id)
+                lambda: add_project_to_meeting.delay(meeting.id, project.id)
             )
         elif current_meeting and should_clear_meeting:
             transaction.on_commit(
