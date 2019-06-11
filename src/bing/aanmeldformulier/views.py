@@ -7,7 +7,12 @@ from bing.projects.models import Project
 
 from .constants import PROJECT_SESSION_KEY
 from .decorators import project_required
-from .forms import ProjectAttachmentForm, ProjectGetOrCreateForm, ProjectToetswijzeForm
+from .forms import (
+    ProjectAttachmentForm,
+    ProjectGetOrCreateForm,
+    ProjectPlanfaseForm,
+    ProjectToetswijzeForm,
+)
 
 
 class ProjectMixin:
@@ -40,6 +45,17 @@ class ToetswijzeView(ProjectMixin, UpdateView):
     model = Project
     form_class = ProjectToetswijzeForm
     template_name = "aanmeldformulier/toetswijze.html"
+    success_url = reverse_lazy("aanmeldformulier:planfase")
+
+    def get_object(self, queryset=None):
+        return self.get_project(queryset=queryset)
+
+
+@method_decorator(project_required, name="dispatch")
+class PlanfaseView(ProjectMixin, UpdateView):
+    model = Project
+    form_class = ProjectPlanfaseForm
+    template_name = "aanmeldformulier/planfase.html"
     success_url = reverse_lazy("aanmeldformulier:upload")
 
     def get_object(self, queryset=None):

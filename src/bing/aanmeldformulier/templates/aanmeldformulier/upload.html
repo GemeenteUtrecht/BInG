@@ -9,8 +9,8 @@
     {% nested_widget 'steps:container' amount=5 %}
         {% widget 'steps:inactive' label=_("Projectinfo") %}
         {% widget 'steps:inactive' label=_("Toetswijze") %}
-        {# {% widget 'steps:inactive' label=_("Planfase") %} #}
-        {% widget 'steps:step' label=_("Upload") step_nr=3 %}
+        {% widget 'steps:inactive' label=_("Planfase") %}
+        {% widget 'steps:step' label=_("Upload") step_nr=4 %}
         {% widget 'steps:total' label=_("Vergadering") amount=5 %}
     {% endnested %}
 

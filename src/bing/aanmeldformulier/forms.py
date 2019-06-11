@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from bing.config.models import APIConfig, BInGConfig
 from bing.config.service import get_drc_client, get_ztc_client
-from bing.projects.constants import Toetswijzen
+from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 
 
@@ -47,6 +47,18 @@ class ProjectToetswijzeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["toetswijze"].choices = Toetswijzen.choices
+
+
+class ProjectPlanfaseForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ("planfase",)
+        labels = {"planfase": _("Voor welke planfase dient getoetst te worden?")}
+        widgets = {"planfase": forms.RadioSelect}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["planfase"].choices = PlanFases.choices
 
 
 class ProjectAttachmentForm(forms.ModelForm):

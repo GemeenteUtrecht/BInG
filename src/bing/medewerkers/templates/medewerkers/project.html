@@ -34,6 +34,7 @@
         <tbody>
             {% widget 'key_value:label-value' label=_("Project ID") value=project.project_id %}
             {% widget 'key_value:label-value' label=_("Toetswijze") value=project.get_toetswijze_display %}
+            {% widget 'key_value:label-value' label=_("Planfase") value=project.get_planfase_display %}
             {% widget 'key_value:label-value' label=_("Aangemeld") value=project.created|timesince|add:" geleden" %}
         </tbody>
     </table>

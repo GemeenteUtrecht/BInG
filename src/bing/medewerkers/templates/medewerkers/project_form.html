@@ -33,6 +33,7 @@
         {% load_widgets form='snippets/forms.html' %}
         <fieldset class="fieldset">
             {% form_field form.toetswijze %}
+            {% form_field form.planfase %}
             {% form_field form.meeting %}
 
             {% widget 'form:required-fields' %}

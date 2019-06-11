@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from bing.config.models import BInGConfig
 from bing.config.service import get_zrc_client, get_ztc_client
 
-from .constants import Toetswijzen
+from .constants import PlanFases, Toetswijzen
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +19,7 @@ class Project(models.Model):
     toetswijze = models.CharField(
         _("toetswijze"), max_length=20, choices=Toetswijzen.choices
     )
+    planfase = models.CharField(_("planfase"), max_length=20, choices=PlanFases.choices)
 
     created = models.DateTimeField(_("created"), auto_now_add=True)
 

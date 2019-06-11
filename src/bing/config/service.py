@@ -12,6 +12,8 @@ def get_client(type: str, **claims) -> Client:
         raise ValueError(f"No {type.upper()} configured!")
 
     client = service.build_client()
+    client.auth.user_id = "bing-user"
+    client.auth.user_representation = "BInG Gebruiker"
     if claims:
         client.auth.set_claims(**claims)
     return client

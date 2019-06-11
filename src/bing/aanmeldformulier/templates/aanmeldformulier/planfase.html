@@ -1,0 +1,47 @@
+{% extends "aanmeldformulier/base.html" %}
+{% load sniplates %}
+
+{% block page-content %}
+
+<div>
+
+    {% load_widgets steps='snippets/form-steps.html' %}
+    {% nested_widget 'steps:container' amount=5 %}
+        {% widget 'steps:inactive' label=_("Projectinfo") %}
+        {% widget 'steps:inactive' label=_("Toetswijze") %}
+        {% widget 'steps:step' label=_("Planfase") step_nr=3 %}
+        {% widget 'steps:inactive' label=_("Upload") %}
+        {% widget 'steps:total' label=_("Vergadering") amount=5 %}
+    {% endnested %}
+
+    <div>
+        <h2>Wat is welke planfase? <i class="fa fa-angle-down"></i></h2>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+    </div>
+
+    <form action="." method="post">
+        {% csrf_token %}
+
+        {% load_widgets form='snippets/forms.html' %}
+
+        <fieldset class="fieldset">
+            {% form_field form.planfase %}
+
+            {% widget 'form:required-fields' %}
+        </fieldset>
+
+        <div class="navigation_buttons">
+            {% widget 'form:submit' text=_("Doorgaan") %}
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}
