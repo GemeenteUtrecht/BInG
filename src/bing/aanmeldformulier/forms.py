@@ -1,18 +1,17 @@
-import base64
 import logging
 import os
 
 from django import forms
-from django.utils import timezone
+from django.conf import settings
+from django.core.files import temp as tempfile
 from django.utils.translation import ugettext_lazy as _
 
-from zds_client import ClientError
-
-from bing.config.models import BInGConfig, RequiredDocuments
-from bing.config.service import get_drc_client, get_zrc_client
+from bing.config.models import RequiredDocuments
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.service.ztc import get_aanvraag_iot
+
+from .tasks import add_project_attachment
 
 logger = logging.getLogger(__name__)
 
@@ -102,56 +101,22 @@ class ProjectAttachmentForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         self.instance.project = self.project
-        config = BInGConfig.get_solo()
 
-        io_type = self.cleaned_data["io_type"]
-        content = self.cleaned_data["attachment"].read()
-        filename = self.cleaned_data["attachment"].name
+        attachment = super().save(*args, **kwargs)
 
-        # create informatieobject
-        drc_client = get_drc_client(scopes=["zds.scopes.documenten.aanmaken"])
-        eio = drc_client.create(
-            "enkelvoudiginformatieobject",
-            {
-                "bronorganisatie": config.organisatie_rsin,
-                "informatieobjecttype": io_type,
-                "creatiedatum": timezone.now().date().isoformat(),
-                "bestandsnaam": filename,
-                "titel": os.path.splitext(filename)[0],
-                "auteur": "BInG formulier",
-                "taal": "dut",
-                "inhoud": base64.b64encode(content).decode("ascii"),
-            },
-        )
+        # create a temp file
+        name = self.cleaned_data["attachment"].name
+        _, ext = os.path.splitext(name)
 
-        self.instance.io_type = io_type
-        self.instance.eio_url = eio["url"]
+        with tempfile.NamedTemporaryFile(
+            suffix=".upload" + ext, dir=settings.FILE_UPLOAD_TEMP_DIR, delete=False
+        ) as temp_file:
+            temp_file.write(self.cleaned_data["attachment"].read())
 
-        # connect io and zaak
-        try:
-            drc_client.create(
-                "objectinformatieobject",
-                {
-                    "informatieobject": eio["url"],
-                    "object": self.instance.project.zaak,
-                    "objectType": "zaak",
-                    "beschrijving": "Aangeleverd stuk door aanvrager",
-                },
-            )
-        except ClientError as exc:
-            logger.info("Trying new setup, got %s", exc)
-            # try the new setup, with reversal of relation direction
-            zrc_client = get_zrc_client()
-            zrc_client.create(
-                "zaakinformatieobject",
-                {
-                    "zaak": self.instance.project.zaak,
-                    "informatieobject": eio["url"],
-                    "beschrijving": "Aangeleverd stuk door aanvrager",
-                },
-            )
+        # handle the rest in Celery
+        add_project_attachment.delay(attachment.id, name, temp_file.name)
 
-        return super().save(*args, **kwargs)
+        return attachment
 
 
 class ProjectAttachmentFormSet(forms.BaseModelFormSet):
