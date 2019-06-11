@@ -119,6 +119,9 @@ class Project(models.Model):
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=len(attachments))
         return list(pool.map(_get_document, attachments))
 
+    def notify(self, msg: str):
+        logger.info("BInG-aanvraag notificatie: %s", msg)
+
 
 class ProjectAttachment(models.Model):
     project = models.ForeignKey("Project", on_delete=models.CASCADE)
