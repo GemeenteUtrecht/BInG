@@ -1,6 +1,7 @@
 import uuid
 from urllib.parse import urljoin
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
@@ -8,6 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 from solo.models import SingletonModel
 from zds_client import Client
 from zgw_consumers.constants import APITypes
+
+from bing.projects.constants import Toetswijzen
 
 RSIN = "002220647"
 
@@ -77,3 +80,25 @@ class BInGConfig(SingletonModel):
 
     def __str__(self):
         return force_text(self._meta.verbose_name)
+
+
+class RequiredDocuments(models.Model):
+    """
+    Configure the documents required for a certain Toetswijze
+    """
+
+    toetswijze = models.CharField(
+        _("toetswijze"), max_length=20, choices=Toetswijzen.choices, unique=True
+    )
+    informatieobjecttypen = ArrayField(
+        models.URLField(_("informatieobjecttype"), max_length=1000),
+        blank=False,
+        help_text=_("Documenttypen"),
+    )
+
+    class Meta:
+        verbose_name = _("verplichte documenten")
+        verbose_name_plural = _("verplichte documenten")
+
+    def __str__(self):
+        return f"{self.get_toetswijze_display()} - {len(self.informatieobjecttypen)} documenten"

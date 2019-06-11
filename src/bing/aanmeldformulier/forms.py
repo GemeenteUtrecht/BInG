@@ -8,10 +8,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from zds_client import ClientError
 
-from bing.config.models import APIConfig, BInGConfig
-from bing.config.service import get_drc_client, get_zrc_client, get_ztc_client
+from bing.config.models import BInGConfig
+from bing.config.service import get_drc_client, get_zrc_client
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
+from bing.service.ztc import get_aanvraag_iot
 
 logger = logging.getLogger(__name__)
 
@@ -76,28 +77,7 @@ class ProjectAttachmentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        config = BInGConfig.get_solo()
-        api_config = APIConfig.get_solo()
-        ztc_client = get_ztc_client()
-
-        # fetch informatieobjecttypen efficiently
-        zaaktype = ztc_client.retrieve("zaaktype", url=config.zaaktype_aanvraag)
-        main_catalogus_uuid = api_config.ztc.extra["main_catalogus_uuid"]
-        informatieobjecttypen = ztc_client.list(
-            "informatieobjecttype", catalogus_uuid=main_catalogus_uuid
-        )
-        informatieobjecttypen = [
-            iot
-            for iot in informatieobjecttypen
-            if iot["url"] in zaaktype["informatieobjecttypen"]
-        ]
-
-        iot_choices = [
-            (iot["url"], iot["omschrijving"]) for iot in informatieobjecttypen
-        ]
-
-        self.fields["io_type"].choices = iot_choices
+        self.fields["io_type"].choices = get_aanvraag_iot()
 
     def save(self, *args, **kwargs):
         config = BInGConfig.get_solo()

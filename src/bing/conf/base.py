@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Optional applications.
     "django.contrib.admin",
+    "django.contrib.postgres",
     # 'django.contrib.admindocs',
     # 'django.contrib.humanize',
     # 'django.contrib.sitemaps',
