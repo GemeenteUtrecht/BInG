@@ -9,7 +9,6 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from bing.config.models import BInGConfig, RequiredDocuments
-from bing.meetings.models import Meeting
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.service.ztc import get_aanvraag_iot

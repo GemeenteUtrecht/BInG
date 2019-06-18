@@ -1,10 +1,12 @@
 from django.db import transaction
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, TemplateView, UpdateView
 
 from extra_views import ModelFormSetView
 
+from bing.projects.constants import Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.service.zrc import fetch_zaak
 
@@ -28,6 +30,10 @@ class ProjectMixin:
         project_id = self.request.session[PROJECT_SESSION_KEY]
         return queryset.get(id=project_id)
 
+    def get_context_data(self, **kwargs):
+        kwargs.setdefault("project", self.get_project())
+        return super().get_context_data(**kwargs)
+
 
 class InfoPageView(TemplateView):
     template_name = "aanmeldformulier/info.html"
@@ -37,6 +43,15 @@ class SpecifyProjectView(FormView):
     form_class = ProjectGetOrCreateForm
     template_name = "aanmeldformulier/specify_project.html"
     success_url = reverse_lazy("aanmeldformulier:toetswijze")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        project_id = self.request.session.get(PROJECT_SESSION_KEY)
+        if project_id:
+            initial["project_id"] = Project.objects.filter(
+                project_id=project_id
+            ).first()
+        return initial
 
     @transaction.atomic()
     def form_valid(self, form):
@@ -98,6 +113,15 @@ class MeetingView(ProjectMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.get_project(queryset=queryset)
+
+    def get(self, request, *args, **kwargs):
+        self.object = project = self.get_project()
+
+        # shortcut - this step isn't needed
+        if project.toetswijze == Toetswijzen.versneld:
+            return HttpResponseRedirect(self.get_success_url())
+
+        return super().get(request, *args, **kwargs)
 
 
 @method_decorator(project_required, name="dispatch")
