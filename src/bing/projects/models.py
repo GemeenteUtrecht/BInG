@@ -102,6 +102,8 @@ class Project(models.Model):
         Retrieve a list of attachments
         """
         attachments = self.projectattachment_set.exclude(io_type="").exclude(eio_url="")
+        if not attachments:
+            return []
 
         # fetch existing files to display
         document_types = dict(get_aanvraag_iot())
