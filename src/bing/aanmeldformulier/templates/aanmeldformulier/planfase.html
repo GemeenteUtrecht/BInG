@@ -3,17 +3,6 @@
 
 {% block page-content %}
 
-<div>
-
-    {% load_widgets steps='snippets/form-steps.html' %}
-    {% nested_widget 'steps:container' amount=5 %}
-        {% widget 'steps:inactive' label=_("Projectinfo") %}
-        {% widget 'steps:inactive' label=_("Toetswijze") %}
-        {% widget 'steps:step' label=_("Planfase") step_nr=3 %}
-        {% widget 'steps:inactive' label=_("Upload") %}
-        {% widget 'steps:total' label=_("Vergadering") amount=5 %}
-    {% endnested %}
-
     <div>
         <h2>Wat is welke planfase? <i class="fa fa-angle-down"></i></h2>
         <p>
@@ -42,6 +31,5 @@
         </div>
 
     </form>
-</div>
 
 {% endblock %}

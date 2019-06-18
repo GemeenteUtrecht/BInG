@@ -1,0 +1,14 @@
+{% load sniplates %}
+
+{% load_widgets steps='snippets/form-steps.html' %}
+{% nested_widget 'steps:container' amount=steps|length %}
+    {% for step in steps %}
+        {% if step.active %}
+            {% widget 'steps:step' label=step.label step_nr=forloop.counter %}
+        {% elif forloop.last %}
+            {% widget 'steps:total' label=step.label amount=amount icon=step.icon %}
+        {% else %}
+            {% widget 'steps:inactive' label=step.label %}
+        {% endif %}
+    {% endfor %}
+{% endnested %}

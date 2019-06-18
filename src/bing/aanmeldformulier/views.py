@@ -10,7 +10,7 @@ from bing.projects.constants import Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.service.zrc import fetch_zaak
 
-from .constants import PROJECT_SESSION_KEY
+from .constants import PROJECT_SESSION_KEY, Steps
 from .decorators import project_required
 from .forms import (
     ProjectAttachmentForm,
@@ -43,14 +43,15 @@ class SpecifyProjectView(FormView):
     form_class = ProjectGetOrCreateForm
     template_name = "aanmeldformulier/specify_project.html"
     success_url = reverse_lazy("aanmeldformulier:toetswijze")
+    current_step = Steps.info
 
     def get_initial(self):
         initial = super().get_initial()
-        project_id = self.request.session.get(PROJECT_SESSION_KEY)
-        if project_id:
-            initial["project_id"] = Project.objects.filter(
-                project_id=project_id
-            ).first()
+        project_pk = self.request.session.get(PROJECT_SESSION_KEY)
+        if project_pk:
+            project = Project.objects.filter(pk=project_pk).first()
+            if project:
+                initial["project_id"] = project.project_id
         return initial
 
     @transaction.atomic()
@@ -66,6 +67,7 @@ class ToetswijzeView(ProjectMixin, UpdateView):
     form_class = ProjectToetswijzeForm
     template_name = "aanmeldformulier/toetswijze.html"
     success_url = reverse_lazy("aanmeldformulier:planfase")
+    current_step = Steps.toetswijze
 
     def get_object(self, queryset=None):
         return self.get_project(queryset=queryset)
@@ -77,6 +79,7 @@ class PlanfaseView(ProjectMixin, UpdateView):
     form_class = ProjectPlanfaseForm
     template_name = "aanmeldformulier/planfase.html"
     success_url = reverse_lazy("aanmeldformulier:upload")
+    current_step = Steps.planfase
 
     def get_object(self, queryset=None):
         return self.get_project(queryset=queryset)
@@ -91,6 +94,7 @@ class UploadView(ProjectMixin, ModelFormSetView):
     factory_kwargs = {"extra": 3}
     template_name = "aanmeldformulier/upload.html"
     success_url = reverse_lazy("aanmeldformulier:vergadering")
+    current_step = Steps.upload
 
     def get_formset_kwargs(self):
         kwargs = super().get_formset_kwargs()
@@ -110,6 +114,7 @@ class MeetingView(ProjectMixin, UpdateView):
     form_class = ProjectMeetingForm
     template_name = "aanmeldformulier/meeting.html"
     success_url = reverse_lazy("aanmeldformulier:confirmation")
+    current_step = Steps.meeting
 
     def get_object(self, queryset=None):
         return self.get_project(queryset=queryset)
@@ -127,6 +132,7 @@ class MeetingView(ProjectMixin, UpdateView):
 @method_decorator(project_required, name="dispatch")
 class ConfirmationView(ProjectMixin, TemplateView):
     template_name = "aanmeldformulier/confirmation.html"
+    current_step = Steps.confirmation
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

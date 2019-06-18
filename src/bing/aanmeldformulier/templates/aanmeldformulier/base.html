@@ -1,5 +1,5 @@
 {% extends "master.html" %}
-{% load sniplates %}
+{% load sniplates aanmeldformulier %}
 
 
 {% block breadcrumbs %}
@@ -33,8 +33,14 @@
 <div class="bodycopy">
 
     <div class="grid-wrap">
-        {% block page-content %}
-        {% endblock page-content %}
+        <div>
+            {% block progress-bar %}
+                {% form_steps current_step=view.current_step project=project|default:None %}
+            {% endblock progress-bar %}
+
+            {% block page-content %}
+            {% endblock page-content %}
+        </div>
     </div>
 
 </div>

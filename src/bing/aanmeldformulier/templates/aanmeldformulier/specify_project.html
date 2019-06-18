@@ -1,19 +1,7 @@
 {% extends "aanmeldformulier/base.html" %}
-{% load sniplates %}
+{% load sniplates aanmeldformulier %}
 
 {% block page-content %}
-
-<div>
-
-    {% load_widgets steps='snippets/form-steps.html' %}
-    {% nested_widget 'steps:container' amount=5 %}
-        {% widget 'steps:step' label=_("Projectinfo") step_nr=1 %}
-        {% widget 'steps:inactive' label=_("Toetswijze") %}
-        {% widget 'steps:inactive' label=_("Planfase") %}
-        {% widget 'steps:inactive' label=_("Upload") %}
-        {% widget 'steps:total' label=_("Vergadering") amount=5 %}
-    {% endnested %}
-
 
     <h2>Om welk project gaat het?</h2>
 
@@ -34,6 +22,5 @@
         </div>
 
     </form>
-</div>
 
 {% endblock %}
