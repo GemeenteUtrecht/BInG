@@ -1,0 +1,12 @@
+.project-documents {
+
+  h2 {
+    margin-bottom: 1em;
+  }
+
+  & &__document-type {
+    color: $rood;
+    border-bottom: solid 2px $rood;
+    max-width: 66.7%;
+  }
+}

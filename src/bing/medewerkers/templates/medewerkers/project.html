@@ -1,5 +1,5 @@
 {% extends "medewerkers/base.html" %}
-{% load sniplates %}
+{% load sniplates i18n %}
 
 {% block subtitle %}Project: {{ object.name }} ({{ object.project_id }}){% endblock subtitle %}
 
@@ -42,6 +42,40 @@
 </section>
 
 <section class="project-documents">
-    TODO: documenten
+    <h2>Documenten</h2>
+
+    {% regroup documents by document_type as document_list %}
+    {% for document_type, docs in document_list %}
+        <h3 class="project-documents__document-type">{{ document_type }}</h3>
+
+        <section class="documents-container">
+            {% for doc in docs %}
+                <article class="document">
+                    <i class="document__icon document__icon--{{ doc.informatieobject.formaat|default:'unknown' }}"></i>
+
+                    <h4 class="document__title" title="{{ doc.informatieobject.titel }}">
+                        {{ doc.informatieobject.titel }}
+                    </h4>
+
+                    <div>
+                        <span class="document__filesize">
+                            <i class="fa fa-file-o"></i>
+                            {{ doc.informatieobject.bestandsomvang|filesizeformat }}
+                        </span>
+
+                        <span class="document__va">
+                            <i class="fa fa-user-times"></i>
+                            {{ doc.informatieobject.vertrouwelijkheidaanduiding }}
+                        </span>
+
+                        <a href="{{ doc.informatieobject.inhoud }}" class="document__download">
+                            <button>{% trans "Download" %}</button>
+                        </a>
+                    </div>
+
+                </article>
+            {% endfor %}
+        </section>
+    {% endfor %}
 </section>
 {% endblock page-content %}

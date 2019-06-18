@@ -1,0 +1,58 @@
+$document-size: 220px !default;
+
+.document {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-direction: column;
+
+  position: relative;
+
+  width: $document-size;
+  height: $document-size;
+  border: solid 1px $schemergrijs;
+  padding: 1em;
+
+  &:after {
+    display: none;
+  }
+
+  & &__title {
+    margin: 0;
+    max-width: calc($document-size - 2em);
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-weight: bold;
+    color: $asfalt;
+  }
+
+  & &__filesize {
+    display: block;
+    margin: 0.6em 0;
+    font-size: 90%;
+  }
+
+  & &__va {
+    display: block;
+    margin: 0.6em 0 1em;
+    font-size: 90%;
+    color: $donkergrijs;
+  }
+
+  & &__icon {
+    display: block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 2em;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: $midgrijs;
+
+    &:before {
+      content: "\f016";
+    }
+  }
+}

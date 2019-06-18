@@ -97,6 +97,9 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
+        documents = self.object.get_documents()
+        documents = sorted(documents, key=lambda doc: (doc["document_type"]))
+        context["documents"] = documents
         return context
 
 
