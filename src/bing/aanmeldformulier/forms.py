@@ -133,13 +133,6 @@ class MeetingField(forms.ModelChoiceField):
     def __init__(self, queryset, *args, **kwargs):
         kwargs.setdefault("empty_label", _("Geen voorkeur"))
         kwargs["help_text"] = ""
-
-        config = BInGConfig.get_solo()
-        earliest_start = (timezone.now() + config.minimal_plan_duration).replace(
-            hour=0, minute=0, second=0
-        )
-        queryset = queryset.filter(start__gt=earliest_start)
-
         super().__init__(queryset, *args, **kwargs)
 
     def label_from_instance(self, obj):
@@ -152,3 +145,14 @@ class ProjectMeetingForm(forms.ModelForm):
         fields = ("meeting",)
         field_classes = {"meeting": MeetingField}
         labels = {"meeting": _("Kies uw gewenste vergaderdatum")}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        config = BInGConfig.get_solo()
+        earliest_start = (timezone.now() + config.minimal_plan_duration).replace(
+            hour=0, minute=0, second=0
+        )
+        self.fields["meeting"].queryset = self.fields["meeting"].queryset.filter(
+            start__gt=earliest_start
+        )
