@@ -28,7 +28,7 @@
             </a>
             ({{ project.created|timesince }} geleden)
             <br>
-            Ingepland: {% if project.meeting and project.meeting.zaak %}{{ project.meeting.start|date }}{% else %}-{% endif %}
+            Ingepland: {{ project.get_meeting_date|date|default:"-" }}
         </li>
     {% endfor %}
 </ul>

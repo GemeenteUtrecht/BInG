@@ -1,6 +1,7 @@
 import concurrent.futures
 import logging
-from typing import Any, Dict, List
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from django.db import models
 from django.utils import timezone
@@ -8,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from bing.config.models import BInGConfig
 from bing.config.service import get_drc_client, get_zrc_client, get_ztc_client
+from bing.service.zrc import fetch_zaak
 from bing.service.ztc import get_aanvraag_iot
 
 from .constants import PlanFases, Toetswijzen
@@ -120,6 +122,29 @@ class Project(models.Model):
 
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=len(attachments))
         return list(pool.map(_get_document, attachments))
+
+    def get_meeting_date(self) -> Optional[datetime]:
+        """
+        Determine the date of the meeting this project is planned in.
+        """
+        # no zaak created yet -> it cannot possibly be a related zaak
+        if not self.zaak:
+            return None
+
+        # no meeting assigned -> not planned
+        if not self.meeting_id:
+            return None
+
+        # no zaak created yet for the meeting
+        if not self.meeting.zaak:
+            return None
+
+        vergader_zaak = fetch_zaak(url=self.meeting.zaak)
+        # only confirmed if it's a related case
+        if self.zaak not in vergader_zaak["relevanteAndereZaken"]:
+            return None
+
+        return self.meeting.start
 
     def notify(self, msg: str):
         logger.info("BInG-aanvraag notificatie: %s", msg)

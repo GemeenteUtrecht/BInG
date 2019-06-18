@@ -1,7 +1,9 @@
 from django.urls import path
 
 from .views import (
+    ConfirmationView,
     InfoPageView,
+    MeetingView,
     PlanfaseView,
     SpecifyProjectView,
     ToetswijzeView,
@@ -16,4 +18,6 @@ urlpatterns = [
     path("toetswijze/", ToetswijzeView.as_view(), name="toetswijze"),
     path("planfase/", PlanfaseView.as_view(), name="planfase"),
     path("upload/", UploadView.as_view(), name="upload"),
+    path("vergadering/", MeetingView.as_view(), name="vergadering"),
+    path("bevestiging/", ConfirmationView.as_view(), name="confirmation"),
 ]

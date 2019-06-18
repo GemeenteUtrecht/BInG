@@ -4,9 +4,12 @@ import os
 from django import forms
 from django.conf import settings
 from django.core.files import temp as tempfile
+from django.template.defaultfilters import date
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from bing.config.models import RequiredDocuments
+from bing.config.models import BInGConfig, RequiredDocuments
+from bing.meetings.models import Meeting
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.service.ztc import get_aanvraag_iot
@@ -123,3 +126,30 @@ class ProjectAttachmentFormSet(forms.BaseModelFormSet):
     def __init__(self, project: Project, *args, **kwargs):
         kwargs["form_kwargs"] = {"project": project}
         super().__init__(*args, **kwargs)
+
+
+class MeetingField(forms.ModelChoiceField):
+    widget = forms.RadioSelect
+
+    def __init__(self, queryset, *args, **kwargs):
+        kwargs.setdefault("empty_label", _("Geen voorkeur"))
+        kwargs["help_text"] = ""
+
+        config = BInGConfig.get_solo()
+        earliest_start = (timezone.now() + config.minimal_plan_duration).replace(
+            hour=0, minute=0, second=0
+        )
+        queryset = queryset.filter(start__gt=earliest_start)
+
+        super().__init__(queryset, *args, **kwargs)
+
+    def label_from_instance(self, obj):
+        return date(obj.start)
+
+
+class ProjectMeetingForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ("meeting",)
+        field_classes = {"meeting": MeetingField}
+        labels = {"meeting": _("Kies uw gewenste vergaderdatum")}

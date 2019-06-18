@@ -1,4 +1,5 @@
 import uuid
+from datetime import timedelta
 from urllib.parse import urljoin
 
 from django.contrib.postgres.fields import ArrayField
@@ -74,6 +75,15 @@ class BInGConfig(SingletonModel):
 
     zaaktype_aanvraag = models.URLField(_("Zaaktype aanvraag"))
     zaaktype_vergadering = models.URLField(_("Zaaktype vergadering"))
+
+    minimal_plan_duration = models.DurationField(
+        _("minimal duration from aanvraag to vergadering"),
+        default=timedelta(days=7),
+        help_text=_(
+            "De minimale tijd die nodig is tussen het moment van indienen aanvraag "
+            "en de eerst mogelijke vergadering."
+        ),
+    )
 
     class Meta:
         verbose_name = _("BInG configuratie")

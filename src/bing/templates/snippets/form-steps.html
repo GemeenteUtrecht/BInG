@@ -26,6 +26,10 @@
 {% block total %}
 <span class="total">
     <span class="steplabel {#assistive#}">{{ label }}</span>
-    <strong>{{ amount }}</strong>
+    {% if icon %}
+        <strong><i class="fa fa-{{ icon }}"></i></strong>
+    {% elif amount %}
+        <strong>{{ amount }}</strong>
+    {% endif %}
 </span>
 {% endblock total %}

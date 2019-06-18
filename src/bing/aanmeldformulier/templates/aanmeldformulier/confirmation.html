@@ -1,0 +1,27 @@
+{% extends "aanmeldformulier/base.html" %}
+{% load sniplates %}
+
+{% block page-content %}
+
+<div>
+
+    {% load_widgets steps='snippets/form-steps.html' %}
+    {% nested_widget 'steps:container' amount=5 %}
+        {% widget 'steps:inactive' label=_("Projectinfo") %}
+        {% widget 'steps:inactive' label=_("Toetswijze") %}
+        {% widget 'steps:inactive' label=_("Planfase") %}
+        {% widget 'steps:inactive' label=_("Upload") %}
+        {% widget 'steps:inactive' label=_("Vergadering") %}
+        {% widget 'steps:total' label=_("Bevestiging") icon='check' %}
+    {% endnested %}
+
+    <h2>Project aangemeld</h2>
+
+    <p>
+        Dank u wel voor uw aanvraag! Deze wordt behandeld met zaakidentificatie
+        <strong>{{ identificatie }}</strong>.
+    </p>
+
+</div>
+
+{% endblock %}

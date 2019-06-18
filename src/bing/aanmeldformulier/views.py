@@ -6,6 +6,7 @@ from django.views.generic import FormView, TemplateView, UpdateView
 from extra_views import ModelFormSetView
 
 from bing.projects.models import Project, ProjectAttachment
+from bing.service.zrc import fetch_zaak
 
 from .constants import PROJECT_SESSION_KEY
 from .decorators import project_required
@@ -13,6 +14,7 @@ from .forms import (
     ProjectAttachmentForm,
     ProjectAttachmentFormSet,
     ProjectGetOrCreateForm,
+    ProjectMeetingForm,
     ProjectPlanfaseForm,
     ProjectToetswijzeForm,
 )
@@ -73,7 +75,7 @@ class UploadView(ProjectMixin, ModelFormSetView):
     formset_class = ProjectAttachmentFormSet
     factory_kwargs = {"extra": 3}
     template_name = "aanmeldformulier/upload.html"
-    success_url = reverse_lazy("aanmeldformulier:info")
+    success_url = reverse_lazy("aanmeldformulier:vergadering")
 
     def get_formset_kwargs(self):
         kwargs = super().get_formset_kwargs()
@@ -84,4 +86,27 @@ class UploadView(ProjectMixin, ModelFormSetView):
         context = super().get_context_data(**kwargs)
         project = self.get_project()
         context["attachments"] = project.get_documents()
+        return context
+
+
+@method_decorator(project_required, name="dispatch")
+class MeetingView(ProjectMixin, UpdateView):
+    model = Project
+    form_class = ProjectMeetingForm
+    template_name = "aanmeldformulier/meeting.html"
+    success_url = reverse_lazy("aanmeldformulier:confirmation")
+
+    def get_object(self, queryset=None):
+        return self.get_project(queryset=queryset)
+
+
+@method_decorator(project_required, name="dispatch")
+class ConfirmationView(ProjectMixin, TemplateView):
+    template_name = "aanmeldformulier/confirmation.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        zaak = fetch_zaak(self.get_project().zaak)
+        context["identificatie"] = zaak["identificatie"]
         return context

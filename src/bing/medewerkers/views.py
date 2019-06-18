@@ -12,9 +12,10 @@ from django.views.generic import (
 
 from bing.meetings.models import Meeting
 from bing.projects.models import Project
+from bing.service.zrc import fetch_zaak, fetch_zaken
 
 from .forms import MeetingForm, ProjectUpdateForm
-from .utils import fetch_vergadering_zaken, fetch_zaak, fetch_zaken, get_next_meeting
+from .utils import fetch_vergadering_zaken, get_next_meeting
 
 
 class LoginView(LoginView):
@@ -78,6 +79,13 @@ class MeetingDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
+class ProjectsView(LoginRequiredMixin, ListView):
+    queryset = (
+        Project.objects.exclude(zaak="").select_related("meeting").order_by("-pk")
+    )
+    template_name = "medewerkers/projects.html"
+
+
 class ProjectDetailView(LoginRequiredMixin, DetailView):
     """
     Display all the project information.
@@ -92,12 +100,7 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class ProjectsView(LoginRequiredMixin, ListView):
-    queryset = Project.objects.exclude(zaak="").order_by("-pk")
-    template_name = "medewerkers/projects.html"
-
-
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     queryset = Project.objects.exclude(zaak="").annotate(num_meetings=Count("meeting"))
     template_name = "medewerkers/project_form.html"
     form_class = ProjectUpdateForm
