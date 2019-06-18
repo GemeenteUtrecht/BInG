@@ -252,6 +252,8 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_URL = "medewerkers:login"
 
+SESSION_COOKIE_NAME = "bing_sessionid"
+
 #
 # Custom settings
 #
