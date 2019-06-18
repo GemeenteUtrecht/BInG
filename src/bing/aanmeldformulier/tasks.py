@@ -74,4 +74,4 @@ def add_project_attachment(attachment_id: int, filename: str, temp_file: str):
             },
         )
 
-    os.remove(temp_file.name)
+    os.remove(temp_file)
