@@ -47,8 +47,8 @@ def add_project_attachment(attachment_id: int, filename: str, temp_file: str):
         },
     )
 
-    attachment.io_type = io_type
     attachment.eio_url = eio["url"]
+    attachment.save(update_fields=["eio_url"])
 
     # connect io and zaak
     try:
