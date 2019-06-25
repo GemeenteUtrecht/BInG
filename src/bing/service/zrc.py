@@ -31,3 +31,16 @@ def fetch_zaken(urls: List[str], num_workers: int = 10) -> List[Dict[str, Any]]:
 
     results = sorted(results, key=operator.itemgetter("registratiedatum"))
     return results
+
+
+def fetch_status(url: str) -> Dict[str, Any]:
+    """
+    Retrieve a single Zaak by URL.
+    """
+    config = BInGConfig.get_solo()
+    zrc_client = get_zrc_client(
+        scopes=["zds.scopes.zaken.lezen"],
+        zaaktypes=[config.zaaktype_vergadering, config.zaaktype_aanvraag],
+    )
+    zaak = zrc_client.retrieve("status", url=url)
+    return zaak

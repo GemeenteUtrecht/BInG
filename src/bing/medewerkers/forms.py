@@ -2,6 +2,7 @@ from django import forms
 from django.db import transaction
 from django.template.defaultfilters import date
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 
 from bing.config.models import RequiredDocuments
 from bing.meetings.models import Meeting
@@ -12,7 +13,7 @@ from bing.meetings.tasks import (
 )
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project
-from bing.service.ztc import get_aanvraag_iot
+from bing.service.ztc import get_aanvraag_iot, get_aanvraag_statustypen
 
 
 class MeetingForm(forms.ModelForm):
@@ -129,3 +130,12 @@ class ProjectUpdateForm(forms.ModelForm):
             transaction.on_commit(change_meeting)
 
         return project
+
+
+class ProjectStatusForm(forms.Form):
+    status = forms.ChoiceField(label=_("Status"), choices=())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["status"].choices = get_aanvraag_statustypen()

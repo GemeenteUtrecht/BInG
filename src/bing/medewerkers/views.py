@@ -17,9 +17,9 @@ from django.views.generic.detail import BaseDetailView
 from bing.meetings.models import Meeting
 from bing.projects.models import Project, ProjectAttachment
 from bing.service.drc import fetch_document, stream_inhoud
-from bing.service.zrc import fetch_zaak, fetch_zaken
+from bing.service.zrc import fetch_status, fetch_zaak, fetch_zaken
 
-from .forms import MeetingForm, ProjectUpdateForm
+from .forms import MeetingForm, ProjectStatusForm, ProjectUpdateForm
 from .utils import fetch_vergadering_zaken, get_next_meeting
 
 
@@ -102,9 +102,16 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
+
+        # status information
+        zaak = fetch_zaak(self.object.zaak)
+        current_status_type = fetch_status(zaak["status"])["statusType"]
+        context["form"] = ProjectStatusForm(initial={"status": current_status_type})
+
         documents = self.object.get_documents()
         documents = sorted(documents, key=lambda doc: (doc["document_type"]))
         context["documents"] = documents
+
         return context
 
 
