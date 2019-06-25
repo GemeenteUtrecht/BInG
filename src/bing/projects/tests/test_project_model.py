@@ -17,11 +17,11 @@ class ProjectTests(TestCase):
 
         self.assertEqual(documents, [])
 
-    @patch("bing.projects.models.get_drc_client")
+    @patch("bing.service.drc.get_drc_client")
     @patch("bing.projects.models.get_aanvraag_iot")
     def test_existing_documents(self, mock_get_aanvraag_iot, mock_get_drc_client):
         project = ProjectFactory.create()
-        ProjectAttachmentFactory.create(
+        attachment = ProjectAttachmentFactory.create(
             project=project, io_type=IO_TYPE_URL, eio_url=EIO_URL
         )
         mock_get_aanvraag_iot.return_value = [(IO_TYPE_URL, "Bijlage")]
@@ -33,5 +33,11 @@ class ProjectTests(TestCase):
 
         self.assertEqual(
             documents,
-            [{"document_type": "Bijlage", "informatieobject": {"url": EIO_URL}}],
+            [
+                {
+                    "document_type": "Bijlage",
+                    "informatieobject": {"url": EIO_URL},
+                    "attachment": attachment,
+                }
+            ],
         )
