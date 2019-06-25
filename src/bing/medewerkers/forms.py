@@ -1,6 +1,7 @@
 from django import forms
 from django.db import transaction
 from django.template.defaultfilters import date
+from django.utils import timezone
 
 from bing.config.models import RequiredDocuments
 from bing.meetings.models import Meeting
@@ -52,6 +53,10 @@ class ProjectUpdateForm(forms.ModelForm):
             for value, label in PlanFases.choices
             if value != PlanFases.onbekend
         ]
+
+        self.fields["meeting"].queryset = self.fields["meeting"].queryset.filter(
+            start__gte=timezone.now()
+        )
 
     @transaction.atomic
     def save(self, commit=True, *args, **kwargs):
@@ -112,8 +117,15 @@ class ProjectUpdateForm(forms.ModelForm):
         elif current_meeting and should_clear_meeting:
             transaction.on_commit(
                 lambda: remove_project_from_meeting.delay(
-                    current_meeting.id, self.instance.id
+                    current_meeting.id, project.id
                 )
             )
+        elif meeting and current_meeting != meeting:
+
+            def change_meeting():
+                remove_project_from_meeting.delay(current_meeting.id, project.id)
+                add_project_to_meeting.delay(meeting.id, project.id)
+
+            transaction.on_commit(change_meeting)
 
         return project
