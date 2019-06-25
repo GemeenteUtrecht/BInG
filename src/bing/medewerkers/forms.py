@@ -19,6 +19,8 @@ from bing.service.ztc import (
     get_aanvraag_statustypen,
 )
 
+from .tasks import set_new_status
+
 
 class MeetingForm(forms.ModelForm):
     class Meta:
@@ -168,3 +170,13 @@ class ProjectStatusForm(forms.Form):
                     "status",
                     _("You cannot set the final status unless a result has been set."),
                 )
+
+    def save(self, project: Project):
+        # set the new status, if it has changed
+        old_status = self.initial.get("status")
+        new_status = self.cleaned_data["status"]
+        if new_status != old_status:
+            set_new_status.delay(project.id, new_status)
+
+        # set the result, if it has changed
+        # TODO

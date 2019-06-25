@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.db.models import Count, Max
 from django.http import StreamingHttpResponse
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
     DetailView,
@@ -13,6 +13,7 @@ from django.views.generic import (
     UpdateView,
 )
 from django.views.generic.detail import BaseDetailView
+from django.views.generic.edit import FormMixin
 
 from bing.meetings.models import Meeting
 from bing.projects.models import Project, ProjectAttachment
@@ -91,22 +92,48 @@ class ProjectsView(LoginRequiredMixin, ListView):
     template_name = "medewerkers/projects.html"
 
 
-class ProjectDetailView(LoginRequiredMixin, DetailView):
+class ProjectDetailView(LoginRequiredMixin, FormMixin, DetailView):
     """
     Display all the project information.
     """
 
     queryset = Project.objects.exclude(zaak="")
+    form_class = ProjectStatusForm
     template_name = "medewerkers/project.html"
     context_object_name = "project"
 
-    def get_context_data(self, **kwargs) -> dict:
-        context = super().get_context_data(**kwargs)
+    def get_initial(self) -> dict:
+        initial = super().get_initial()
 
-        # status information
+        # fetch current status information
         zaak = fetch_zaak(self.object.zaak)
         current_status_type = fetch_status(zaak["status"])["statusType"]
-        context["form"] = ProjectStatusForm(initial={"status": current_status_type})
+
+        initial.update({"status": current_status_type})
+        return initial
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests: instantiate a form instance with the passed
+        POST variables and then check if it's valid.
+        """
+        self.object = self.get_object()
+
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        form.save(project=self.object)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("medewerkers:project-detail", kwargs={"pk": self.object.pk})
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
 
         documents = self.object.get_documents()
         documents = sorted(documents, key=lambda doc: (doc["document_type"]))
