@@ -32,67 +32,76 @@
 
 <section class="project">
 
-    <table class="project__details">
-        <tbody>
-            {% widget 'key_value:label-value' label=_("Project ID") value=project.project_id %}
-            {% widget 'key_value:label-value' label=_("Toetswijze") value=project.get_toetswijze_display %}
-            {% widget 'key_value:label-value' label=_("Planfase") value=project.get_planfase_display %}
-            {% widget 'key_value:label-value' label=_("Aangemeld") value=project.created|timesince|add:" geleden" %}
-        </tbody>
-    </table>
+    <div class="project__details">
+        <table>
+            <tbody>
+                {% widget 'key_value:label-value' label=_("Project ID") value=project.project_id %}
+                {% widget 'key_value:label-value' label=_("Toetswijze") value=project.get_toetswijze_display %}
+                {% widget 'key_value:label-value' label=_("Planfase") value=project.get_planfase_display %}
+                {% widget 'key_value:label-value' label=_("Aangemeld") value=project.created|timesince|add:" geleden" %}
+            </tbody>
+        </table>
 
-    <form class="project__edit-controls" action="." method="post">
-        {% csrf_token %}
-        {% load_widgets form='snippets/forms.html' %}
+        <section class="project-documents">
+            <h2>Documenten</h2>
 
-        {% form_field form.status %}
-        {% form_field form.resultaat %}
+            {% regroup documents by document_type as document_list %}
+            {% for document_type, docs in document_list %}
+                <h3 class="project-documents__document-type">{{ document_type }}</h3>
 
-        <br>
-        {% widget 'form:required-fields' %}
+                <section class="documents-container">
+                    {% for doc in docs %}
+                        <article class="document">
+                            <i class="document__icon document__icon--{{ doc.informatieobject.formaat|default:'unknown' }}"></i>
 
-        <div class="navigation_buttons">
-            {% widget 'form:submit' text=_("Bijwerken") %}
-        </div>
-    </form>
+                            <h4 class="document__title" title="{{ doc.informatieobject.titel }}">
+                                {{ doc.informatieobject.titel }}
+                            </h4>
 
-</section>
+                            <div>
+                                <span class="document__filesize">
+                                    <i class="fa fa-file-o"></i>
+                                    {{ doc.informatieobject.bestandsomvang|filesizeformat }}
+                                </span>
 
-<section class="project-documents">
-    <h2>Documenten</h2>
+                                <span class="document__va">
+                                    <i class="fa fa-user-times"></i>
+                                    {{ doc.informatieobject.vertrouwelijkheidaanduiding }}
+                                </span>
 
-    {% regroup documents by document_type as document_list %}
-    {% for document_type, docs in document_list %}
-        <h3 class="project-documents__document-type">{{ document_type }}</h3>
+                                <a href="{% url 'medewerkers:attachment-download' pk=doc.attachment.pk %}" class="document__download">
+                                    <button>{% trans "Download" %}</button>
+                                </a>
+                            </div>
 
-        <section class="documents-container">
-            {% for doc in docs %}
-                <article class="document">
-                    <i class="document__icon document__icon--{{ doc.informatieobject.formaat|default:'unknown' }}"></i>
-
-                    <h4 class="document__title" title="{{ doc.informatieobject.titel }}">
-                        {{ doc.informatieobject.titel }}
-                    </h4>
-
-                    <div>
-                        <span class="document__filesize">
-                            <i class="fa fa-file-o"></i>
-                            {{ doc.informatieobject.bestandsomvang|filesizeformat }}
-                        </span>
-
-                        <span class="document__va">
-                            <i class="fa fa-user-times"></i>
-                            {{ doc.informatieobject.vertrouwelijkheidaanduiding }}
-                        </span>
-
-                        <a href="{% url 'medewerkers:attachment-download' pk=doc.attachment.pk %}" class="document__download">
-                            <button>{% trans "Download" %}</button>
-                        </a>
-                    </div>
-
-                </article>
+                        </article>
+                    {% endfor %}
+                </section>
             {% endfor %}
         </section>
-    {% endfor %}
+    </div>
+
+    <div class="project__edit-controls">
+
+        <form action="." method="post">
+            {% csrf_token %}
+            {% load_widgets form='snippets/forms.html' %}
+
+            {% form_field form.status %}
+            {% form_field form.resultaat %}
+
+            <br>
+            {% widget 'form:required-fields' %}
+
+            <div class="navigation_buttons">
+                {% widget 'form:submit' text=_("Bijwerken") %}
+            </div>
+        </form>
+
+        <hr>
+
+    </div>
+
 </section>
+
 {% endblock page-content %}
