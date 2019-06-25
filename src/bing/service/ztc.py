@@ -27,12 +27,6 @@ def get_aanvraag_iot() -> List[Tuple[str, str]]:
     return iot_choices
 
 
-def fetch_statustype(url: str) -> Dict[str, Any]:
-    ztc_client = get_ztc_client()
-    statustype = ztc_client.retrieve("statustype", url=url)
-    return statustype
-
-
 @lru_cache()
 def get_aanvraag_statustypen() -> List[Tuple[str, str]]:
     config = BInGConfig.get_solo()
