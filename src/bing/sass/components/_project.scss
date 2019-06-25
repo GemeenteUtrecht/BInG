@@ -1,0 +1,15 @@
+.project {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  & &__details {
+    width: 57.5%;
+  }
+
+  & &__edit-controls {
+    width: 37.5%;
+
+    margin-top: 1em;
+  }
+}

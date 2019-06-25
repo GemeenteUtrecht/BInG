@@ -24,13 +24,15 @@
 {% endnested %}
 {% endblock breadcrumbs %}
 
+{% block body-class %}project-detail{% endblock %}
+{% block bodycopy-class %}{% endblock %}
 
 {% block page-content %}
 {% load_widgets key_value='snippets/key-value.html' %}
 
 <section class="project">
 
-    <table>
+    <table class="project__details">
         <tbody>
             {% widget 'key_value:label-value' label=_("Project ID") value=project.project_id %}
             {% widget 'key_value:label-value' label=_("Toetswijze") value=project.get_toetswijze_display %}
@@ -38,6 +40,10 @@
             {% widget 'key_value:label-value' label=_("Aangemeld") value=project.created|timesince|add:" geleden" %}
         </tbody>
     </table>
+
+    <div class="project__edit-controls">
+        EDIT CONTROLS
+    </div>
 
 </section>
 
