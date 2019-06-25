@@ -13,7 +13,11 @@ from bing.meetings.tasks import (
 )
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project
-from bing.service.ztc import get_aanvraag_iot, get_aanvraag_statustypen
+from bing.service.ztc import (
+    get_aanvraag_iot,
+    get_aanvraag_resultaattypen,
+    get_aanvraag_statustypen,
+)
 
 
 class MeetingForm(forms.ModelForm):
@@ -134,8 +138,33 @@ class ProjectUpdateForm(forms.ModelForm):
 
 class ProjectStatusForm(forms.Form):
     status = forms.ChoiceField(label=_("Status"), choices=())
+    resultaat = forms.ChoiceField(
+        label=_("Resultaat"),
+        choices=(),
+        required=False,
+        help_text=_(
+            "Ken een resultaat toe. Een resultaat is verplicht vóór het afsluiten van de zaak."
+        ),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields["status"].choices = get_aanvraag_statustypen()
+        self.fields["resultaat"].choices = [
+            ("", "-------")
+        ] + get_aanvraag_resultaattypen()
+
+    def clean(self):
+        super().clean()
+
+        last_choice = self.fields["status"].choices[-1][0]
+        status = self.cleaned_data.get("status")
+        resultaat = self.cleaned_data.get("resultaat")
+
+        if status == last_choice:
+            if not resultaat:
+                self.add_error(
+                    "status",
+                    _("You cannot set the final status unless a result has been set."),
+                )

@@ -46,6 +46,9 @@
         {% load_widgets form='snippets/forms.html' %}
 
         {% form_field form.status %}
+        {% form_field form.resultaat %}
+
+        <br>
         {% widget 'form:required-fields' %}
 
         <div class="navigation_buttons">

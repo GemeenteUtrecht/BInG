@@ -44,3 +44,17 @@ def get_aanvraag_statustypen() -> List[Tuple[str, str]]:
         (statustype["url"], statustype["omschrijving"])
         for statustype in sorted(statustypen, key=operator.itemgetter("volgnummer"))
     ]
+
+
+@lru_cache()
+def get_aanvraag_resultaattypen() -> List[Tuple[str, str]]:
+    config = BInGConfig.get_solo()
+    ztc_client = get_ztc_client()
+
+    resultaattypen = ztc_client.list(
+        "resultaattype", query_params={"zaaktype": config.zaaktype_aanvraag}
+    )
+    return [
+        (resultaattype["url"], resultaattype["omschrijving"])
+        for resultaattype in resultaattypen
+    ]

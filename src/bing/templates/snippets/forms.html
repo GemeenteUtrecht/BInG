@@ -6,7 +6,7 @@
 {% if label %}
 <label for="{{ id_for_label }}">
     {{ label }}
-    <span aria-hidden="true" class="label_required" id="name_required"> * </span>
+    {% if required %}<span aria-hidden="true" class="label_required" id="name_required"> * </span>{% endif %}
 </label>
 {% endif %}
 {% endblock _label %}

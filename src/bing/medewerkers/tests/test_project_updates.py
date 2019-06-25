@@ -1,13 +1,13 @@
 from unittest.mock import patch
 
-from django.test import TransactionTestCase
+from django.test import TestCase, TransactionTestCase
 
 from bing.config.models import RequiredDocuments
 from bing.meetings.tests.factories import MeetingFactory
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.tests.factories import ProjectFactory
 
-from ..forms import ProjectUpdateForm
+from ..forms import ProjectStatusForm, ProjectUpdateForm
 
 
 class ProjectToetswijzeUpdateTests(TransactionTestCase):
@@ -115,3 +115,76 @@ class ProjectToetswijzeUpdateTests(TransactionTestCase):
             form.save()
 
         mock_notify.assert_not_called()
+
+
+class ProjectMeetingUpdates(TestCase):
+    """
+    Test the forms used during meetings to update the status/result of a project.
+    """
+
+    STATUSTYPEN = [
+        ("https://example.com/statustypen/1", "Status 1"),
+        ("https://example.com/statustypen/2", "Status 2"),
+    ]
+
+    RESULTAATTYPEN = [
+        ("https://example.com/resultaattypen/1", "Resultaat 1"),
+        ("https://example.com/resultaattypen/2", "Resultaat 2"),
+    ]
+
+    def setUp(self):
+        super().setUp()
+
+        # install mocks
+        st_patcher = patch(
+            "bing.medewerkers.forms.get_aanvraag_statustypen",
+            return_value=self.STATUSTYPEN,
+        )
+        self.st_mock = st_patcher.start()
+        self.addCleanup(st_patcher.stop)
+
+        rt_patcher = patch(
+            "bing.medewerkers.forms.get_aanvraag_resultaattypen",
+            return_value=self.RESULTAATTYPEN,
+        )
+        self.rt_mock = rt_patcher.start()
+        self.addCleanup(rt_patcher.stop)
+
+    def test_result_optional(self):
+        form = ProjectStatusForm(data={"status": "https://example.com/statustypen/1"})
+
+        valid = form.is_valid()
+
+        self.assertTrue(valid)
+
+    def test_result_given(self):
+        form = ProjectStatusForm(
+            data={
+                "status": "https://example.com/statustypen/1",
+                "resultaat": "https://example.com/resultaattypen/2",
+            }
+        )
+
+        valid = form.is_valid()
+
+        self.assertTrue(valid)
+
+    def test_not_final_status_without_result(self):
+        form = ProjectStatusForm(data={"status": "https://example.com/statustypen/2"})
+
+        valid = form.is_valid()
+
+        self.assertFalse(valid)
+        self.assertIn("status", form.errors)
+
+    def test_final_status_with_result_given(self):
+        form = ProjectStatusForm(
+            data={
+                "status": "https://example.com/statustypen/2",
+                "resultaat": "https://example.com/resultaattypen/2",
+            }
+        )
+
+        valid = form.is_valid()
+
+        self.assertTrue(valid)
