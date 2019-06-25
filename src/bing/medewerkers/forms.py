@@ -19,7 +19,7 @@ from bing.service.ztc import (
     get_aanvraag_statustypen,
 )
 
-from .tasks import set_new_status
+from .tasks import set_new_status, set_result
 
 
 class MeetingForm(forms.ModelForm):
@@ -171,7 +171,27 @@ class ProjectStatusForm(forms.Form):
                     _("You cannot set the final status unless a result has been set."),
                 )
 
+    def clean_status(self):
+        last_choice = self.fields["status"].choices[-1][0]
+        status = self.cleaned_data.get("status")
+
+        if status == last_choice:
+            raise forms.ValidationError(
+                _(
+                    "Currently it's not possible to close the case. Related documents "
+                    "need the 'indicatieGebruiksrecht' attribute set"
+                )
+            )
+
     def save(self, project: Project):
+        """
+        Persist the changes in the ZRC.
+
+        TODO: if the last status is being set and the result at the same time,
+        then the status-set should be chained AFTER completion of the result
+        setting.
+        """
+
         # set the new status, if it has changed
         old_status = self.initial.get("status")
         new_status = self.cleaned_data["status"]
@@ -179,4 +199,7 @@ class ProjectStatusForm(forms.Form):
             set_new_status.delay(project.id, new_status)
 
         # set the result, if it has changed
-        # TODO
+        old_resultaat = self.initial.get("resultaat")
+        new_resultaat = self.cleaned_data["resultaat"]
+        if new_resultaat != old_resultaat:
+            set_result.delay(project.id, new_resultaat)

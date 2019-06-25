@@ -18,7 +18,7 @@ from django.views.generic.edit import FormMixin
 from bing.meetings.models import Meeting
 from bing.projects.models import Project, ProjectAttachment
 from bing.service.drc import fetch_document, stream_inhoud
-from bing.service.zrc import fetch_status, fetch_zaak, fetch_zaken
+from bing.service.zrc import fetch_resultaat, fetch_status, fetch_zaak, fetch_zaken
 
 from .forms import MeetingForm, ProjectStatusForm, ProjectUpdateForm
 from .utils import fetch_vergadering_zaken, get_next_meeting
@@ -108,8 +108,14 @@ class ProjectDetailView(LoginRequiredMixin, FormMixin, DetailView):
         # fetch current status information
         zaak = fetch_zaak(self.object.zaak)
         current_status_type = fetch_status(zaak["status"])["statusType"]
+        current_resultaat = fetch_resultaat(zaak["resultaat"])
+        current_resultaat_type = (
+            current_resultaat["resultaatType"] if current_resultaat else ""
+        )
 
-        initial.update({"status": current_status_type})
+        initial.update(
+            {"status": current_status_type, "resultaat": current_resultaat_type}
+        )
         return initial
 
     def post(self, request, *args, **kwargs):

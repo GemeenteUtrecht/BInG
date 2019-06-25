@@ -1,6 +1,6 @@
 import concurrent.futures
 import operator
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from django.utils import timezone
 
@@ -44,8 +44,21 @@ def fetch_status(url: str) -> Dict[str, Any]:
         scopes=["zds.scopes.zaken.lezen"],
         zaaktypes=[config.zaaktype_vergadering, config.zaaktype_aanvraag],
     )
-    zaak = zrc_client.retrieve("status", url=url)
-    return zaak
+    status = zrc_client.retrieve("status", url=url)
+    return status
+
+
+def fetch_resultaat(url: Optional[str]) -> Optional[Dict[str, str]]:
+    if not url:
+        return None
+
+    config = BInGConfig.get_solo()
+    zrc_client = get_zrc_client(
+        scopes=["zds.scopes.zaken.lezen"],
+        zaaktypes=[config.zaaktype_vergadering, config.zaaktype_aanvraag],
+    )
+    resultaat = zrc_client.retrieve("resultaat", url=url)
+    return resultaat
 
 
 def set_status(zaak_url: str, statustype_url: str, **extra) -> Dict[str, str]:
@@ -66,3 +79,22 @@ def set_status(zaak_url: str, statustype_url: str, **extra) -> Dict[str, str]:
 
     status = zrc_client.create("status", body)
     return status
+
+
+def set_resultaat(
+    zaak_url: str, resultaattype_url: str, toelichting: str = ""
+) -> Dict[str, str]:
+    config = BInGConfig.get_solo()
+    zrc_client = get_zrc_client(
+        scopes=["zds.scopes.zaken.bijwerken"],
+        zaaktypes=[config.zaaktype_vergadering, config.zaaktype_aanvraag],
+    )
+
+    body = {
+        "zaak": zaak_url,
+        "resultaatType": resultaattype_url,
+        "toelichting": toelichting,
+    }
+
+    resultaat = zrc_client.create("resultaat", body)
+    return resultaat
