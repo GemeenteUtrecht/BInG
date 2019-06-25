@@ -1,6 +1,9 @@
+from mimetypes import guess_extension
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.db.models import Count, Max
+from django.http import StreamingHttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -9,9 +12,11 @@ from django.views.generic import (
     TemplateView,
     UpdateView,
 )
+from django.views.generic.detail import BaseDetailView
 
 from bing.meetings.models import Meeting
-from bing.projects.models import Project
+from bing.projects.models import Project, ProjectAttachment
+from bing.service.drc import fetch_document, stream_inhoud
 from bing.service.zrc import fetch_zaak, fetch_zaken
 
 from .forms import MeetingForm, ProjectUpdateForm
@@ -108,3 +113,28 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "medewerkers/project_form.html"
     form_class = ProjectUpdateForm
     success_url = reverse_lazy("medewerkers:kalender")
+
+
+class AttachmentDownloadView(LoginRequiredMixin, BaseDetailView):
+    queryset = (
+        ProjectAttachment.objects.exclude(project__zaak="")
+        .exclude(io_type="")
+        .exclude(eio_url="")
+    )
+
+    def get(self, request, *args, **kwargs):
+        attachment = self.get_object()
+
+        document = fetch_document(url=attachment.eio_url)
+        content_type = document["formaat"] or "application/octet-stream"
+
+        default = f"attachment{guess_extension(content_type)}"
+        filename = document["bestandsnaam"] or default
+
+        content = stream_inhoud(document["inhoud"])
+        response = StreamingHttpResponse(
+            streaming_content=content, content_type=content_type
+        )
+        response["Content-Length"] = document["bestandsomvang"]
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return response

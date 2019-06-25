@@ -68,7 +68,7 @@
                             {{ doc.informatieobject.vertrouwelijkheidaanduiding }}
                         </span>
 
-                        <a href="{{ doc.informatieobject.inhoud }}" class="document__download">
+                        <a href="{% url 'medewerkers:attachment-download' pk=doc.attachment.pk %}" class="document__download">
                             <button>{% trans "Download" %}</button>
                         </a>
                     </div>

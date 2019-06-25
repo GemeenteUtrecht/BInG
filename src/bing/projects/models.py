@@ -8,7 +8,8 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from bing.config.models import BInGConfig
-from bing.config.service import get_drc_client, get_zrc_client, get_ztc_client
+from bing.config.service import get_zrc_client, get_ztc_client
+from bing.service.drc import fetch_document
 from bing.service.zrc import fetch_zaak
 from bing.service.ztc import get_aanvraag_iot
 
@@ -109,15 +110,13 @@ class Project(models.Model):
 
         # fetch existing files to display
         document_types = dict(get_aanvraag_iot())
-        drc_client = get_drc_client(scopes=["zds.scopes.documenten.lezen"])
 
         def _get_document(attachment: ProjectAttachment) -> Dict[str, Any]:
-            document = drc_client.retrieve(
-                "enkelvoudiginformatieobject", url=attachment.eio_url
-            )
+            document = fetch_document(url=attachment.eio_url)
             return {
                 "document_type": document_types[attachment.io_type],
                 "informatieobject": document,
+                "attachment": attachment,
             }
 
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=len(attachments))

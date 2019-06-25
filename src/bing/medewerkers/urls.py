@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    AttachmentDownloadView,
     IndexView,
     KalenderView,
     LoginView,
@@ -20,4 +21,9 @@ urlpatterns = [
     path("projects/", ProjectsView.as_view(), name="projects"),
     path("projects/<pk>/", ProjectDetailView.as_view(), name="project-detail"),
     path("projects/<pk>/update/", ProjectUpdateView.as_view(), name="project-update"),
+    path(
+        "attachments/<pk>/download/",
+        AttachmentDownloadView.as_view(),
+        name="attachment-download",
+    ),
 ]
