@@ -32,3 +32,5 @@ src/bing/static/css/screen.css
 
 src/bing/static/fonts/
 src/bing/static/js/
+
+\.python-version
