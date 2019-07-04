@@ -127,7 +127,7 @@ class Project(models.Model):
 
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=len(attachments))
         documents = list(pool.map(_get_document, attachments))
-        return filter(None, documents)
+        return list(filter(None, documents))
 
     def get_meeting_date(self) -> Optional[datetime]:
         """
