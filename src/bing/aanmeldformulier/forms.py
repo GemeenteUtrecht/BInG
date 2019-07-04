@@ -78,9 +78,7 @@ class ProjectAttachmentForm(forms.ModelForm):
 
     def __init__(self, project: Project, *args, **kwargs):
         self.project = project
-
         super().__init__(*args, **kwargs)
-
         io_types = get_aanvraag_iot()
 
         try:
@@ -97,6 +95,7 @@ class ProjectAttachmentForm(forms.ModelForm):
                 (io_type, label)
                 for io_type, label in io_types
                 if io_type in io_types_config.informatieobjecttypen
+                and io_type == self.initial['io_type']
             ]
 
         self.fields["io_type"].choices = io_types

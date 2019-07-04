@@ -58,6 +58,26 @@
 {% endblock Select %}
 
 
+{% block FakeRadioSelect %}
+<fieldset class="fieldset_CheckRadio fieldset_RadioButton">
+
+    <legend class="legend_RadioButton">
+        {% for val, display in choices %}
+            {{ display }}
+        {% endfor %}
+        {% comment %} <span class="label_required"> * </span> {% endcomment %}
+    </legend>
+
+    {% for val, display in choices %}
+        <input type="hidden" name="{{ html_name }}" value="{{ val }}" id="{{ id }}_{{ forloop.counter0 }}" {% if val == raw_value|default:"" %}checked{% endif %}>
+    {% endfor %}
+    {% reuse "_help" %}
+    {{ errors }}
+
+</fieldset>
+{% endblock %}
+
+
 {% block RadioSelect %}
 <fieldset class="fieldset_CheckRadio fieldset_RadioButton">
 
