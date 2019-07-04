@@ -7,6 +7,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from zds_client.client import ClientError
+
 from bing.config.models import BInGConfig
 from bing.config.service import get_zrc_client, get_ztc_client
 from bing.service.drc import fetch_document
@@ -112,15 +114,20 @@ class Project(models.Model):
         document_types = dict(get_aanvraag_iot())
 
         def _get_document(attachment: ProjectAttachment) -> Dict[str, Any]:
-            document = fetch_document(url=attachment.eio_url)
-            return {
-                "document_type": document_types[attachment.io_type],
-                "informatieobject": document,
-                "attachment": attachment,
-            }
+            try:
+                document = fetch_document(url=attachment.eio_url)
+            except ClientError:
+                return None
+            else:
+                return {
+                    "document_type": document_types[attachment.io_type],
+                    "informatieobject": document,
+                    "attachment": attachment,
+                }
 
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=len(attachments))
-        return list(pool.map(_get_document, attachments))
+        documents = list(pool.map(_get_document, attachments))
+        return list(filter(None, documents))
 
     def get_meeting_date(self) -> Optional[datetime]:
         """

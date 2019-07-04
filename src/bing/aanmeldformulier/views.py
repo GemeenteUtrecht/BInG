@@ -6,9 +6,11 @@ from django.views.generic import FormView, TemplateView, UpdateView
 
 from extra_views import ModelFormSetView
 
+from bing.config.models import RequiredDocuments
 from bing.projects.constants import Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.service.zrc import fetch_zaak
+from bing.service.ztc import get_aanvraag_iot
 
 from .constants import PROJECT_SESSION_KEY, Steps
 from .decorators import project_required
@@ -96,9 +98,44 @@ class UploadView(ProjectMixin, ModelFormSetView):
     success_url = reverse_lazy("aanmeldformulier:vergadering")
     current_step = Steps.upload
 
+    # TODO: Simple cache....
+    _req_doc_types = []
+
+    def get_required_document_types(self):
+        if not self._req_doc_types:
+            required_io_types = []
+            io_types = get_aanvraag_iot()
+
+            try:
+                io_types_config = RequiredDocuments.objects.get(
+                    toetswijze=self.get_project().toetswijze
+                )
+            except RequiredDocuments.DoesNotExist:
+                logger.warning(
+                    "No RequiredDocuments for toetswijze '%s' configured",
+                    project.toetswijze,
+                )
+            else:
+                required_io_types = [
+                    (io_type, label)
+                    for io_type, label in io_types
+                    if io_type in io_types_config.informatieobjecttypen
+                ]
+                self._req_doc_types = required_io_types
+        return self._req_doc_types
+
+
     def get_formset_kwargs(self):
         kwargs = super().get_formset_kwargs()
         kwargs["project"] = self.get_project()
+
+        kwargs["initial"] = [{'io_type': doc_type[0]} for doc_type in self.get_required_document_types()]
+        print(kwargs['initial'])
+        return kwargs
+
+    def get_factory_kwargs(self):
+        kwargs = super().get_factory_kwargs()
+        kwargs['extra'] = len(self.get_required_document_types())
         return kwargs
 
     def get_context_data(self, **kwargs):

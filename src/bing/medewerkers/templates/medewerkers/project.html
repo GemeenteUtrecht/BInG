@@ -15,7 +15,7 @@
     {% widget 'crumbs:crumb' label=_("Kalender") url=kalender_url %}
 
     {% if project.meeting %}
-        {% url 'medewerkers:meeting' pk=project.meeting.pk as meeting_url %}
+        {% url 'medewerkers:meeting-detail' pk=project.meeting.pk as meeting_url %}
         {% with project.meeting.start|date as meeting_date %}
             {% widget 'crumbs:crumb' label=_("Vergadering")|add:" "|add:meeting_date url=meeting_url %}
         {% endwith %}

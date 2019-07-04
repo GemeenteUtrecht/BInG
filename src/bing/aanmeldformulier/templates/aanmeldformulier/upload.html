@@ -25,7 +25,7 @@
 
         {% for form in formset %}
             <fieldset class="fieldset">
-                {% form_field form.io_type %}
+                {% form_field form.io_type widget="form:FakeRadioSelect" %}
                 {% form_field form.attachment %}
 
                 {% widget 'form:required-fields' %}

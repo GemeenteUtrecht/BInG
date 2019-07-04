@@ -171,18 +171,6 @@ class ProjectStatusForm(forms.Form):
                     _("You cannot set the final status unless a result has been set."),
                 )
 
-    def clean_status(self):
-        last_choice = self.fields["status"].choices[-1][0]
-        status = self.cleaned_data.get("status")
-
-        if status == last_choice:
-            raise forms.ValidationError(
-                _(
-                    "Currently it's not possible to close the case. Related documents "
-                    "need the 'indicatieGebruiksrecht' attribute set"
-                )
-            )
-
     def save(self, project: Project):
         """
         Persist the changes in the ZRC.
