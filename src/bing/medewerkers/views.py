@@ -142,8 +142,9 @@ class ProjectDetailView(LoginRequiredMixin, FormMixin, DetailView):
         context = super().get_context_data(**kwargs)
 
         documents = self.object.get_documents()
-        documents = sorted(documents, key=lambda doc: (doc["document_type"]))
-        context["documents"] = documents
+        if documents:
+            documents = sorted(documents, key=lambda doc: (doc.get("document_type")))
+            context["documents"] = documents
 
         return context
 

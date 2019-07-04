@@ -44,6 +44,9 @@ def add_project_attachment(attachment_id: int, filename: str, temp_file: str):
             "auteur": "BInG formulier",
             "taal": "dut",
             "inhoud": base64.b64encode(content).decode("ascii"),
+            # TODO: This should not be set here by default. Please have a look at issue 224 for more information.
+            # https://github.com/GemeenteUtrecht/ZGW/issues/224
+            "indicatie_gebruiksrecht": False,
         },
     )
 
