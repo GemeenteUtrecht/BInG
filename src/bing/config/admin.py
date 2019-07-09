@@ -5,7 +5,7 @@ from solo.admin import SingletonModelAdmin
 
 from bing.service.ztc import get_aanvraag_iot
 
-from .models import APIConfig, BInGConfig, RequiredDocuments
+from .models import APIConfig, BInGConfig, RequiredDocuments, URLRewrite
 
 
 @admin.register(APIConfig)
@@ -42,3 +42,9 @@ class RequiredDocumentsAdmin(admin.ModelAdmin):
         return len(obj.informatieobjecttypen)
 
     num_informatieobjecttypen.short_description = "# informatieobjecttypen"
+
+
+@admin.register(URLRewrite)
+class URLRewriteAdmin(admin.ModelAdmin):
+    list_display = ("from_value", "to_value")
+    ordering = ("from_value",)
