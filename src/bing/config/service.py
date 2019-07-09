@@ -1,11 +1,10 @@
 from functools import partial
 
-from zds_client import Client
-
+from .client import ClientWrapper
 from .models import APIConfig
 
 
-def get_client(type: str, **claims) -> Client:
+def get_client(type: str, **claims) -> ClientWrapper:
     config = APIConfig.get_solo()
     service = getattr(config, type, None)
     if service is None:
@@ -16,7 +15,7 @@ def get_client(type: str, **claims) -> Client:
     client.auth.user_representation = "BInG Gebruiker"
     if claims:
         client.auth.set_claims(**claims)
-    return client
+    return ClientWrapper(client)
 
 
 get_zrc_client = partial(get_client, "zrc")
