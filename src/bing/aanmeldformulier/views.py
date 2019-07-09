@@ -1,3 +1,5 @@
+import logging
+
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -22,6 +24,8 @@ from .forms import (
     ProjectPlanfaseForm,
     ProjectToetswijzeForm,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ProjectMixin:
@@ -104,11 +108,12 @@ class UploadView(ProjectMixin, ModelFormSetView):
     def get_required_document_types(self):
         if not self._req_doc_types:
             required_io_types = []
+            project = self.get_project()
             io_types = get_aanvraag_iot()
 
             try:
                 io_types_config = RequiredDocuments.objects.get(
-                    toetswijze=self.get_project().toetswijze
+                    toetswijze=project.toetswijze
                 )
             except RequiredDocuments.DoesNotExist:
                 logger.warning(
@@ -131,7 +136,6 @@ class UploadView(ProjectMixin, ModelFormSetView):
         kwargs["initial"] = [
             {"io_type": doc_type[0]} for doc_type in self.get_required_document_types()
         ]
-        print(kwargs["initial"])
         return kwargs
 
     def get_factory_kwargs(self):
