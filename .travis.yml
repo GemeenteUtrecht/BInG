@@ -6,6 +6,7 @@ python: 3.7
 
 services:
   - postgresql
+  - docker
 
 addons:
   postgresql: "10"
@@ -26,6 +27,7 @@ install:
 script:
   - python src/manage.py collectstatic --noinput --link
   - coverage run src/manage.py test src
+  - ./bin/release_docker_image.sh
 
 after_success:
   - codecov
