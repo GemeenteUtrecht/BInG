@@ -124,18 +124,19 @@ class UploadView(ProjectMixin, ModelFormSetView):
                 self._req_doc_types = required_io_types
         return self._req_doc_types
 
-
     def get_formset_kwargs(self):
         kwargs = super().get_formset_kwargs()
         kwargs["project"] = self.get_project()
 
-        kwargs["initial"] = [{'io_type': doc_type[0]} for doc_type in self.get_required_document_types()]
-        print(kwargs['initial'])
+        kwargs["initial"] = [
+            {"io_type": doc_type[0]} for doc_type in self.get_required_document_types()
+        ]
+        print(kwargs["initial"])
         return kwargs
 
     def get_factory_kwargs(self):
         kwargs = super().get_factory_kwargs()
-        kwargs['extra'] = len(self.get_required_document_types())
+        kwargs["extra"] = len(self.get_required_document_types())
         return kwargs
 
     def get_context_data(self, **kwargs):

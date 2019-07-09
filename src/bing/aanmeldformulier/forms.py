@@ -95,7 +95,7 @@ class ProjectAttachmentForm(forms.ModelForm):
                 (io_type, label)
                 for io_type, label in io_types
                 if io_type in io_types_config.informatieobjecttypen
-                and io_type == self.initial['io_type']
+                and io_type == self.initial["io_type"]
             ]
 
         self.fields["io_type"].choices = io_types

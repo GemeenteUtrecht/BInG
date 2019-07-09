@@ -13,10 +13,7 @@ def fetch_zaak(url: str) -> Dict[str, Any]:
     Retrieve a single Zaak by URL.
     """
     config = BInGConfig.get_solo()
-    zrc_client = get_zrc_client(
-        scopes=["zds.scopes.zaken.lezen"],
-        zaaktypes=['*'],
-    )
+    zrc_client = get_zrc_client(scopes=["zds.scopes.zaken.lezen"], zaaktypes=["*"])
     zaak = zrc_client.retrieve("zaak", url=url)
     return zaak
 
@@ -40,10 +37,7 @@ def fetch_status(url: str) -> Dict[str, Any]:
     Retrieve a single Zaak by URL.
     """
     config = BInGConfig.get_solo()
-    zrc_client = get_zrc_client(
-        scopes=["zds.scopes.zaken.lezen"],
-        zaaktypes=['*'],
-    )
+    zrc_client = get_zrc_client(scopes=["zds.scopes.zaken.lezen"], zaaktypes=["*"])
     status = zrc_client.retrieve("status", url=url)
     return status
 
@@ -53,10 +47,7 @@ def fetch_resultaat(url: Optional[str]) -> Optional[Dict[str, str]]:
         return None
 
     config = BInGConfig.get_solo()
-    zrc_client = get_zrc_client(
-        scopes=["zds.scopes.zaken.lezen"],
-        zaaktypes=['*'],
-    )
+    zrc_client = get_zrc_client(scopes=["zds.scopes.zaken.lezen"], zaaktypes=["*"])
     resultaat = zrc_client.retrieve("resultaat", url=url)
     return resultaat
 
@@ -67,8 +58,7 @@ def set_status(zaak_url: str, statustype_url: str, **extra) -> Dict[str, str]:
 
     config = BInGConfig.get_solo()
     zrc_client = get_zrc_client(
-        scopes=["zds.scopes.statussen.toevoegen"],
-        zaaktypes=['*'],
+        scopes=["zds.scopes.statussen.toevoegen"], zaaktypes=["*"]
     )
 
     defaults = {"datumStatusGezet": timezone.now().isoformat()}
@@ -85,10 +75,7 @@ def set_resultaat(
     zaak_url: str, resultaattype_url: str, toelichting: str = ""
 ) -> Dict[str, str]:
     config = BInGConfig.get_solo()
-    zrc_client = get_zrc_client(
-        scopes=["zds.scopes.zaken.bijwerken"],
-        zaaktypes=['*'],
-    )
+    zrc_client = get_zrc_client(scopes=["zds.scopes.zaken.bijwerken"], zaaktypes=["*"])
 
     body = {
         "zaak": zaak_url,
