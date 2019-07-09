@@ -1,6 +1,6 @@
 import operator
 from functools import lru_cache
-from typing import Any, Dict, List, Tuple
+from typing import List, Tuple
 
 from bing.config.models import APIConfig, BInGConfig
 from bing.config.service import get_ztc_client
