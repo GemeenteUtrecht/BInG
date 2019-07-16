@@ -55,8 +55,7 @@ class KalenderView(LoginRequiredMixin, CreateView):
         meetings = {meeting.zaak: meeting for meeting in qs}
 
         context["object_list"] = [
-            (meetings[url], zaak) for url, zaak in zaken.items()
-            if url in meetings
+            (meetings[url], zaak) for url, zaak in zaken.items() if url in meetings
         ]
         return context
 
@@ -84,7 +83,8 @@ class MeetingDetailView(LoginRequiredMixin, DetailView):
         }
 
         context["projects"] = [
-            (projects[url], zaak) for url, zaak in project_zaken.items()
+            (projects[url], zaak)
+            for url, zaak in project_zaken.items()
             if url in projects
         ]
         return context
