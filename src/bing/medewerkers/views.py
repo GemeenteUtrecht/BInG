@@ -85,6 +85,7 @@ class MeetingDetailView(LoginRequiredMixin, DetailView):
 
         context["projects"] = [
             (projects[url], zaak) for url, zaak in project_zaken.items()
+            if url in projects
         ]
         return context
 
