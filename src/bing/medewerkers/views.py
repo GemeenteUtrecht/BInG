@@ -50,10 +50,14 @@ class KalenderView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         zaken = {zaak["url"]: zaak for zaak in fetch_vergadering_zaken()}
+
         qs = Meeting.objects.filter(zaak__in=zaken)
         meetings = {meeting.zaak: meeting for meeting in qs}
 
-        context["object_list"] = [(meetings[url], zaak) for url, zaak in zaken.items()]
+        context["object_list"] = [
+            (meetings[url], zaak) for url, zaak in zaken.items()
+            if url in meetings
+        ]
         return context
 
 

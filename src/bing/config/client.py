@@ -25,6 +25,10 @@ class ClientWrapper(Client):
         if json:
             self.rewrite_urls(json)
 
+        params = kwargs.get("params")
+        if params:
+            self.rewrite_urls(params)
+
         response = self.client.request(*args, **kwargs)
 
         if isinstance(response, (dict, list)):
