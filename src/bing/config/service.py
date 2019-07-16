@@ -11,11 +11,15 @@ def get_client(type: str, **claims) -> ClientWrapper:
         raise ValueError(f"No {type.upper()} configured!")
 
     client = service.build_client()
+    wrapper = ClientWrapper(client)
     client.auth.user_id = "bing-user"
     client.auth.user_representation = "BInG Gebruiker"
+
     if claims:
+        wrapper.rewrite_urls(claims)
         client.auth.set_claims(**claims)
-    return ClientWrapper(client)
+
+    return wrapper
 
 
 get_zrc_client = partial(get_client, "zrc")
