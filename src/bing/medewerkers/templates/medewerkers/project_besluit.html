@@ -41,7 +41,7 @@
             {% form_field form.start_date %}
             {% form_field form.end_date %}
             {% form_field form.final_reaction_date %}
-            {% form_field form.attachment %}
+            {% form_field form.attachment 'form:FileInput' %}
 
             {% widget 'form:required-fields' %}
         </fieldset>
