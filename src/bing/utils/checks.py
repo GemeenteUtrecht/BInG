@@ -25,7 +25,8 @@ def check_modelform_exclude(app_configs, **kwargs):
 
     for form in get_subclasses(ModelForm):
         # ok, fields is defined
-        if form._meta.fields or getattr(form.Meta, "fields", None):
+        fields = form._meta.fields or getattr(form.Meta, "fields", None)
+        if fields or isinstance(fields, tuple):
             continue
 
         # no `.fields` defined, so scream loud enough to prevent this

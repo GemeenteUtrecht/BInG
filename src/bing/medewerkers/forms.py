@@ -191,3 +191,21 @@ class ProjectStatusForm(forms.Form):
         new_resultaat = self.cleaned_data["resultaat"]
         if new_resultaat != old_resultaat:
             set_result.delay(project.id, new_resultaat)
+
+
+class ProjectBesluitForm(forms.ModelForm):
+    besluittype = forms.ChoiceField(
+        label=_("soort besluit"), choices=(), widget=forms.RadioSelect
+    )
+    start_date = forms.DateField(label=_("Ingangsdatum"))
+    end_date = forms.DateField(label=_("Vervaldatum"), required=False)
+    final_reaction_date = forms.DateField(
+        label=_("Uiterlijke reactiedatum"), required=False
+    )
+    attachment = forms.FileField(
+        label=_("bestand"), help_text=_("Document waarin het besluit is vastgelegd.")
+    )
+
+    class Meta:
+        model = Project
+        fields = ()

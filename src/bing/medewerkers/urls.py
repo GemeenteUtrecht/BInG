@@ -6,6 +6,7 @@ from .views import (
     KalenderView,
     LoginView,
     MeetingDetailView,
+    ProjectBesluitCreate,
     ProjectDetailView,
     ProjectsView,
     ProjectUpdateView,
@@ -20,6 +21,9 @@ urlpatterns = [
     path("kalender/<pk>/", MeetingDetailView.as_view(), name="meeting-detail"),
     path("projects/", ProjectsView.as_view(), name="projects"),
     path("projects/<pk>/", ProjectDetailView.as_view(), name="project-detail"),
+    path(
+        "projects/<pk>/besluit/", ProjectBesluitCreate.as_view(), name="project-besluit"
+    ),
     path("projects/<pk>/update/", ProjectUpdateView.as_view(), name="project-update"),
     path(
         "attachments/<pk>/download/",
