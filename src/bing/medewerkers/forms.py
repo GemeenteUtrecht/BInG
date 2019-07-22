@@ -1,4 +1,8 @@
+import os
+import tempfile
+
 from django import forms
+from django.conf import settings
 from django.db import transaction
 from django.template.defaultfilters import date
 from django.utils import timezone
@@ -14,12 +18,13 @@ from bing.meetings.tasks import (
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project
 from bing.service.ztc import (
+    get_aanvraag_besluittypen,
     get_aanvraag_iot,
     get_aanvraag_resultaattypen,
     get_aanvraag_statustypen,
 )
 
-from .tasks import set_new_status, set_result
+from .tasks import add_besluit, set_new_status, set_result
 
 
 class MeetingForm(forms.ModelForm):
@@ -209,3 +214,34 @@ class ProjectBesluitForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["besluittype"].choices = get_aanvraag_besluittypen()
+
+    def save(self, *args, **kwargs):
+        obj = super().save(*args, **kwargs)
+
+        # create a temp file
+        name = self.cleaned_data["attachment"].name
+        _, ext = os.path.splitext(name)
+
+        with tempfile.NamedTemporaryFile(
+            suffix=".upload" + ext, dir=settings.FILE_UPLOAD_TEMP_DIR, delete=False
+        ) as temp_file:
+            temp_file.write(self.cleaned_data["attachment"].read())
+
+        end_date = self.cleaned_data.get("end_date")
+        final_reaction_date = self.cleaned_data.get("final_reaction_date")
+        besluit_data = {
+            "besluittype": self.cleaned_data["besluittype"],
+            "ingangsdatum": self.cleaned_data["start_date"].isoformat(),
+            "vervaldatum": end_date.isoformat() if end_date else None,
+            "uiterlijkeReactiedatum": final_reaction_date.isoformat()
+            if final_reaction_date
+            else None,
+        }
+
+        add_besluit.delay(self.instance.pk, name, temp_file.name, **besluit_data)
+
+        return obj
