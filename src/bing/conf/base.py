@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "bing.projects",
     "bing.medewerkers",
     "bing.meetings",
+    "bing.cache",
     "bing.utils",
 ]
 
