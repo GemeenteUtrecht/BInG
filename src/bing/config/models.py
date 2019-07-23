@@ -3,6 +3,7 @@ from datetime import timedelta
 from urllib.parse import urljoin
 
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
@@ -56,11 +57,33 @@ class APIConfig(SingletonModel):
         limit_choices_to={"api_type": APITypes.brc},
     )
 
+    camunda_root = models.URLField(
+        _("camunda root"),
+        help_text=_("Root URL where camunda is installed."),
+        default="http://localhost:12018/gemeente-utrecht/camunda/",
+    )
+
     class Meta:
         verbose_name = _("APIs configuration")
 
     def __str__(self):
         return force_text(self._meta.verbose_name)
+
+    def clean(self):
+        from .service import Camunda
+
+        camunda = Camunda(config=self)
+        try:
+            camunda.request("version")
+        except Exception as exc:
+            raise ValidationError(
+                {
+                    "camunda_root": _(
+                        "Invalid Camunda root, got error %s while checking the version endpont"
+                    )
+                    % exc
+                }
+            )
 
 
 class BInGConfig(SingletonModel):
