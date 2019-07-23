@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass
 from typing import Iterable, Optional, Union
 
@@ -29,7 +30,10 @@ class ClientWrapper(Client):
         if params:
             self.rewrite_urls(params)
 
+        start = time.time()
         response = self.client.request(*args, **kwargs)
+        duration = time.time() - start
+        self.client._log._entries[-1]["duration"] = int(duration * 1000)  # in ms
 
         if isinstance(response, (dict, list)):
             self.rewrite_urls(response, reverse=True)
