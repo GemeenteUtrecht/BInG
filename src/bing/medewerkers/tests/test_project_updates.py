@@ -1,4 +1,3 @@
-from unittest import expectedFailure
 from unittest.mock import patch
 
 from django.test import TestCase, TransactionTestCase
@@ -138,15 +137,13 @@ class ProjectMeetingUpdates(TestCase):
 
         # install mocks
         st_patcher = patch(
-            "bing.medewerkers.forms.get_aanvraag_statustypen",
-            return_value=self.STATUSTYPEN,
+            "bing.service.ztc.get_statustypen", return_value=self.STATUSTYPEN
         )
         self.st_mock = st_patcher.start()
         self.addCleanup(st_patcher.stop)
 
         rt_patcher = patch(
-            "bing.medewerkers.forms.get_aanvraag_resultaattypen",
-            return_value=self.RESULTAATTYPEN,
+            "bing.service.ztc.get_resultaattypen", return_value=self.RESULTAATTYPEN
         )
         self.rt_mock = rt_patcher.start()
         self.addCleanup(rt_patcher.stop)

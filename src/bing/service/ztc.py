@@ -28,13 +28,12 @@ def get_aanvraag_iot() -> List[Tuple[str, str]]:
 
 
 @lru_cache()
-def get_aanvraag_statustypen() -> List[Tuple[str, str]]:
-    config = BInGConfig.get_solo()
+def get_statustypen(zaaktype: str) -> List[Tuple[str, str]]:
     api_config = APIConfig.get_solo()
     ztc_client = get_ztc_client()
 
     main_catalogus_uuid = api_config.ztc.extra["main_catalogus_uuid"]
-    zaaktype_uuid = config.zaaktype_aanvraag.split("/")[-1]
+    zaaktype_uuid = zaaktype.split("/")[-1]
 
     statustypen = ztc_client.list(
         "statustype", catalogus_uuid=main_catalogus_uuid, zaaktype_uuid=zaaktype_uuid
@@ -47,17 +46,40 @@ def get_aanvraag_statustypen() -> List[Tuple[str, str]]:
 
 
 @lru_cache()
-def get_aanvraag_resultaattypen() -> List[Tuple[str, str]]:
-    config = BInGConfig.get_solo()
+def get_resultaattypen(zaaktype: str) -> List[Tuple[str, str]]:
     ztc_client = get_ztc_client()
 
     resultaattypen = ztc_client.list(
-        "resultaattype", query_params={"zaaktype": config.zaaktype_aanvraag}
+        "resultaattype", query_params={"zaaktype": zaaktype}
     )
     return [
         (resultaattype["url"], resultaattype["omschrijving"])
         for resultaattype in resultaattypen
     ]
+
+
+@lru_cache()
+def get_aanvraag_statustypen() -> List[Tuple[str, str]]:
+    config = BInGConfig.get_solo()
+    return get_statustypen(config.zaaktype_aanvraag)
+
+
+@lru_cache()
+def get_aanvraag_resultaattypen() -> List[Tuple[str, str]]:
+    config = BInGConfig.get_solo()
+    return get_resultaattypen(config.zaaktype_aanvraag)
+
+
+@lru_cache()
+def get_vergadering_statustypen() -> List[Tuple[str, str]]:
+    config = BInGConfig.get_solo()
+    return get_statustypen(config.zaaktype_vergadering)
+
+
+@lru_cache()
+def get_vergadering_resultaattypen() -> List[Tuple[str, str]]:
+    config = BInGConfig.get_solo()
+    return get_resultaattypen(config.zaaktype_vergadering)
 
 
 @lru_cache()

@@ -1,9 +1,10 @@
 import os
 import tempfile
+from typing import Callable
 
 from django import forms
 from django.conf import settings
-from django.db import transaction
+from django.db import models, transaction
 from django.template.defaultfilters import date
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -22,6 +23,8 @@ from bing.service.ztc import (
     get_aanvraag_iot,
     get_aanvraag_resultaattypen,
     get_aanvraag_statustypen,
+    get_vergadering_resultaattypen,
+    get_vergadering_statustypen,
 )
 
 from .tasks import add_besluit, set_new_status, set_result
@@ -143,7 +146,7 @@ class ProjectUpdateForm(forms.ModelForm):
         return project
 
 
-class ProjectStatusForm(forms.Form):
+class StatusForm(forms.Form):
     status = forms.ChoiceField(label=_("Status"), choices=())
     resultaat = forms.ChoiceField(
         label=_("Resultaat"),
@@ -154,13 +157,14 @@ class ProjectStatusForm(forms.Form):
         ),
     )
 
+    GET_STATUSTYPEN: Callable = None
+    GET_RESULTAATTYPEN: Callable = None
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["status"].choices = get_aanvraag_statustypen()
-        self.fields["resultaat"].choices = [
-            ("", "-------")
-        ] + get_aanvraag_resultaattypen()
+        self.fields["status"].choices = self.GET_STATUSTYPEN()
+        self.fields["resultaat"].choices = [("", "-------")] + self.GET_RESULTAATTYPEN()
 
     def clean(self):
         super().clean()
@@ -176,7 +180,7 @@ class ProjectStatusForm(forms.Form):
                     _("You cannot set the final status unless a result has been set."),
                 )
 
-    def save(self, project: Project):
+    def save(self, obj: models.Model):
         """
         Persist the changes in the ZRC.
 
@@ -189,13 +193,23 @@ class ProjectStatusForm(forms.Form):
         old_status = self.initial.get("status")
         new_status = self.cleaned_data["status"]
         if new_status != old_status:
-            set_new_status.delay(project.id, new_status)
+            set_new_status.delay(obj.zaak, new_status)
 
         # set the result, if it has changed
         old_resultaat = self.initial.get("resultaat")
         new_resultaat = self.cleaned_data["resultaat"]
         if new_resultaat != old_resultaat:
-            set_result.delay(project.id, new_resultaat)
+            set_result.delay(obj.zaak, new_resultaat)
+
+
+class ProjectStatusForm(StatusForm):
+    GET_STATUSTYPEN = staticmethod(get_aanvraag_statustypen)
+    GET_RESULTAATTYPEN = staticmethod(get_aanvraag_resultaattypen)
+
+
+class MeetingStatusForm(StatusForm):
+    GET_STATUSTYPEN = staticmethod(get_vergadering_statustypen)
+    GET_RESULTAATTYPEN = staticmethod(get_vergadering_resultaattypen)
 
 
 class ProjectBesluitForm(forms.ModelForm):
