@@ -26,6 +26,13 @@ class RewriteTests(TestCase):
         # client object is not relevant for this code path
         cls.wrapper = ClientWrapper(client=Client("dummy"))
 
+    def setUp(self):
+        super().setUp()
+
+        patcher = patch.object(self.wrapper.client, "_log")
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_noop(self):
         data = [
             {
@@ -79,10 +86,14 @@ class RewriteTests(TestCase):
         with patch.object(
             self.wrapper.client, "request", return_value=response_data
         ) as mock_request:
-            response = self.wrapper.request("https://example.com", json=request_data)
+            response = self.wrapper.request(
+                "https://example.com", "dummy_operation", json=request_data
+            )
 
         mock_request.assert_called_once_with(
             "https://example.com",
+            "dummy_operation",
+            method="GET",
             json={"key": "http://localhost:12018/vng/drc/eio/123"},
         )
 
@@ -90,6 +101,8 @@ class RewriteTests(TestCase):
 
     def test_request_no_body(self):
         with patch.object(self.wrapper.client, "request") as mock_request:
-            self.wrapper.request("https://example.com")
+            self.wrapper.request("https://example.com", "dummy_operation")
 
-        mock_request.assert_called_once_with("https://example.com")
+        mock_request.assert_called_once_with(
+            "https://example.com", "dummy_operation", method="GET"
+        )
