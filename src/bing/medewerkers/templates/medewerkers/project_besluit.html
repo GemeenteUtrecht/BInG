@@ -33,6 +33,14 @@
 <section>
     <h2>Besluiten</h2>
 
+    <ul>
+        {% for besluit in besluiten %}
+            <li>
+                {{ besluit.datum }} - Ingangsdatum {{ besluit.ingangsdatum }} ({{ besluit.besluittype }})
+            </li>
+        {% endfor %}
+    </ul>
+
     <form action="." method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% load_widgets form='snippets/forms.html' %}

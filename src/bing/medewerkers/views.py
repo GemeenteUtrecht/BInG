@@ -17,6 +17,7 @@ from django.views.generic.edit import FormMixin
 
 from bing.meetings.models import Meeting
 from bing.projects.models import Project, ProjectAttachment
+from bing.service.brc import fetch_besluiten
 from bing.service.drc import fetch_document, stream_inhoud
 from bing.service.zrc import fetch_resultaat, fetch_status, fetch_zaak, fetch_zaken
 
@@ -161,6 +162,11 @@ class ProjectBesluitCreate(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("medewerkers:project-detail", kwargs={"pk": self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        besluiten = fetch_besluiten(zaak=self.object.zaak)
+        kwargs["besluiten"] = besluiten
+        return super().get_context_data(**kwargs)
 
 
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):
