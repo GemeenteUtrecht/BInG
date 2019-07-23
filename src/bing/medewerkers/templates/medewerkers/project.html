@@ -43,11 +43,21 @@
         </table>
 
         <section class="project-documents">
-            <h2>Documenten</h2>
+            <h2>Besluiten</h2>
+
+            <ul>
+                {% for besluit in besluiten %}
+                    <li>
+                        {{ besluit.datum }} - Ingangsdatum {{ besluit.ingangsdatum }} ({{ besluit.besluittype }})
+                    </li>
+                {% endfor %}
+            </ul>
 
             <a href="{% url 'medewerkers:project-besluit' pk=project.id %}">
                 <button>{% trans "Voeg besluit toe" %}</button>
             </a>
+
+            <h2>Documenten</h2>
 
             {% regroup documents by document_type as document_list %}
             {% for document_type, docs in document_list %}

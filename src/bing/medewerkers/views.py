@@ -152,6 +152,8 @@ class ProjectDetailView(LoginRequiredMixin, FormMixin, DetailView):
             documents = sorted(documents, key=lambda doc: (doc.get("document_type")))
             context["documents"] = documents
 
+        context["besluiten"] = fetch_besluiten(zaak=self.object.zaak)
+
         return context
 
 
@@ -162,11 +164,6 @@ class ProjectBesluitCreate(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("medewerkers:project-detail", kwargs={"pk": self.object.pk})
-
-    def get_context_data(self, **kwargs):
-        besluiten = fetch_besluiten(zaak=self.object.zaak)
-        kwargs["besluiten"] = besluiten
-        return super().get_context_data(**kwargs)
 
 
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):

@@ -31,15 +31,7 @@
 {% load_widgets key_value='snippets/key-value.html' %}
 
 <section>
-    <h2>Besluiten</h2>
-
-    <ul>
-        {% for besluit in besluiten %}
-            <li>
-                {{ besluit.datum }} - Ingangsdatum {{ besluit.ingangsdatum }} ({{ besluit.besluittype }})
-            </li>
-        {% endfor %}
-    </ul>
+    <h2>Voeg besluit toe</h2>
 
     <form action="." method="post" enctype="multipart/form-data">
         {% csrf_token %}
