@@ -21,7 +21,13 @@ from bing.service.brc import fetch_besluiten
 from bing.service.drc import fetch_document, stream_inhoud
 from bing.service.zrc import fetch_resultaat, fetch_status, fetch_zaak, fetch_zaken
 
-from .forms import MeetingForm, ProjectBesluitForm, ProjectStatusForm, ProjectUpdateForm
+from .forms import (
+    MeetingForm,
+    MeetingStatusForm,
+    ProjectBesluitForm,
+    ProjectStatusForm,
+    ProjectUpdateForm,
+)
 from .utils import fetch_vergadering_zaken, get_next_meeting
 
 
@@ -61,53 +67,7 @@ class KalenderView(LoginRequiredMixin, CreateView):
         return context
 
 
-class MeetingDetailView(LoginRequiredMixin, DetailView):
-    """
-    Display the information of a single meeting.
-    """
-
-    queryset = Meeting.objects.exclude(zaak="")
-    template_name = "medewerkers/meeting.html"
-    context_object_name = "meeting"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        zaak = fetch_zaak(self.object.zaak)
-        context["zaak"] = zaak
-
-        project_zaken = {
-            zaak["url"]: zaak for zaak in fetch_zaken(zaak["relevanteAndereZaken"])
-        }
-        projects = {
-            project.zaak: project
-            for project in Project.objects.filter(zaak__in=project_zaken)
-        }
-
-        context["projects"] = [
-            (projects[url], zaak)
-            for url, zaak in project_zaken.items()
-            if url in projects
-        ]
-        return context
-
-
-class ProjectsView(LoginRequiredMixin, ListView):
-    queryset = (
-        Project.objects.exclude(zaak="").select_related("meeting").order_by("-pk")
-    )
-    template_name = "medewerkers/projects.html"
-
-
-class ProjectDetailView(LoginRequiredMixin, FormMixin, DetailView):
-    """
-    Display all the project information.
-    """
-
-    queryset = Project.objects.exclude(zaak="")
-    form_class = ProjectStatusForm
-    template_name = "medewerkers/project.html"
-    context_object_name = "project"
-
+class StatusFormMixin(FormMixin):
     def get_initial(self) -> dict:
         initial = super().get_initial()
 
@@ -138,8 +98,60 @@ class ProjectDetailView(LoginRequiredMixin, FormMixin, DetailView):
             return self.form_invalid(form)
 
     def form_valid(self, form):
-        form.save(project=self.object)
+        form.save(obj=self.object)
         return super().form_valid(form)
+
+
+class MeetingDetailView(LoginRequiredMixin, StatusFormMixin, DetailView):
+    """
+    Display the information of a single meeting.
+    """
+
+    queryset = Meeting.objects.exclude(zaak="")
+    form_class = MeetingStatusForm
+    template_name = "medewerkers/meeting.html"
+    context_object_name = "meeting"
+
+    def get_success_url(self):
+        return reverse("medewerkers:meeting-detail", kwargs={"pk": self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        zaak = fetch_zaak(self.object.zaak)
+        context["zaak"] = zaak
+
+        project_zaken = {
+            zaak["url"]: zaak for zaak in fetch_zaken(zaak["relevanteAndereZaken"])
+        }
+        projects = {
+            project.zaak: project
+            for project in Project.objects.filter(zaak__in=project_zaken)
+        }
+
+        context["projects"] = [
+            (projects[url], zaak)
+            for url, zaak in project_zaken.items()
+            if url in projects
+        ]
+        return context
+
+
+class ProjectsView(LoginRequiredMixin, ListView):
+    queryset = (
+        Project.objects.exclude(zaak="").select_related("meeting").order_by("-pk")
+    )
+    template_name = "medewerkers/projects.html"
+
+
+class ProjectDetailView(LoginRequiredMixin, StatusFormMixin, DetailView):
+    """
+    Display all the project information.
+    """
+
+    queryset = Project.objects.exclude(zaak="")
+    form_class = ProjectStatusForm
+    template_name = "medewerkers/project.html"
+    context_object_name = "project"
 
     def get_success_url(self):
         return reverse("medewerkers:project-detail", kwargs={"pk": self.object.pk})

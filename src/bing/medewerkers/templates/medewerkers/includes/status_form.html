@@ -1,0 +1,16 @@
+{% load sniplates i18n %}
+
+<form action="." method="post">
+    {% csrf_token %}
+    {% load_widgets form='snippets/forms.html' %}
+
+    {% form_field form.status %}
+    {% form_field form.resultaat %}
+
+    <br>
+    {% widget 'form:required-fields' %}
+
+    <div class="navigation_buttons">
+        {% widget 'form:submit' text=_("Bijwerken") %}
+    </div>
+</form>
