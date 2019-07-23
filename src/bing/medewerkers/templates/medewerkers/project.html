@@ -48,7 +48,11 @@
             <ul>
                 {% for besluit in besluiten %}
                     <li>
-                        {{ besluit.datum }} - Ingangsdatum {{ besluit.ingangsdatum }} ({{ besluit.besluittype }})
+                        <i class="fa fa-legal"></i>
+                        {{ besluit.datum }} - Ingangsdatum {{ besluit.ingangsdatum }}
+                        ({{ besluit.besluittype }})
+                        <br>
+                        Documenten: {{ besluit.documents }}
                     </li>
                 {% endfor %}
             </ul>
