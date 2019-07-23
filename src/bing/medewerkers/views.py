@@ -17,10 +17,11 @@ from django.views.generic.edit import FormMixin
 
 from bing.meetings.models import Meeting
 from bing.projects.models import Project, ProjectAttachment
+from bing.service.brc import fetch_besluiten
 from bing.service.drc import fetch_document, stream_inhoud
 from bing.service.zrc import fetch_resultaat, fetch_status, fetch_zaak, fetch_zaken
 
-from .forms import MeetingForm, ProjectStatusForm, ProjectUpdateForm
+from .forms import MeetingForm, ProjectBesluitForm, ProjectStatusForm, ProjectUpdateForm
 from .utils import fetch_vergadering_zaken, get_next_meeting
 
 
@@ -152,6 +153,20 @@ class ProjectDetailView(LoginRequiredMixin, FormMixin, DetailView):
             context["documents"] = documents
 
         return context
+
+
+class ProjectBesluitCreate(LoginRequiredMixin, UpdateView):
+    queryset = Project.objects.exclude(zaak="")
+    form_class = ProjectBesluitForm
+    template_name = "medewerkers/project_besluit.html"
+
+    def get_success_url(self):
+        return reverse("medewerkers:project-detail", kwargs={"pk": self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        besluiten = fetch_besluiten(zaak=self.object.zaak)
+        kwargs["besluiten"] = besluiten
+        return super().get_context_data(**kwargs)
 
 
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):

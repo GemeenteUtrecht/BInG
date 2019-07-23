@@ -58,3 +58,24 @@ def get_aanvraag_resultaattypen() -> List[Tuple[str, str]]:
         (resultaattype["url"], resultaattype["omschrijving"])
         for resultaattype in resultaattypen
     ]
+
+
+@lru_cache()
+def get_aanvraag_besluittypen() -> List[Tuple[str, str]]:
+    config = BInGConfig.get_solo()
+    ztc_client = get_ztc_client()
+
+    config = BInGConfig.get_solo()
+    api_config = APIConfig.get_solo()
+    ztc_client = get_ztc_client()
+
+    main_catalogus_uuid = api_config.ztc.extra["main_catalogus_uuid"]
+    zaaktype_uuid = config.zaaktype_aanvraag.split("/")[-1]
+
+    besluittypen = ztc_client.list(
+        "besluittype", catalogus_uuid=main_catalogus_uuid, zaaktype_uuid=zaaktype_uuid
+    )
+    return [
+        (besluittype["url"], besluittype["omschrijving"])
+        for besluittype in besluittypen
+    ]

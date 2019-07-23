@@ -45,6 +45,10 @@
         <section class="project-documents">
             <h2>Documenten</h2>
 
+            <a href="{% url 'medewerkers:project-besluit' pk=project.id %}">
+                <button>{% trans "Voeg besluit toe" %}</button>
+            </a>
+
             {% regroup documents by document_type as document_list %}
             {% for document_type, docs in document_list %}
                 <h3 class="project-documents__document-type">{{ document_type }}</h3>

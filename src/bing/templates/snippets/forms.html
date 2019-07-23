@@ -29,6 +29,15 @@
 </div>
 {% endblock %}
 
+{% block DateInput %}
+<div>
+    {% reuse "_label" %}
+    {% reuse "input" input_type="date" raw_value=value %}
+    {% reuse "_help" %}
+    {{ errors }}
+</div>
+{% endblock %}
+
 {% block DateTimeInput %}
 <div>
     {% reuse "_label" %}
@@ -47,6 +56,14 @@
 </div>
 {% endblock %}
 
+{% block FileInput %}
+<div>
+    {% reuse "_label" %}
+    {% reuse "input" input_type="file" raw_value="" %}
+    <div>{% reuse "_help" %}</div>
+    {{ errors }}
+</div>
+{% endblock %}
 
 {% block Select %}
 <div>
