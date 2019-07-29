@@ -70,7 +70,7 @@ class APIConfig(SingletonModel):
         return force_text(self._meta.verbose_name)
 
     def clean(self):
-        from .service import Camunda
+        from bing.camunda.client import Camunda
 
         camunda = Camunda(config=self)
         try:
