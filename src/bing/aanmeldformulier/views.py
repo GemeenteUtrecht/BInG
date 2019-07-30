@@ -11,7 +11,6 @@ from extra_views import ModelFormSetView
 from bing.config.models import RequiredDocuments
 from bing.projects.constants import Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
-from bing.service.zrc import fetch_zaak
 from bing.service.ztc import get_aanvraag_iot
 
 from .constants import PROJECT_SESSION_KEY, Steps
@@ -24,6 +23,7 @@ from .forms import (
     ProjectPlanfaseForm,
     ProjectToetswijzeForm,
 )
+from .tasks import start_camunda_process
 
 logger = logging.getLogger(__name__)
 
@@ -149,6 +149,13 @@ class UploadView(ProjectMixin, ModelFormSetView):
         context["attachments"] = project.get_documents()
         return context
 
+    def formset_valid(self, form):
+        response = super().formset_valid(form)
+        project = self.get_project()
+        if project.toetswijze == Toetswijzen.versneld:
+            start_camunda_process.delay(project.id)
+        return response
+
 
 @method_decorator(project_required, name="dispatch")
 class MeetingView(ProjectMixin, UpdateView):
@@ -170,15 +177,20 @@ class MeetingView(ProjectMixin, UpdateView):
 
         return super().get(request, *args, **kwargs)
 
+    def form_valid(self, form):
+        response = super().form_valid()
+        start_camunda_process.delay(self.object.id)
+        return response
+
 
 @method_decorator(project_required, name="dispatch")
 class ConfirmationView(ProjectMixin, TemplateView):
+    """
+    Show the confirmation page.
+
+    TODO: set up ajax polling/notification when the Zaak has been created so
+    that the identification can be displayed.
+    """
+
     template_name = "aanmeldformulier/confirmation.html"
     current_step = Steps.confirmation
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        zaak = fetch_zaak(self.get_project().zaak)
-        context["identificatie"] = zaak["identificatie"]
-        return context

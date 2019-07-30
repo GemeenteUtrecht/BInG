@@ -106,10 +106,9 @@
     <div class="inputfield_container">
 
         {% for val, display in choices %}
-
             <span class="radio_container">
                 <input type="radio" class="radio" name="{{ html_name }}"
-                       value="{{ val }}" id="{{ id }}_{{ forloop.counter0 }}" {% if val == raw_value|default:"" %}checked{% endif %}>
+                       value="{{ val }}" id="{{ id }}_{{ forloop.counter0 }}" {% if val == value|default:"" %}checked{% endif %}>
                 <label for="{{ id }}_{{ forloop.counter0 }}">{{ display }}</label>
             </span>
 

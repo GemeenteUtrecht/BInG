@@ -1,15 +1,15 @@
 import base64
+import json
 import logging
 import os
 
 from django.utils import timezone
 
-from zds_client import ClientError
-
+from bing.camunda.client import Camunda
 from bing.celery import app
 from bing.config.models import BInGConfig
-from bing.config.service import get_drc_client, get_zrc_client
-from bing.projects.models import ProjectAttachment
+from bing.config.service import get_drc_client
+from bing.projects.models import Project, ProjectAttachment
 
 logger = logging.getLogger(__name__)
 
@@ -53,28 +53,62 @@ def add_project_attachment(attachment_id: int, filename: str, temp_file: str):
     attachment.eio_url = eio["url"]
     attachment.save(update_fields=["eio_url"])
 
-    # connect io and zaak
-    try:
-        drc_client.create(
-            "objectinformatieobject",
-            {
-                "informatieobject": eio["url"],
-                "object": attachment.project.zaak,
-                "objectType": "zaak",
-                "beschrijving": "Aangeleverd stuk door aanvrager",
-            },
-        )
-    except ClientError as exc:
-        logger.info("Trying new setup, got %s", exc)
-        # try the new setup, with reversal of relation direction
-        zrc_client = get_zrc_client()
-        zrc_client.create(
-            "zaakinformatieobject",
-            {
-                "zaak": attachment.project.zaak,
-                "informatieobject": eio["url"],
-                "beschrijving": "Aangeleverd stuk door aanvrager",
-            },
-        )
-
     os.remove(temp_file)
+
+
+@app.task
+def start_camunda_process(project_id: int) -> None:
+    try:
+        project = Project.objects.get(id=project_id)
+    except Project.DoesNotExist:
+        logger.error("Project %d not found in database", project_id)
+        return
+
+    if project.camunda_process_instance_id and project.camunda_process_instance_url:
+        logger.warning("Not re-triggering camunda process for project %s!", project_id)
+        return
+
+    config = BInGConfig.get_solo()
+    client = Camunda()
+
+    documents = list(project.projectattachment_set.values_list("eio_url", flat=True))
+
+    body = {
+        "businessKey": f"bing-project-{project.project_id}",
+        "withVariablesInReturn": False,
+        "variables": {
+            "zaaktype": {"value": config.zaaktype_aanvraag, "type": "String"},
+            "project_id": {"value": project.project_id, "type": "String"},
+            "datum_ingediend": {
+                "value": timezone.now().date().isoformat(),
+                "type": "Date",
+            },
+            "naam": {"value": project.name, "type": "String"},
+            "toetswijze": {"value": project.toetswijze, "type": "String"},
+            "documenten": {"value": json.dumps(documents), "type": "Json"},
+            "meeting_datum": {
+                "value": project.meeting.start.date().isoformat()
+                if project.meeting_id
+                else None,
+                "type": "Date",
+            },
+            "meeting_zaak": {
+                "value": project.meeting.zaak if project.meeting_id else None,
+                "type": "String",
+            },
+        },
+    }
+
+    response = client.request(
+        f"process-definition/key/{config.aanvraag_process_key}/start",
+        method="POST",
+        json=body,
+    )
+
+    project.camunda_process_instance_id = response["id"]
+
+    self_rel = next((link for link in response["links"] if link["rel"] == "self"))
+    project.camunda_process_instance_url = self_rel["href"]
+    project.save(
+        update_fields=["camunda_process_instance_id", "camunda_process_instance_url"]
+    )
