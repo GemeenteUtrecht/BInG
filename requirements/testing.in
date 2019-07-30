@@ -3,4 +3,5 @@ coverage
 factory_boy
 freezegun
 isort
+requests_mock
 tblib
