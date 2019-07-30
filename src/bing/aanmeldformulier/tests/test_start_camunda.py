@@ -91,3 +91,10 @@ class CamundaStartTests(TestCase):
             "withVariablesInReturn": False,
         }
         self.assertEqual(request.json(), expected_body)
+
+        project.refresh_from_db()
+        self.assertEqual(project.camunda_process_instance_id, instance_id)
+        self.assertEqual(
+            project.camunda_process_instance_url,
+            f"http://localhost:8080/rest-test/process-instance/{instance_id}",
+        )
