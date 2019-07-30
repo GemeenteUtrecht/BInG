@@ -64,6 +64,10 @@ def start_camunda_process(project_id: int) -> None:
         logger.error("Project %d not found in database", project_id)
         return
 
+    if project.camunda_process_instance_id and project.camunda_process_instance_url:
+        logger.warning("Not re-triggering camunda process for project %s!", project_id)
+        return
+
     config = BInGConfig.get_solo()
     client = Camunda()
 
