@@ -11,8 +11,8 @@
         {% load_widgets form='snippets/forms.html' %}
 
         <fieldset class="fieldset">
-            {% form_field form.project_id %}
             {% form_field form.name %}
+            {% form_field form.project_id %}
 
             {% widget 'form:required-fields' %}
         </fieldset>

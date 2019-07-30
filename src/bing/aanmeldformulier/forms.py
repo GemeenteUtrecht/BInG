@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.files import temp as tempfile
 from django.template.defaultfilters import date
 from django.utils import timezone
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from bing.config.models import BInGConfig, RequiredDocuments
@@ -22,6 +23,7 @@ class ProjectGetOrCreateForm(forms.ModelForm):
     project_id = forms.CharField(
         label=_("Project-ID"),
         max_length=Project._meta.get_field("project_id").max_length,
+        required=False,
     )
 
     class Meta:
@@ -30,16 +32,15 @@ class ProjectGetOrCreateForm(forms.ModelForm):
         labels = {"name": _("Projectnaam")}
 
     def save(self, *args, **kwargs):
-        # look up the project if it already exists
-        project = Project.objects.filter(
-            project_id=self.cleaned_data["project_id"]
-        ).first()
-        if project is None:
-            self.instance.project_id = self.cleaned_data["project_id"]
-            project = super().save(*args, **kwargs)
+        project_id = self.cleaned_data["project_id"] or slugify(
+            self.cleaned_data["name"]
+        )
 
-        # FIXME: should only happen after final submission!
-        project.ensure_zaak()
+        # look up the project if it already exists
+        project = Project.objects.filter(project_id=project_id).first()
+        if project is None:
+            self.instance.project_id = project_id
+            project = super().save(*args, **kwargs)
 
         return project
 
