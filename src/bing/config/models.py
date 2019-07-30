@@ -108,6 +108,17 @@ class BInGConfig(SingletonModel):
         ),
     )
 
+    # camunda
+    aanvraag_process_key = models.CharField(
+        _("aanvraag process key"),
+        max_length=100,
+        blank=True,
+        help_text=_(
+            "Na het indienen van een BInG-aanvraag wordt een instantie "
+            "van een procesdefinitie met deze key opgestart."
+        ),
+    )
+
     class Meta:
         verbose_name = _("BInG configuratie")
 

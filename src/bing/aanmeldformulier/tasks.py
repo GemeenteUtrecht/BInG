@@ -4,10 +4,11 @@ import os
 
 from django.utils import timezone
 
+from bing.camunda.client import Camunda
 from bing.celery import app
 from bing.config.models import BInGConfig
 from bing.config.service import get_drc_client
-from bing.projects.models import ProjectAttachment
+from bing.projects.models import Project, ProjectAttachment
 
 logger = logging.getLogger(__name__)
 
@@ -56,4 +57,15 @@ def add_project_attachment(attachment_id: int, filename: str, temp_file: str):
 
 @app.task
 def start_camunda_process(project_id: int) -> None:
-    pass
+    try:
+        project = Project.objects.get(id=project_id)
+    except Project.DoesNotExist:
+        logger.error("Project %d not found in database", project_id)
+        return
+
+    config = BInGConfig.get_solo()
+
+    client = Camunda()
+    response = client.request(
+        f"process-definition/key/{config.aanvraag_process_key}/start", method="POST"
+    )

@@ -18,6 +18,7 @@ class CamundaStartTests(TestCase):
         api_config.save()
 
         bing_config = BInGConfig.get_solo()
+        bing_config.aanvraag_process_key = "bing"
         bing_config.save()
 
     def test_full_project(self):

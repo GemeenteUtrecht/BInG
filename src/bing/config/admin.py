@@ -1,8 +1,10 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.admin import widgets
 
 from solo.admin import SingletonModelAdmin
 
+from bing.camunda.models import ProcessDefinition
 from bing.service.ztc import get_aanvraag_iot
 
 from .models import APIConfig, BInGConfig, RequiredDocuments, URLRewrite
@@ -15,11 +17,20 @@ class APIConfigAdmin(SingletonModelAdmin):
 
 @admin.register(BInGConfig)
 class BInGConfigAdmin(SingletonModelAdmin):
-    pass
-
-
-def get_informatieobjecttype_choices() -> list:
-    return [("foo", "bar")]
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == "aanvraag_process_key":
+            definition_keys = list(
+                ProcessDefinition.objects.values_list("key", "name").distinct("key")
+            )
+            choices = [("", "-------")] + definition_keys
+            return forms.ChoiceField(
+                label=db_field.verbose_name.capitalize(),
+                widget=widgets.AdminRadioSelect(),
+                choices=choices,
+                required=False,
+                help_text=db_field.help_text,
+            )
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
 @admin.register(RequiredDocuments)
