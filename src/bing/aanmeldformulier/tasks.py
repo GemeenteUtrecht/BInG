@@ -100,3 +100,11 @@ def start_camunda_process(project_id: int) -> None:
         method="POST",
         json=body,
     )
+
+    project.camunda_process_instance_id = response["id"]
+
+    self_rel = next((link for link in response["links"] if link["rel"] == "self"))
+    project.camunda_process_instance_url = self_rel["href"]
+    project.save(
+        update_fields=["camunda_process_instance_id", "camunda_process_instance_url"]
+    )

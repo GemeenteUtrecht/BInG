@@ -45,6 +45,14 @@ class Project(models.Model):
         help_text=_("Specify during which meeting the project will be discussed."),
     )
 
+    # track camunda references
+    camunda_process_instance_id = models.CharField(
+        _("process instance ID"), max_length=100, unique=True, blank=True
+    )
+    camunda_process_instance_url = models.URLField(
+        _("process instance URL"), unique=True, blank=True
+    )
+
     class Meta:
         verbose_name = _("project")
         verbose_name_plural = _("projects")
