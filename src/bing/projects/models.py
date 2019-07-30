@@ -47,10 +47,15 @@ class Project(models.Model):
 
     # track camunda references
     camunda_process_instance_id = models.CharField(
-        _("process instance ID"), max_length=100, unique=True, blank=True
+        _("process instance ID"),
+        max_length=100,
+        unique=True,
+        blank=True,
+        null=True,
+        default=None,
     )
     camunda_process_instance_url = models.URLField(
-        _("process instance URL"), unique=True, blank=True
+        _("process instance URL"), unique=True, blank=True, null=True, default=None
     )
 
     class Meta:
