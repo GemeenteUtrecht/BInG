@@ -12,6 +12,6 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(ProjectAttachment)
 class ProjectAttachmentAdmin(admin.ModelAdmin):
-    list_display = ("project", "eio_url")
+    list_display = ("project", "eio_url", "celery_task_id")
     list_filter = ("project",)
     list_select_related = ("project",)

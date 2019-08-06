@@ -96,7 +96,7 @@ class ProjectAttachmentForm(forms.ModelForm):
                 (io_type, label)
                 for io_type, label in io_types
                 if io_type in io_types_config.informatieobjecttypen
-                and io_type == self.initial["io_type"]
+                and io_type == self.initial["io_type"]  # noqa (black puts it like that)
             ]
 
         self.fields["io_type"].choices = io_types
@@ -116,7 +116,9 @@ class ProjectAttachmentForm(forms.ModelForm):
             temp_file.write(self.cleaned_data["attachment"].read())
 
         # handle the rest in Celery
-        upload_document.delay(attachment.id, name, temp_file.name)
+        async_result = upload_document.delay(attachment.id, name, temp_file.name)
+        attachment.celery_task_id = async_result.task_id
+        attachment.save(update_fields=["celery_task_id"])
 
         return attachment
 

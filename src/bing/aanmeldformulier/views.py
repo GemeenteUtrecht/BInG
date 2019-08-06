@@ -194,3 +194,8 @@ class ConfirmationView(ProjectMixin, TemplateView):
 
     template_name = "aanmeldformulier/confirmation.html"
     current_step = Steps.confirmation
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        del self.request.session[PROJECT_SESSION_KEY]
+        return response
