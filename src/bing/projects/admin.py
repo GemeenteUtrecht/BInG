@@ -5,7 +5,7 @@ from .models import Project, ProjectAttachment
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ("project_id", "name", "zaak")
+    list_display = ("project_id", "name", "zaak", "camunda_process_instance_url")
     list_filter = ("created", "meeting")
     search_fields = ("project_id", "name", "zaak")
 

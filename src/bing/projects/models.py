@@ -1,5 +1,6 @@
 import concurrent.futures
 import logging
+import warnings
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -69,6 +70,8 @@ class Project(models.Model):
         """
         Ensure a 'Zaak' is created for this project.
         """
+        warnings.warn("The ZAAK object should be created via Camunda", DeprecationWarning)
+
         if self.zaak:
             return
 
