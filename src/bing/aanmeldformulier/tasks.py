@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 @app.task
-def add_project_attachment(attachment_id: int, filename: str, temp_file: str):
+def upload_document(attachment_id: int, filename: str, temp_file: str):
     try:
         attachment = ProjectAttachment.objects.select_related("project").get(
             id=attachment_id

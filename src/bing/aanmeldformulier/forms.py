@@ -14,7 +14,7 @@ from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.service.ztc import get_aanvraag_iot
 
-from .tasks import add_project_attachment
+from .tasks import upload_document
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +116,7 @@ class ProjectAttachmentForm(forms.ModelForm):
             temp_file.write(self.cleaned_data["attachment"].read())
 
         # handle the rest in Celery
-        add_project_attachment.delay(attachment.id, name, temp_file.name)
+        upload_document.delay(attachment.id, name, temp_file.name)
 
         return attachment
 
