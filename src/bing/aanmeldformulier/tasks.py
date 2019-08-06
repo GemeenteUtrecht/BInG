@@ -77,25 +77,22 @@ def start_camunda_process(project_id: int) -> None:
         "businessKey": f"bing-project-{project.project_id}",
         "withVariablesInReturn": False,
         "variables": {
-            "zaaktype": {"value": config.zaaktype_aanvraag, "type": "String"},
-            "project_id": {"value": project.project_id, "type": "String"},
-            "datum_ingediend": {
-                "value": timezone.now().date().isoformat(),
-                "type": "Date",
+            "zaak": {
+                "type": "Json",
+                "value": json.dumps(
+                    {
+                        "bronorganisatie": config.organisatie_rsin,
+                        "identificatie": f"BING-{project.project_id}",
+                        "zaaktype": config.zaaktype_aanvraag,
+                        "verantwoordelijkeOrganisatie": config.organisatie_rsin,
+                        "startdatum": timezone.now().date().isoformat(),
+                        "omschrijving": f"BInG aanvraag voor {project.name}",
+                    }
+                ),
             },
-            "naam": {"value": project.name, "type": "String"},
+            "projectId": {"value": project.project_id, "type": "String"},
             "toetswijze": {"value": project.toetswijze, "type": "String"},
             "documenten": {"value": json.dumps(documents), "type": "Json"},
-            "meeting_datum": {
-                "value": project.meeting.start.date().isoformat()
-                if project.meeting_id
-                else None,
-                "type": "Date",
-            },
-            "meeting_zaak": {
-                "value": project.meeting.zaak if project.meeting_id else None,
-                "type": "String",
-            },
         },
     }
 

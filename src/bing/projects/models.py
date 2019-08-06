@@ -70,7 +70,9 @@ class Project(models.Model):
         """
         Ensure a 'Zaak' is created for this project.
         """
-        warnings.warn("The ZAAK object should be created via Camunda", DeprecationWarning)
+        warnings.warn(
+            "The ZAAK object should be created via Camunda", DeprecationWarning
+        )
 
         if self.zaak:
             return

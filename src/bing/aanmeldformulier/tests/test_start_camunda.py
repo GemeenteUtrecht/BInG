@@ -34,6 +34,7 @@ class CamundaStartTests(TestCase):
 
         See: https://docs.camunda.org/manual/7.9/reference/rest/process-definition/post-start-process-instance/
         """
+        config = BInGConfig.get_solo()
         meeting = MeetingFactory.create()
         project = ProjectFactory.create(meeting=meeting)
         attachment = ProjectAttachmentFactory.create(project=project)
@@ -71,24 +72,29 @@ class CamundaStartTests(TestCase):
         )
 
         expected_body = {
+            "businessKey": f"bing-project-{project.project_id}",
+            "withVariablesInReturn": False,
             "variables": {
-                "zaaktype": {"value": self.zaaktype, "type": "String"},
-                "project_id": {"value": project.project_id, "type": "String"},
-                "datum_ingediend": {"value": "2019-07-30", "type": "Date"},
-                "naam": {"value": project.name, "type": "String"},
+                "zaak": {
+                    "type": "Json",
+                    "value": json.dumps(
+                        {
+                            "bronorganisatie": config.organisatie_rsin,
+                            "identificatie": f"BING-{project.project_id}",
+                            "zaaktype": config.zaaktype_aanvraag,
+                            "verantwoordelijkeOrganisatie": config.organisatie_rsin,
+                            "startdatum": "2019-07-30",
+                            "omschrijving": f"BInG aanvraag voor {project.name}",
+                        }
+                    ),
+                },
+                "projectId": {"value": project.project_id, "type": "String"},
                 "toetswijze": {"value": project.toetswijze, "type": "String"},
                 "documenten": {
                     "value": json.dumps([attachment.eio_url]),
                     "type": "Json",
                 },
-                "meeting_datum": {
-                    "value": meeting.start.date().isoformat(),
-                    "type": "Date",
-                },
-                "meeting_zaak": {"value": meeting.zaak, "type": "String"},
             },
-            "businessKey": f"bing-project-{project.project_id}",
-            "withVariablesInReturn": False,
         }
         self.assertEqual(request.json(), expected_body)
 
