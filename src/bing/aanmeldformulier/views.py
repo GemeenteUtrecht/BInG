@@ -178,7 +178,7 @@ class MeetingView(ProjectMixin, UpdateView):
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
-        response = super().form_valid()
+        response = super().form_valid(form)
         start_camunda_process.delay(self.object.id)
         return response
 
