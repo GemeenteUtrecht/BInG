@@ -80,7 +80,7 @@ class CamundaStartTests(TestCase):
                     "value": json.dumps(
                         {
                             "bronorganisatie": config.organisatie_rsin,
-                            "identificatie": f"BING-{project.project_id}",
+                            "identificatie": f"BInG-{project.project_id}",
                             "zaaktype": config.zaaktype_aanvraag,
                             "verantwoordelijkeOrganisatie": config.organisatie_rsin,
                             "startdatum": "2019-07-30",

@@ -82,7 +82,7 @@ def start_camunda_process(project_id: int) -> None:
                 "value": json.dumps(
                     {
                         "bronorganisatie": config.organisatie_rsin,
-                        "identificatie": f"BING-{project.project_id}",
+                        "identificatie": project.zaak_identificatie,
                         "zaaktype": config.zaaktype_aanvraag,
                         "verantwoordelijkeOrganisatie": config.organisatie_rsin,
                         "startdatum": timezone.now().date().isoformat(),

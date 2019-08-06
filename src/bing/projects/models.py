@@ -66,6 +66,10 @@ class Project(models.Model):
     def __str__(self):
         return f"{self.project_id} | {self.name}"
 
+    @property
+    def zaak_identificatie(self) -> str:
+        return f"BInG-{self.project_id}"
+
     def ensure_zaak(self):
         """
         Ensure a 'Zaak' is created for this project.
@@ -92,7 +96,7 @@ class Project(models.Model):
             "zaak",
             {
                 "bronorganisatie": config.organisatie_rsin,
-                "identificatie": f"BING-{self.project_id}",
+                "identificatie": self.zaak_identificatie,
                 "zaaktype": zaaktype_url,
                 "verantwoordelijkeOrganisatie": config.organisatie_rsin,
                 "startdatum": startdatum,
