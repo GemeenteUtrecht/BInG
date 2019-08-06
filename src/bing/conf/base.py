@@ -271,6 +271,7 @@ SHOW_ALERT = True
 # CELERY
 #
 CELERY_BROKER_URL = get_redis_db_url(db=0)
+CELERY_RESULT_BACKEND = get_redis_db_url(db=1)
 
 # Django-Axes (4.0+)
 #

@@ -5,6 +5,8 @@ import os
 
 from django.utils import timezone
 
+from celery.result import AsyncResult, ResultSet
+
 from bing.camunda.client import Camunda
 from bing.celery import app
 from bing.config.models import BInGConfig
@@ -64,6 +66,17 @@ def start_camunda_process(project_id: int) -> None:
         logger.error("Project %d not found in database", project_id)
         return
 
+    attachments = list(
+        project.projectattachment_set.values_list("eio_url", "celery_task_id")
+    )
+
+    # check that the file uploads have completed
+    results = [AsyncResult(attachment["celery_task_id"]) for attachment in attachments]
+    group_result = ResultSet(results=results)
+    if not group_result.ready():
+        start_camunda_process.delay(project_id, countdown=1)
+        return
+
     if project.camunda_process_instance_id and project.camunda_process_instance_url:
         logger.warning("Not re-triggering camunda process for project %s!", project_id)
         return
@@ -71,7 +84,7 @@ def start_camunda_process(project_id: int) -> None:
     config = BInGConfig.get_solo()
     client = Camunda()
 
-    documents = list(project.projectattachment_set.values_list("eio_url", flat=True))
+    documents = [attachment["eio_url"] for attachment in attachments]
 
     body = {
         "businessKey": f"bing-project-{project.project_id}",
