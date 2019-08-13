@@ -4,6 +4,7 @@ import os
 from django.urls import reverse_lazy
 
 from .utils import get_redis_db_url
+from .api import *  # noqa
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 DJANGO_PROJECT_DIR = os.path.abspath(
@@ -54,6 +55,8 @@ INSTALLED_APPS = [
     # 'django.contrib.sitemaps',
     # External applications.
     "axes",
+    "rest_framework",
+    "rest_framework.authtoken",
     "sniplates",
     "solo",
     "hijack",
