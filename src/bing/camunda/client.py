@@ -1,6 +1,8 @@
+import copy
 from urllib.parse import urljoin
 
 import requests
+from zds_client.client import Client
 
 from bing.config.models import APIConfig
 
@@ -19,5 +21,22 @@ class Camunda:
     def request(self, path: str, method="GET", *args, **kwargs):
         url = urljoin(self.root_url, path)
         response = requests.request(method, url, *args, **kwargs)
-        response.raise_for_status()
-        return response.json()
+        response_json = None
+
+        try:
+            response.raise_for_status()
+            response_json = response.json()
+            return response_json
+        except Exception:
+            raise
+        finally:
+            Client._log.add(
+                "camunda",
+                url,
+                method,
+                kwargs.get("headers") or {},
+                copy.deepcopy(kwargs.get("data", kwargs.get("json", None))),
+                response.status_code,
+                dict(response.headers),
+                response_json,
+            )
