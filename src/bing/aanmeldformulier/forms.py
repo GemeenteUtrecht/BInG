@@ -12,9 +12,8 @@ from django.utils.translation import ugettext_lazy as _
 from bing.config.models import BInGConfig, RequiredDocuments
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
+from bing.projects.tasks import upload_document
 from bing.service.ztc import get_aanvraag_iot
-
-from .tasks import upload_document
 
 logger = logging.getLogger(__name__)
 

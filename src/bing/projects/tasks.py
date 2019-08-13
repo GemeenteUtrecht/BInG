@@ -67,14 +67,16 @@ def start_camunda_process(project_id: int) -> None:
         return
 
     attachments = list(
-        project.projectattachment_set.values_list("eio_url", "celery_task_id")
+        project.projectattachment_set.values("eio_url", "celery_task_id")
     )
 
     # check that the file uploads have completed
-    results = [AsyncResult(attachment["celery_task_id"]) for attachment in attachments]
+    results = [
+        AsyncResult(str(attachment["celery_task_id"])) for attachment in attachments
+    ]
     group_result = ResultSet(results=results)
     if not group_result.ready():
-        start_camunda_process.delay(project_id, countdown=1)
+        start_camunda_process.apply_async(args=(project_id,), countdown=1.0)
         return
 
     if project.camunda_process_instance_id and project.camunda_process_instance_url:
