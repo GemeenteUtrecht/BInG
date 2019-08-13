@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.urls import reverse_lazy
 from django.utils import timezone
 
@@ -45,8 +47,13 @@ class ZaakCreationTests(APITestCase):
 
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token}")
 
-    def test_project_sync(self):
+    @patch("bing.webhooks.handlers.get_zrc_client")
+    def test_project_sync(self, mock_get_zrc_client):
         project = ProjectFactory.create(project_id="dummy", zaak="")
+        mock_get_zrc_client.return_value.retrieve.return_value = {
+            "url": "http://gemma-zrc.k8s.dc1.proeftuin.utrecht.nl/api/v1/zaken/9a32b9ba-cf41-4c35-984e-0f964700aa73",
+            "identificatie": project.zaak_identificatie,
+        }
 
         response = self.client.post(self.url, NOTIFICATION)
 
