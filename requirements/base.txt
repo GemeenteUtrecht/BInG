@@ -4,8 +4,11 @@
 #
 #    pip-compile --no-index requirements/base.in
 #
+-e git+https://github.com/vbabiy/djangorestframework-camel-case.git@master#egg=djangorestframework-camel-case
 amqp==2.4.2               # via kombu
+attrs==19.1.0             # via glom
 billiard==3.6.0.0         # via celery
+boltons==19.1.0           # via face, glom
 celery==4.3.0
 certifi==2019.3.9         # via requests
 chardet==3.0.4            # via requests
@@ -23,9 +26,10 @@ django-rosetta==0.9.3
 django-sniplates==0.6.0
 django-solo==1.1.3
 django==2.2.4
-djangorestframework-camel-case==1.0.3
 djangorestframework==3.10.2
+face==19.1.2              # via glom
 gemma-zds-client==0.11.0
+glom==19.2.0
 idna==2.8                 # via requests
 kombu==4.5.0              # via celery
 pillow==6.0.0
