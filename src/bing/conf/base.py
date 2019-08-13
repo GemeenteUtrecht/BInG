@@ -14,6 +14,8 @@ BASE_DIR = os.path.abspath(
     os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir)
 )
 
+SITE_ID = int(os.getenv("SITE_ID", 1))
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -44,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.sessions",
     # Note: If enabled, at least one Site object is required
-    # 'django.contrib.sites',
+    "django.contrib.sites",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Optional applications.
@@ -73,6 +75,7 @@ INSTALLED_APPS = [
     "bing.meetings",
     "bing.cache",
     "bing.utils",
+    "bing.webhooks",
 ]
 
 MIDDLEWARE = [
