@@ -20,4 +20,8 @@ django-sniplates
 django-solo
 django-redis
 
+# API
+djangorestframework
+djangorestframework-camel-case
+
 celery
