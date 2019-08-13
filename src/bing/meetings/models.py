@@ -15,7 +15,7 @@ EIGENSCHAP_DATUM = "Vergaderdatum"
 
 class Meeting(models.Model):
     start = models.DateTimeField(_("start"))
-    end = models.DateTimeField(_("start"))
+    end = models.DateTimeField(_("end"))
 
     created = models.DateTimeField(_("created"), auto_now_add=True)
 
