@@ -1,4 +1,5 @@
 import copy
+import time
 from urllib.parse import urljoin
 
 import requests
@@ -20,6 +21,7 @@ class Camunda:
 
     def request(self, path: str, method="GET", *args, **kwargs):
         url = urljoin(self.root_url, path)
+        start = time.time()
         response = requests.request(method, url, *args, **kwargs)
         response_json = None
 
@@ -30,6 +32,7 @@ class Camunda:
         except Exception:
             raise
         finally:
+            duration = time.time() - start
             Client._log.add(
                 "camunda",
                 url,
@@ -40,3 +43,4 @@ class Camunda:
                 dict(response.headers),
                 response_json,
             )
+            Client._log._entries[-1]["duration"] = int(duration * 1000)  # in ms
