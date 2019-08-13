@@ -12,9 +12,8 @@ from django.utils.translation import ugettext_lazy as _
 from bing.config.models import BInGConfig, RequiredDocuments
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
+from bing.projects.tasks import upload_document
 from bing.service.ztc import get_aanvraag_iot
-
-from .tasks import add_project_attachment
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +95,7 @@ class ProjectAttachmentForm(forms.ModelForm):
                 (io_type, label)
                 for io_type, label in io_types
                 if io_type in io_types_config.informatieobjecttypen
-                and io_type == self.initial["io_type"]
+                and io_type == self.initial["io_type"]  # noqa (black puts it like that)
             ]
 
         self.fields["io_type"].choices = io_types
@@ -116,7 +115,9 @@ class ProjectAttachmentForm(forms.ModelForm):
             temp_file.write(self.cleaned_data["attachment"].read())
 
         # handle the rest in Celery
-        add_project_attachment.delay(attachment.id, name, temp_file.name)
+        async_result = upload_document.delay(attachment.id, name, temp_file.name)
+        attachment.celery_task_id = async_result.task_id
+        attachment.save(update_fields=["celery_task_id"])
 
         return attachment
 

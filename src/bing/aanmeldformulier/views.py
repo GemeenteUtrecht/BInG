@@ -11,6 +11,7 @@ from extra_views import ModelFormSetView
 from bing.config.models import RequiredDocuments
 from bing.projects.constants import Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
+from bing.projects.tasks import start_camunda_process
 from bing.service.ztc import get_aanvraag_iot
 
 from .constants import PROJECT_SESSION_KEY, Steps
@@ -23,7 +24,6 @@ from .forms import (
     ProjectPlanfaseForm,
     ProjectToetswijzeForm,
 )
-from .tasks import start_camunda_process
 
 logger = logging.getLogger(__name__)
 
@@ -194,3 +194,8 @@ class ConfirmationView(ProjectMixin, TemplateView):
 
     template_name = "aanmeldformulier/confirmation.html"
     current_step = Steps.confirmation
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        del self.request.session[PROJECT_SESSION_KEY]
+        return response

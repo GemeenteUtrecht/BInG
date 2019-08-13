@@ -1,5 +1,6 @@
 import json
 import uuid
+from unittest.mock import patch
 
 from django.test import TestCase
 
@@ -8,9 +9,8 @@ from freezegun import freeze_time
 
 from bing.config.models import APIConfig, BInGConfig
 from bing.meetings.tests.factories import MeetingFactory
+from bing.projects.tasks import start_camunda_process
 from bing.projects.tests.factories import ProjectAttachmentFactory, ProjectFactory
-
-from ..tasks import start_camunda_process
 
 
 class CamundaStartTests(TestCase):
@@ -60,7 +60,8 @@ class CamundaStartTests(TestCase):
                     "suspended": False,
                 },
             )
-            start_camunda_process(project.id)
+            with patch("bing.projects.tasks.ResultSet.ready", return_value=True):
+                start_camunda_process(project.id)
 
         request = m.last_request
         self.assertIsNotNone(request)

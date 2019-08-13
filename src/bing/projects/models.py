@@ -184,6 +184,10 @@ class ProjectAttachment(models.Model):
     io_type = models.URLField(_("document type"), blank=True)
     eio_url = models.URLField(_("enkelvoudig informatieobject URL"), blank=True)
 
+    celery_task_id = models.UUIDField(
+        _("celery task id"), editable=False, blank=True, null=True
+    )
+
     class Meta:
         verbose_name = _("project attachment")
         verbose_name_plural = _("project attachments")
