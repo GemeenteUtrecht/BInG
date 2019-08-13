@@ -34,6 +34,9 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
+    # own API
+    path("api/", include("bing.webhooks.api.urls")),
+    # web views
     path("", TemplateView.as_view(template_name="index.html"), name="index"),
     path("aanmelden/", include("bing.aanmeldformulier.urls")),
     path("medewerkers/", include("bing.medewerkers.urls")),
