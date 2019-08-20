@@ -93,7 +93,7 @@ def start_camunda_process(project_id: int) -> None:
         "withVariablesInReturn": False,
         "variables": {
             "zaak": {
-                "type": "Json",
+                "type": "json",
                 "value": json.dumps(
                     {
                         "bronorganisatie": config.organisatie_rsin,
@@ -104,6 +104,10 @@ def start_camunda_process(project_id: int) -> None:
                         "omschrijving": f"BInG aanvraag voor {project.name}",
                     }
                 ),
+                "valueInfo": {
+                    "serializationDataFormat": "application/json",
+                    "objectTypeName": "com.gemeenteutrecht.processplatform.domain.impl.ZaakImpl",
+                },
             },
             "projectId": {"value": project.project_id, "type": "String"},
             "toetswijze": {"value": project.toetswijze, "type": "String"},

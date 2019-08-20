@@ -77,7 +77,7 @@ class CamundaStartTests(TestCase):
             "withVariablesInReturn": False,
             "variables": {
                 "zaak": {
-                    "type": "Json",
+                    "type": "json",
                     "value": json.dumps(
                         {
                             "bronorganisatie": config.organisatie_rsin,
@@ -88,6 +88,10 @@ class CamundaStartTests(TestCase):
                             "omschrijving": f"BInG aanvraag voor {project.name}",
                         }
                     ),
+                    "valueInfo": {
+                        "serializationDataFormat": "application/json",
+                        "objectTypeName": "com.gemeenteutrecht.processplatform.domain.impl.ZaakImpl",
+                    },
                 },
                 "projectId": {"value": project.project_id, "type": "String"},
                 "toetswijze": {"value": project.toetswijze, "type": "String"},
