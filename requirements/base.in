@@ -1,4 +1,5 @@
 pip-tools
+glom
 psycopg2
 Pillow
 pytz
@@ -19,5 +20,10 @@ django-rosetta
 django-sniplates
 django-solo
 django-redis
+
+# API
+djangorestframework
+# djangorestframework-camel-case
+-e git+https://github.com/vbabiy/djangorestframework-camel-case.git@master#egg=djangorestframework-camel-case
 
 celery

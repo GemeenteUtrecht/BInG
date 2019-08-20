@@ -56,6 +56,14 @@ class APIConfig(SingletonModel):
         related_name="+",
         limit_choices_to={"api_type": APITypes.brc},
     )
+    nrc = models.ForeignKey(
+        "zgw_consumers.Service",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        limit_choices_to={"api_type": APITypes.nrc},
+    )
 
     camunda_root = models.URLField(
         _("camunda root"),

@@ -7,8 +7,9 @@ from bing.config.models import BInGConfig
 from bing.config.service import get_zrc_client
 from bing.projects.models import Project
 
+from ...utils import match_project_id
+
 RE_NAME = re.compile(r"BInG aanvraag voor (?P<name>.*)")
-RE_PROJECT_ID = re.compile(r"BING-(?P<project_id>.*)")
 
 
 class Command(BaseCommand):
@@ -26,13 +27,7 @@ class Command(BaseCommand):
         ]  # TODO: handle extra pages
 
         for zaak in zaken:
-            match_project_id = RE_PROJECT_ID.match(zaak["identificatie"])
-            project_id = (
-                match_project_id.group("project_id")
-                if match_project_id
-                else str(uuid.uuid4())
-            )
-
+            project_id = match_project_id(zaak["identificatie"]) or str(uuid.uuid4())
             match_name = RE_NAME.match(zaak["omschrijving"])
             name = match_name.group("name") if match_name else "UNKNOWN"
 
