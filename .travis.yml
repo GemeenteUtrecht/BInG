@@ -32,3 +32,10 @@ script:
 
 after_success:
   - codecov
+
+deploy:
+  provider: script
+  script: bash docker_push.sh
+  on:
+    branch: develop
+    tags: true
