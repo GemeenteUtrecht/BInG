@@ -2,4 +2,4 @@
 
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-./bin/release_docker_image.sh
+JOB_NAME=push ./bin/release_docker_image.sh
