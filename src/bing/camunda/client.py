@@ -1,8 +1,9 @@
 import copy
 import time
-from typing import Dict
+from typing import Dict, List, Union
 from urllib.parse import urljoin
 
+import inflection
 import requests
 from zds_client.client import Client
 
@@ -67,7 +68,7 @@ class Camunda:
         try:
             response.raise_for_status()
             response_json = response.json()
-            return response_json
+            return underscoreize(response_json)
         except Exception:
             raise
         finally:
@@ -83,3 +84,17 @@ class Camunda:
                 response_json,
             )
             Client._log._entries[-1]["duration"] = int(duration * 1000)  # in ms
+
+
+def underscoreize(data: Union[List, Dict, str, None]) -> Union[List, Dict, str, None]:
+    if isinstance(data, list):
+        return [underscoreize(item) for item in data]
+
+    if isinstance(data, dict):
+        new_data = {}
+        for key, value in data.items():
+            new_key = inflection.underscore(key)
+            new_data[new_key] = underscoreize(value)
+        return new_data
+
+    return data

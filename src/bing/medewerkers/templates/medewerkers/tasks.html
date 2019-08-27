@@ -28,5 +28,11 @@
         moeten worden.
     </p>
 
+    <ul>
+        {% for task in tasks %}
+            <li>{{ task }}</li>
+        {% endfor %}
+    </ul>
+
 </div>
 {% endblock page-content %}

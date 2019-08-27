@@ -18,6 +18,7 @@ from django.views.generic.edit import FormMixin
 from bing.meetings.models import Meeting
 from bing.projects.models import Project, ProjectAttachment
 from bing.service.brc import fetch_besluiten
+from bing.service.camunda import get_aanvraag_tasks
 from bing.service.drc import fetch_document, stream_inhoud
 from bing.service.zrc import fetch_resultaat, fetch_status, fetch_zaak, fetch_zaken
 
@@ -218,4 +219,5 @@ class UserTasksView(LoginRequiredMixin, TemplateView):
     template_name = "medewerkers/tasks.html"
 
     def get_context_data(self, **kwargs) -> dict:
+        kwargs["tasks"] = get_aanvraag_tasks()
         return super().get_context_data(**kwargs)

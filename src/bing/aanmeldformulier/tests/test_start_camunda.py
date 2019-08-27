@@ -93,7 +93,7 @@ class CamundaStartTests(TestCase):
                     ],
                     "id": instance_id,
                     "definitionId": "aProcessDefinitionId",
-                    "businessKey": f"bing-project-{project.project_id}",
+                    "businessKey": f"bing-aanvraag",
                     "tenantId": None,
                     "ended": False,
                     "suspended": False,
@@ -112,7 +112,7 @@ class CamundaStartTests(TestCase):
         )
 
         expected_body = {
-            "businessKey": f"bing-project-{project.project_id}",
+            "businessKey": f"bing-aanvraag",
             "withVariablesInReturn": False,
             "variables": {
                 "zaak": {

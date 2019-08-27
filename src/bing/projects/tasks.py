@@ -89,7 +89,7 @@ def start_camunda_process(project_id: int) -> None:
     documents = [attachment["eio_url"] for attachment in attachments]
 
     body = {
-        "businessKey": f"bing-project-{project.project_id}",
+        "businessKey": f"bing-aanvraag",
         "withVariablesInReturn": False,
         "variables": {
             "zaak": {
