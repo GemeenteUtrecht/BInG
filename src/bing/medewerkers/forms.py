@@ -9,6 +9,7 @@ from django.template.defaultfilters import date
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from bing.camunda.client_models import Task
 from bing.config.models import RequiredDocuments
 from bing.meetings.models import Meeting
 from bing.meetings.tasks import (
@@ -88,6 +89,7 @@ class ProjectUpdateForm(forms.ModelForm):
             )
             transaction.on_commit(lambda: project.notify(msg))
 
+        # TODO: move this logic to camunda
         should_clear_meeting = self.cleaned_data["toetswijze"] == Toetswijzen.versneld
 
         # TODO: doorlooptijd zaak aanpassen
@@ -121,7 +123,7 @@ class ProjectUpdateForm(forms.ModelForm):
 
         project = super().save(commit=commit, *args, **kwargs)
 
-        meeting = self.cleaned_data["meeting"]
+        meeting = self.cleaned_data.get("meeting")
         if not commit:
             return project
 
@@ -142,6 +144,27 @@ class ProjectUpdateForm(forms.ModelForm):
                 add_project_to_meeting.delay(meeting.id, project.id)
 
             transaction.on_commit(change_meeting)
+
+        return project
+
+
+class ProjectProcedureForm(ProjectUpdateForm):
+    def __init__(self, task: Task, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        del self.fields["planfase"]
+        del self.fields["meeting"]
+
+        self.task = task
+
+    @transaction.atomic
+    def save(self, *args, **kwargs) -> Project:
+        project = super().save(*args, **kwargs)
+
+        # update task in camunda
+        self.task.claim()
+        # TODO: should use form-variables?
+        self.task.complete({"Procedure": project.toetswijze.capitalize()})
 
         return project
 

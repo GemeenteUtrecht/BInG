@@ -1,0 +1,45 @@
+{% extends "medewerkers/base.html" %}
+{% load sniplates %}
+
+
+{% block subtitle %}Project: {{ object.name }} ({{ object.project_id }}){% endblock subtitle %}
+
+{% block breadcrumbs %}
+{% load_widgets crumbs='snippets/breadcrumbs.html' %}
+{% nested_widget 'crumbs:crumbs' %}
+    {% widget 'crumbs:crumb' label=_("BInG") url='/' %}
+
+    {% url 'medewerkers:index' as index_url %}
+    {% widget 'crumbs:crumb' label=_("Medewerkers") url=index_url %}
+
+    {% url 'medewerkers:projects' as projects_url %}
+    {% widget 'crumbs:crumb' label=_("Projecten") url=projects_url %}
+
+{% endnested %}
+{% endblock breadcrumbs %}
+
+
+{% block page-content %}
+<div>
+    <h2>Bepaal of verifieer de toetswijze</h2>
+
+    <p>
+        Eventuele fouten bij de aanmelding kunnen hier rechtgezet worden.
+    </p>
+
+    {# TODO: display documents? #}
+
+    <form action="." method="post">
+        {% csrf_token %}
+        {% load_widgets form='snippets/forms.html' %}
+        <fieldset class="fieldset">
+            {% form_field form.toetswijze %}
+            {% widget 'form:required-fields' %}
+        </fieldset>
+
+        <div class="navigation_buttons">
+            {% widget 'form:submit' text=_("Bevestig") %}
+        </div>
+    </form>
+</div>
+{% endblock page-content %}

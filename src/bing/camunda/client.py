@@ -1,4 +1,5 @@
 import copy
+import logging
 import time
 from typing import Dict, List, Union
 from urllib.parse import urljoin
@@ -15,6 +16,8 @@ from bing.config.service import (
     get_zrc_client,
     get_ztc_client,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def get_api_token_headers() -> Dict[str, str]:
@@ -67,9 +70,16 @@ class Camunda:
 
         try:
             response.raise_for_status()
-            response_json = response.json()
+            if response.content:
+                response_json = response.json()
             return underscoreize(response_json)
         except Exception:
+            try:
+                # see if we can grab any extra output
+                response_json = response.json()
+            except Exception:
+                pass
+            logger.exception("Error: %r", response_json)
             raise
         finally:
             duration = time.time() - start

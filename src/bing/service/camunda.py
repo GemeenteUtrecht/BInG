@@ -1,4 +1,5 @@
-from typing import List, Tuple, Union
+import uuid
+from typing import Any, Dict, List, Tuple, Union
 
 from bing.camunda.client import Camunda
 from bing.camunda.client_models import Task
@@ -28,3 +29,36 @@ def get_aanvraag_tasks() -> List[Tuple[Union[Project, None], Task]]:
     }
 
     return [(projects.get(str(task.process_instance_id)), task) for task in tasks]
+
+
+def get_task(task_id: uuid.UUID) -> Task:
+    client = Camunda()
+    task_data = client.request(f"task/{task_id}")
+    return Task(**task_data)
+
+
+def claim_task(task_id: uuid.UUID) -> None:
+    client = Camunda()
+    client.request(
+        f"task/{task_id}/claim",
+        method="POST",
+        json={
+            # FIXME: should be mapped to actual camunda users
+            # BING _could_ create a service account user, or a user object
+            # for the actual end-user in Camunda
+            "userId": "demo"
+        },
+    )
+
+
+def complete_task(task_id: uuid.UUID, variables: Dict[str, Any]) -> None:
+    client = Camunda()
+
+    # fetch the old state of variables
+    client.request(
+        f"task/{task_id}/complete",
+        method="POST",
+        json={
+            "variables": {name: {"value": value} for name, value in variables.items()}
+        },
+    )

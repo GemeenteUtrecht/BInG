@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     AttachmentDownloadView,
+    DetermineProcedureView,
     IndexView,
     KalenderView,
     LoginView,
@@ -32,4 +33,10 @@ urlpatterns = [
         name="attachment-download",
     ),
     path("tasks/", UserTasksView.as_view(), name="tasks"),
+    # TODO: build a generic task router
+    path(
+        "tasks/<pk>/<uuid:task_id>/",
+        DetermineProcedureView.as_view(),
+        name="task-determine-procedure",
+    ),
 ]

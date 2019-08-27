@@ -2,7 +2,7 @@ from mimetypes import guess_extension
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.db.models import Count, Max
+from django.db.models import Max
 from django.http import StreamingHttpResponse
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -18,14 +18,16 @@ from django.views.generic.edit import FormMixin
 from bing.meetings.models import Meeting
 from bing.projects.models import Project, ProjectAttachment
 from bing.service.brc import fetch_besluiten
-from bing.service.camunda import get_aanvraag_tasks
+from bing.service.camunda import get_aanvraag_tasks, get_task
 from bing.service.drc import fetch_document, stream_inhoud
 from bing.service.zrc import fetch_resultaat, fetch_status, fetch_zaak, fetch_zaken
 
+from .decorators import camunda_task
 from .forms import (
     MeetingForm,
     MeetingStatusForm,
     ProjectBesluitForm,
+    ProjectProcedureForm,
     ProjectStatusForm,
     ProjectUpdateForm,
 )
@@ -180,7 +182,7 @@ class ProjectBesluitCreate(LoginRequiredMixin, UpdateView):
 
 
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):
-    queryset = Project.objects.exclude(zaak="").annotate(num_meetings=Count("meeting"))
+    queryset = Project.objects.exclude(zaak="")
     template_name = "medewerkers/project_form.html"
     form_class = ProjectUpdateForm
     success_url = reverse_lazy("medewerkers:kalender")
@@ -221,3 +223,20 @@ class UserTasksView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs) -> dict:
         kwargs["tasks"] = get_aanvraag_tasks()
         return super().get_context_data(**kwargs)
+
+
+@camunda_task
+class DetermineProcedureView(LoginRequiredMixin, UpdateView):
+    queryset = (
+        Project.objects
+        # .exclude(zaak="")
+        .exclude(camunda_process_instance_id="")
+    )
+    template_name = "medewerkers/determine_procedure.html"
+    form_class = ProjectProcedureForm
+    success_url = reverse_lazy("medewerkers:tasks")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["task"] = get_task(self.kwargs["task_id"])
+        return kwargs
