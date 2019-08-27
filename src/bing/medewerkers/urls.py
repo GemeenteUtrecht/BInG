@@ -10,6 +10,7 @@ from .views import (
     ProjectDetailView,
     ProjectsView,
     ProjectUpdateView,
+    UserTasksView,
 )
 
 app_name = "medewerkers"
@@ -30,4 +31,5 @@ urlpatterns = [
         AttachmentDownloadView.as_view(),
         name="attachment-download",
     ),
+    path("tasks/", UserTasksView.as_view(), name="tasks"),
 ]

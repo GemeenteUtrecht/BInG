@@ -208,3 +208,14 @@ class AttachmentDownloadView(LoginRequiredMixin, BaseDetailView):
         response["Content-Length"] = document["bestandsomvang"]
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response
+
+
+class UserTasksView(LoginRequiredMixin, TemplateView):
+    """
+    Fetch and display the open user tasks in Camunda.
+    """
+
+    template_name = "medewerkers/tasks.html"
+
+    def get_context_data(self, **kwargs) -> dict:
+        return super().get_context_data(**kwargs)

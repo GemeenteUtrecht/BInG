@@ -7,26 +7,14 @@
 {% block page-content %}
     <div class="toptaken">
         <ul>
-            <li>
-                <a href="{% url 'medewerkers:kalender' %}" class="topTasksButton">
-                    <i class="fa fa-calendar fa-2x"></i>
-                    <span>Kalender</span>
-                </a>
-            </li>
+            {% include "medewerkers/includes/top_task_button.html" with url_name='medewerkers:tasks' icon='tasks' label='Taken' only %}
 
-            <li>
-                <a href="{% url 'medewerkers:projects' %}"  class="topTasksButton">
-                    <i class="fa fa-building-o fa-2x"></i>
-                    <span>Projecten</span>
-                </a>
-            </li>
+            {% include "medewerkers/includes/top_task_button.html" with url_name='medewerkers:kalender' icon='calendar' label='Kalender' only %}
 
-            <li>
-                <a href="{% url 'aanmeldformulier:info' %}" class="topTasksButton">
-                    <i class="fa fa-plus fa-2x"></i>
-                    <span>Project aanmelden</span>
-                </a>
-            </li>
+            {% include "medewerkers/includes/top_task_button.html" with url_name='medewerkers:projects' icon='building' label='Projecten' only %}
+
+            {% include "medewerkers/includes/top_task_button.html" with url_name='aanmeldformulier:info' icon='plus' label='Project aanmelden' only %}
+
         </ul>
     </div>
 {% endblock page-content %}
