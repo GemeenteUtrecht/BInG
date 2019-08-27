@@ -21,16 +21,20 @@
 
 {% block page-content %}
 <div>
-    <h2>Taken</h2>
-
     <p>
         Hier vind je de projectaanvragen die door een medewerker behandeld
         moeten worden.
     </p>
 
     <ul>
-        {% for task in tasks %}
-            <li>{{ task }}</li>
+        {% for project, task in tasks %}
+            <li>
+                <a href="{% url 'medewerkers:project-detail' pk=project.pk %}">
+                    {{ project.name }}
+                </a>
+                &bull;
+                <strong>{{ task.name }}</strong>
+            </li>
         {% endfor %}
     </ul>
 
