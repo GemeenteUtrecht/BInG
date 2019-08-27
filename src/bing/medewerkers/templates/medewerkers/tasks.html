@@ -29,16 +29,20 @@
     <ul>
         {% for project, task in tasks %}
             <li>
-                <a href="{% url 'medewerkers:project-detail' pk=project.pk %}">{{ project.name }}</a>
-                <br>
-                <br>
-                {# TODO: generic task routing #}
-                <a href="{% url 'medewerkers:task-determine-procedure' pk=project.pk task_id=task.id %}">
-                    <button>
-                        {{ task.name }}
-                        <i class="fa fa-arrow-right"></i>
-                    </button>
-                </a>
+                {% if project %}
+                    <a href="{% url 'medewerkers:project-detail' pk=project.pk %}">{{ project.name }}</a>
+                    <br>
+                    <br>
+                    {# TODO: generic task routing #}
+                    <a href="{% url 'medewerkers:task-determine-procedure' pk=project.pk task_id=task.id %}">
+                        <button>
+                            {{ task.name }}
+                            <i class="fa fa-arrow-right"></i>
+                        </button>
+                    </a>
+                {% else %}
+                    <span>&lt;project onbekend&gt;: {{ task.name }}</span>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>
