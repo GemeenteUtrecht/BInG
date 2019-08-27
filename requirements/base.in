@@ -1,5 +1,6 @@
 pip-tools
 glom
+inflection
 psycopg2
 Pillow
 pytz

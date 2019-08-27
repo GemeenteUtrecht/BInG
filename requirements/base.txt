@@ -31,6 +31,7 @@ face==19.1.2              # via glom
 gemma-zds-client==0.11.0
 glom==19.2.0
 idna==2.8                 # via requests
+inflection==0.3.1
 kombu==4.5.0              # via celery
 pillow==6.0.0
 pip-tools==4.0.0
