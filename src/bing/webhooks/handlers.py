@@ -1,5 +1,6 @@
 import logging
 
+from bing.config.models import BInGConfig
 from bing.config.service import get_zrc_client
 from bing.projects.models import Project
 from bing.projects.utils import match_project_id
@@ -8,11 +9,15 @@ logger = logging.getLogger(__name__)
 
 
 def update_project_for_new_zaak(zaak_url: str):
-    client = get_zrc_client(scopes=["zds.scopes.zaken.lezen"])
+    config = BInGConfig.get_solo()
+    client = get_zrc_client(
+        scopes=["zds.scopes.zaken.lezen"],
+        zaaktypes=[config.zaaktype_aanvraag, config.zaaktype_vergadering],
+    )
     try:
         zaak = client.retrieve("zaak", url=zaak_url)
     except Exception:
-        logger.exception("Could not retrieve zaak %s", zaak)
+        logger.exception("Could not retrieve zaak %s", zaak_url)
         return
 
     project_id = match_project_id(zaak["identificatie"])
