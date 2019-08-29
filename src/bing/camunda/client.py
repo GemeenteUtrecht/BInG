@@ -4,6 +4,8 @@ import time
 from typing import Dict, List, Union
 from urllib.parse import urljoin
 
+from django.conf import settings
+
 import inflection
 import requests
 from zds_client.client import Client
@@ -45,8 +47,18 @@ def get_api_token_headers() -> Dict[str, str]:
 
 
 class Camunda:
-    def __init__(self, config: APIConfig = None, path: str = "engine-rest/"):
-        assert path.endswith("/"), "path must end with a trailing slash"
+    def __init__(self, config: APIConfig = None, path: str = None):
+        if path is None:
+            path = settings.CAMUNDA_API_ROOT
+
+        if path.startswith("/"):
+            logger.info("Fixing API root path, removing leading slash")
+            path = path[1:]
+
+        if not path.endswith("/"):
+            logger.info("Fixing API root path, appending slash")
+            path = f"{path}/"
+
         config = config or APIConfig.get_solo()
         self._root = config.camunda_root
         self._path = path

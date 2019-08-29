@@ -269,6 +269,8 @@ PROJECT_NAME = "bing"
 ENVIRONMENT = None
 SHOW_ALERT = True
 
+CAMUNDA_API_ROOT = os.getenv("CAMUNDA_API_ROOT", "engine-rest")
+
 #
 # Library settings
 #
