@@ -136,7 +136,13 @@ class CamundaStartTests(TestCase):
                 "toetswijze": {"value": project.toetswijze, "type": "String"},
                 "documenten": {
                     "value": json.dumps([attachment.eio_url]),
-                    "type": "Json",
+                    "type": "json",
+                    "valueInfo": {
+                        "serializationDataFormat": "application/json",
+                        "objectTypeName": (
+                            "com.gemeenteutrecht.processplatform.domain.document.request.impl.DocumentListImpl"
+                        ),
+                    },
                 },
             },
         }

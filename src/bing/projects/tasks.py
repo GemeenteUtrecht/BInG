@@ -111,7 +111,16 @@ def start_camunda_process(project_id: int) -> None:
             },
             "projectId": {"value": project.project_id, "type": "String"},
             "toetswijze": {"value": project.toetswijze, "type": "String"},
-            "documenten": {"value": json.dumps(documents), "type": "Json"},
+            "documenten": {
+                "value": json.dumps(documents),
+                "type": "json",
+                "valueInfo": {
+                    "serializationDataFormat": "application/json",
+                    "objectTypeName": (
+                        "com.gemeenteutrecht.processplatform.domain.document.request.impl.DocumentListImpl"
+                    ),
+                },
+            },
         },
     }
 
