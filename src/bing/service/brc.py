@@ -79,6 +79,8 @@ def fetch_besluiten(zaak: str) -> List[Dict[str, Any]]:
             results = [
                 future.result() for future in concurrent.futures.as_completed(futures)
             ]
+    else:
+        results = []
 
     bios_per_besluit = defaultdict(list)
     for bio in sum(results, []):
