@@ -28,5 +28,5 @@ def settings(request):
 
 def client_log(request) -> Dict[str, Log]:
     log = Client._log
-    total_duration = sum(entry["duration"] for entry in log.entries())
+    total_duration = sum(entry.get("duration", 0) for entry in log.entries())
     return {"client_log": log, "total_duration_api_calls": total_duration}
