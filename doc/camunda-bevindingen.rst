@@ -14,6 +14,11 @@ Camunda bevindingen
 * ``task/:id/rendered-form`` is op zich interessant, maar styling-wise kan dat
   een nope gaan worden + het lijkt erop dat daar angular controls in zitten...
   doen we dus niet iets mee
+* Starting the  camunda process and providing the ZGW API request bodies is
+  just an extra hop and kind of beats the point of adding a generic process
+  engine. The strength really lies in being able to map process-specific
+  variables to generic API resources/calls, not have a leaky abstraction to
+  end-user applications.
 
 Task handlers
 =============
