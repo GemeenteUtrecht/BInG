@@ -86,7 +86,15 @@ def start_camunda_process(project_id: int) -> None:
     config = BInGConfig.get_solo()
     client = Camunda()
 
-    documents = [attachment["eio_url"] for attachment in attachments]
+    documents = [
+        {
+            "informatieobject": attachment["eio_url"],
+            "objectType": "zaak",
+            "titel": "",
+            "beschrijving": "",
+        }
+        for attachment in attachments
+    ]
 
     body = {
         "businessKey": f"bing-aanvraag",

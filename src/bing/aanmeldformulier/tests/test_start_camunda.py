@@ -135,7 +135,16 @@ class CamundaStartTests(TestCase):
                 "projectId": {"value": project.project_id, "type": "String"},
                 "toetswijze": {"value": project.toetswijze, "type": "String"},
                 "documenten": {
-                    "value": json.dumps([attachment.eio_url]),
+                    "value": json.dumps(
+                        [
+                            {
+                                "informatieobject": attachment.eio_url,
+                                "objectType": "zaak",
+                                "titel": "",
+                                "beschrijving": "",
+                            }
+                        ]
+                    ),
                     "type": "json",
                     "valueInfo": {
                         "serializationDataFormat": "application/json",
