@@ -25,6 +25,7 @@ local.py
 /mail/
 /log/*.log*
 /log/nginx/*.log*
+.env
 
 # Static files build by gulp
 src/bing/static/css/admin/admin_overrides.css
