@@ -8,6 +8,15 @@ from bing.config.models import BInGConfig
 from bing.config.service import get_zrc_client
 
 
+def find_zaak(uuid: str):
+    config = BInGConfig.get_solo()
+    zrc_client = get_zrc_client(
+        scopes=["zds.scopes.zaken.lezen"],
+        zaaktypes=[config.zaaktype_vergadering, config.zaaktype_aanvraag],
+    )
+    return zrc_client.retrieve("zaak", uuid=uuid)
+
+
 def fetch_zaak(url: str) -> Dict[str, Any]:
     """
     Retrieve a single Zaak by URL.

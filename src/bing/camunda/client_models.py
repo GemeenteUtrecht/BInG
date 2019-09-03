@@ -31,7 +31,7 @@ class Model:
                     continue
 
                 # Optional is ONE type combined with None
-                typehint = next(t for t in typehint.__args__ if t is not None)
+                typehint = next(t for t in typehint if t is not None)
 
             if isinstance(value, typehint):
                 continue
@@ -63,6 +63,9 @@ class Task(Model):
     suspended: bool
     form_key: None
     tenant_id: None
+
+    # enriched from service
+    variables: Optional[dict] = None
 
     def claim(self) -> None:
         from bing.service.camunda import claim_task

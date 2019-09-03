@@ -34,7 +34,10 @@ def get_aanvraag_tasks() -> List[Tuple[Union[Project, None], Task]]:
 def get_task(task_id: uuid.UUID) -> Task:
     client = Camunda()
     task_data = client.request(f"task/{task_id}")
-    return Task(**task_data)
+    variables = client.request(
+        f"task/{task_id}/variables", params={"deserializeValues": "false"}
+    )
+    return Task(variables=variables, **task_data)
 
 
 def claim_task(task_id: uuid.UUID) -> None:

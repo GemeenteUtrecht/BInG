@@ -1,3 +1,4 @@
+import json
 from mimetypes import guess_extension
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -20,7 +21,13 @@ from bing.projects.models import Project, ProjectAttachment
 from bing.service.brc import fetch_besluiten
 from bing.service.camunda import get_aanvraag_tasks, get_task
 from bing.service.drc import fetch_document, stream_inhoud
-from bing.service.zrc import fetch_resultaat, fetch_status, fetch_zaak, fetch_zaken
+from bing.service.zrc import (
+    fetch_resultaat,
+    fetch_status,
+    fetch_zaak,
+    fetch_zaken,
+    find_zaak,
+)
 
 from .decorators import camunda_task
 from .forms import (
@@ -238,5 +245,17 @@ class DetermineProcedureView(LoginRequiredMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["task"] = get_task(self.kwargs["task_id"])
+        task = get_task(self.kwargs["task_id"])
+
+        # set the zaak URL if it's missing
+        project = Project.objects.get(
+            camunda_process_instance_id=str(task.process_instance_id)
+        )
+        if not project.zaak:
+            # TODO: properly deserialize in Camunda layer
+            zaak_uuid = json.loads(task.variables["zaak_id"]["value"])
+            project.zaak = find_zaak(zaak_uuid)["url"]
+            project.save(update_fields=["zaak"])
+
+        kwargs["task"] = task
         return kwargs
