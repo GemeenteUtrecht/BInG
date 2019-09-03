@@ -11,6 +11,7 @@ import requests
 from zds_client.client import Client
 
 from bing.config.models import APIConfig, BInGConfig
+from bing.config.rewrites import URLRewriteMixin
 from bing.config.service import (
     get_brc_client,
     get_drc_client,
@@ -46,7 +47,7 @@ def get_api_token_headers() -> Dict[str, str]:
     }
 
 
-class Camunda:
+class Camunda(URLRewriteMixin, object):
     def __init__(self, config: APIConfig = None, path: str = None):
         if path is None:
             path = settings.CAMUNDA_API_ROOT
@@ -76,6 +77,10 @@ class Camunda:
         headers.update(get_api_token_headers())
         kwargs["headers"] = headers
 
+        json = kwargs.get("json")
+        if json:
+            self.rewrite_urls(json)
+
         start = time.time()
         response = requests.request(method, url, *args, **kwargs)
         response_json = None
@@ -84,6 +89,9 @@ class Camunda:
             response.raise_for_status()
             if response.content:
                 response_json = response.json()
+
+                if isinstance(response_json, (dict, list)):
+                    self.rewrite_urls(response_json, reverse=True)
             return underscoreize(response_json)
         except Exception:
             try:

@@ -18,7 +18,8 @@ class ProjectAdmin(admin.ModelAdmin):
         self, request: HttpRequest, queryset: models.QuerySet
     ) -> None:
         for project in queryset:
-            start_camunda_process.delay(project.id)
+            start_camunda_process(project.id)
+            # start_camunda_process.delay(project.id)
         self.message_user(
             request,
             _("Started the Camunda process for {count} projects").format(
