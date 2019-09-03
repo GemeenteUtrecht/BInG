@@ -259,3 +259,16 @@ class DetermineProcedureView(LoginRequiredMixin, UpdateView):
 
         kwargs["task"] = task
         return kwargs
+
+
+class HandleTaskView(LoginRequiredMixin, TemplateView):
+    template_name = "medewerkers/task.html"
+
+    def get_context_data(self, **kwargs):
+        task = get_task(self.kwargs["task_id"])
+        # find the project based on the task process instance
+        project = Project.objects.get(
+            camunda_process_instance_id=str(task.process_instance_id)
+        )
+        kwargs.update({"task": task, "project": project})
+        return super().get_context_data(**kwargs)

@@ -33,8 +33,7 @@
                     <a href="{% url 'medewerkers:project-detail' pk=project.pk %}">{{ project.name }}</a>
                     <br>
                     <br>
-                    {# TODO: generic task routing #}
-                    <a href="{% url 'medewerkers:task-determine-procedure' pk=project.pk task_id=task.id %}">
+                    <a href="{% url 'medewerkers:handle-task' task_id=task.id %}">
                         <button>
                             {{ task.name }}
                             <i class="fa fa-arrow-right"></i>

@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Tuple, Union
 
 from bing.camunda.client import Camunda
 from bing.camunda.client_models import Task
+from bing.camunda.interface import Variable
 from bing.config.models import BInGConfig
 from bing.projects.models import Project
 
@@ -34,9 +35,12 @@ def get_aanvraag_tasks() -> List[Tuple[Union[Project, None], Task]]:
 def get_task(task_id: uuid.UUID) -> Task:
     client = Camunda()
     task_data = client.request(f"task/{task_id}")
-    variables = client.request(
+    raw_variables = client.request(
         f"task/{task_id}/variables", params={"deserializeValues": "false"}
     )
+    variables = {
+        key: Variable(value).deserialize() for key, value in raw_variables.items()
+    }
     return Task(variables=variables, **task_data)
 
 

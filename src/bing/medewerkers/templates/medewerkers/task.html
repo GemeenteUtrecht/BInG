@@ -1,0 +1,43 @@
+{% extends "medewerkers/base.html" %}
+{% load sniplates %}
+
+
+{% block subtitle %}Taak: {{ task.name }}{% endblock subtitle %}
+
+{% block breadcrumbs %}
+{% load_widgets crumbs='snippets/breadcrumbs.html' %}
+{% nested_widget 'crumbs:crumbs' %}
+    {% widget 'crumbs:crumb' label=_("BInG") url='/' %}
+
+    {% url 'medewerkers:index' as index_url %}
+    {% widget 'crumbs:crumb' label=_("Medewerkers") url=index_url %}
+
+    {% url 'medewerkers:tasks' as tasks_url %}
+    {% widget 'crumbs:crumb' label=_("Taken") url=tasks_url %}
+
+{% endnested %}
+{% endblock breadcrumbs %}
+
+
+{% block page-content %}
+<div>
+
+    <p>
+        <strong>Aanvraag: {{ project.name }}</strong>
+        <br>
+        <small>task_id {{ task.id }}</small>
+    </p>
+
+    <p>
+        Taak aangemaakt op {{ task.created }}, due date: {{ task.due|default:"-" }}.
+    </p>
+
+
+    <p>
+        Variabelen:
+        <br>
+        <code><pre>{{ task.variables }}</pre></code>
+    </p>
+
+</div>
+{% endblock page-content %}
