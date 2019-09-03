@@ -8,6 +8,7 @@ from django.utils import timezone
 from celery.result import AsyncResult, ResultSet
 
 from bing.camunda.client import Camunda
+from bing.camunda.interface import DocumentListVariable, ZaakVariable
 from bing.celery import app
 from bing.config.models import BInGConfig
 from bing.config.service import get_drc_client
@@ -107,35 +108,19 @@ def start_camunda_process(project_id: int, attempt=0) -> None:
         "businessKey": f"bing-aanvraag",
         "withVariablesInReturn": False,
         "variables": {
-            "zaak": {
-                "type": "json",
-                "value": json.dumps(
-                    {
-                        "bronorganisatie": config.organisatie_rsin,
-                        "identificatie": project.zaak_identificatie,
-                        "zaaktype": config.zaaktype_aanvraag,
-                        "verantwoordelijkeOrganisatie": config.organisatie_rsin,
-                        "startdatum": timezone.now().date().isoformat(),
-                        "omschrijving": f"BInG aanvraag voor {project.name}",
-                    }
-                ),
-                "valueInfo": {
-                    "serializationDataFormat": "application/json",
-                    "objectTypeName": "com.gemeenteutrecht.processplatform.domain.impl.ZaakImpl",
-                },
-            },
+            "zaak": ZaakVariable(
+                data={
+                    "bronorganisatie": config.organisatie_rsin,
+                    "identificatie": project.zaak_identificatie,
+                    "zaaktype": config.zaaktype_aanvraag,
+                    "verantwoordelijkeOrganisatie": config.organisatie_rsin,
+                    "startdatum": timezone.now().date().isoformat(),
+                    "omschrijving": f"BInG aanvraag voor {project.name}",
+                }
+            ).serialize(),
             "projectId": {"value": project.project_id, "type": "String"},
             "toetswijze": {"value": project.toetswijze, "type": "String"},
-            "documenten": {
-                "value": json.dumps(documents),
-                "type": "json",
-                "valueInfo": {
-                    "serializationDataFormat": "application/json",
-                    "objectTypeName": (
-                        "com.gemeenteutrecht.processplatform.domain.document.request.impl.DocumentListImpl"
-                    ),
-                },
-            },
+            "documenten": DocumentListVariable(data=documents).serialize(),
         },
     }
 
