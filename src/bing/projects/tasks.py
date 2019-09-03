@@ -59,7 +59,7 @@ def upload_document(attachment_id: int, filename: str, temp_file: str):
 
 
 @app.task
-def start_camunda_process(project_id: int) -> None:
+def start_camunda_process(project_id: int, attempt=0) -> None:
     try:
         project = Project.objects.get(id=project_id)
     except Project.DoesNotExist:
@@ -76,7 +76,14 @@ def start_camunda_process(project_id: int) -> None:
     ]
     group_result = ResultSet(results=results)
     if not group_result.ready():
-        start_camunda_process.apply_async(args=(project_id,), countdown=1.0)
+        # prevent endless scheduled tasks if the result is purged from the redis
+        # storage - which would result in state PENDING
+        if attempt >= 5:
+            logger.error("Attempted process start %d times, giving up", attempt)
+            return
+        start_camunda_process.apply_async(
+            args=(project_id,), kwargs={"attempt": attempt + 1}, countdown=2 ** attempt
+        )
         return
 
     if project.camunda_process_instance_id and project.camunda_process_instance_url:
