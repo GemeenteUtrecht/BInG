@@ -1,5 +1,4 @@
 import base64
-import json
 import logging
 import os
 
@@ -94,15 +93,7 @@ def start_camunda_process(project_id: int, attempt=0) -> None:
     config = BInGConfig.get_solo()
     client = Camunda()
 
-    documents = [
-        {
-            "informatieobject": attachment["eio_url"],
-            "objectType": "zaak",
-            "titel": "",
-            "beschrijving": "",
-        }
-        for attachment in attachments
-    ]
+    documents = [attachment["eio_url"] for attachment in attachments]
 
     body = {
         "businessKey": f"bing-aanvraag",

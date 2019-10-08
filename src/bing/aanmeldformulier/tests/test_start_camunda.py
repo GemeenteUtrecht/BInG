@@ -2,7 +2,7 @@ import json
 import uuid
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 import requests_mock
 from freezegun import freeze_time
@@ -14,7 +14,10 @@ from bing.projects.tasks import start_camunda_process
 from bing.projects.tests.factories import ProjectAttachmentFactory, ProjectFactory
 
 
+@override_settings(CAMUNDA_API_ROOT="engine-rest")
 class CamundaStartTests(TestCase):
+    maxDiff = None
+
     @classmethod
     def setUpTestData(cls):
         # set up service config
@@ -135,21 +138,12 @@ class CamundaStartTests(TestCase):
                 "projectId": {"value": project.project_id, "type": "String"},
                 "toetswijze": {"value": project.toetswijze, "type": "String"},
                 "documenten": {
-                    "value": json.dumps(
-                        [
-                            {
-                                "informatieobject": attachment.eio_url,
-                                "objectType": "zaak",
-                                "titel": "",
-                                "beschrijving": "",
-                            }
-                        ]
-                    ),
+                    "value": json.dumps([attachment.eio_url]),
                     "type": "json",
                     "valueInfo": {
                         "serializationDataFormat": "application/json",
                         "objectTypeName": (
-                            "com.gemeenteutrecht.processplatform.domain.document.request.impl.DocumentListImpl"
+                            "com.gemeenteutrecht.processplatform.domain.document.impl.DocumentImpl"
                         ),
                     },
                 },

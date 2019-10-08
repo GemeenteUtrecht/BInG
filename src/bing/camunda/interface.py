@@ -29,4 +29,6 @@ class ZaakVariable(Variable):
 
 
 class DocumentListVariable(Variable):
-    object_type_name = "com.gemeenteutrecht.processplatform.domain.document.request.impl.DocumentListImpl"
+    object_type_name = (
+        "com.gemeenteutrecht.processplatform.domain.document.impl.DocumentImpl"
+    )
