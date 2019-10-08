@@ -169,7 +169,12 @@ def relate_created_zaak(project_id: int):
     # TODO: should be respected by Camunda in the first place
     # fix the identificatie
     zrc_client.partial_update(
-        "zaak", {"identificatie": project.zaak_identificatie}, uuid=zaak_uuid
+        "zaak",
+        {
+            "identificatie": project.zaak_identificatie,
+            "omschrijving": f"BInG aanvraag voor {project.name}",
+        },
+        uuid=zaak_uuid,
     )
 
     project.zaak = zaak["url"]
