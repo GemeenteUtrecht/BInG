@@ -69,6 +69,13 @@ class CamundaStartTests(TestCase):
         bing_config.aanvraag_process_key = "bing"
         bing_config.save()
 
+    def setUp(self):
+        super().setUp()
+
+        patcher = patch("bing.projects.tasks.relate_created_zaak")
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     @freeze_time("2019-07-30 14:00")
     def test_full_project(self):
         """

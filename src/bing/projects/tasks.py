@@ -1,4 +1,5 @@
 import base64
+import json
 import logging
 import os
 
@@ -10,7 +11,7 @@ from bing.camunda.client import Camunda
 from bing.camunda.interface import DocumentListVariable, ZaakVariable
 from bing.celery import app
 from bing.config.models import BInGConfig
-from bing.config.service import get_drc_client
+from bing.config.service import get_drc_client, get_zrc_client
 from bing.projects.models import Project, ProjectAttachment
 
 logger = logging.getLogger(__name__)
@@ -128,3 +129,48 @@ def start_camunda_process(project_id: int, attempt=0) -> None:
     project.save(
         update_fields=["camunda_process_instance_id", "camunda_process_instance_url"]
     )
+
+    relate_created_zaak.delay(project_id)
+
+
+@app.task
+def relate_created_zaak(project_id: int):
+    """
+    Fetch the created Zaak object and relate it to the project.
+    """
+    try:
+        project = Project.objects.get(id=project_id)
+    except Project.DoesNotExist:
+        logger.error("Project %d not found in database", project_id)
+        return
+
+    assert (
+        project.camunda_process_instance_id
+    ), "Project must have a Camunda process instance"
+
+    if project.zaak:
+        return
+
+    client = Camunda()
+    response = client.request(
+        f"process-instance/{project.camunda_process_instance_id}/variables",
+        params={"deserializeValues": "false"},
+    )
+
+    config = BInGConfig.get_solo()
+    zrc_client = get_zrc_client(
+        scopes=["zds.scopes.zaken.lezen", "zds.scopes.zaken.bijwerken"],
+        zaaktypes=[config.zaaktype_aanvraag, config.zaaktype_vergadering],
+    )
+
+    zaak_uuid = json.loads(response["zaak_id"]["value"])
+    zaak = zrc_client.retrieve("zaak", uuid=zaak_uuid)
+
+    # TODO: should be respected by Camunda in the first place
+    # fix the identificatie
+    zrc_client.partial_update(
+        "zaak", {"identificatie": project.zaak_identificatie}, uuid=zaak_uuid
+    )
+
+    project.zaak = zaak["url"]
+    project.save(update_fields=["zaak"])
