@@ -25,7 +25,7 @@ django-redis==4.10.0
 django-rosetta==0.9.3
 django-sniplates==0.6.0
 django-solo==1.1.3
-django==2.2.4
+django==2.2.9
 djangorestframework==3.10.2
 face==19.1.2              # via glom
 gemma-zds-client==0.11.0

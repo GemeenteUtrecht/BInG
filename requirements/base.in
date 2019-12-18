@@ -11,7 +11,7 @@ python-dotenv
 gemma-zds-client
 zgw-consumers
 
-Django
+Django<3.0
 django-hijack
 django-hijack-admin
 django-axes
