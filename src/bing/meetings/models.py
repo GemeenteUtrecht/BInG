@@ -3,8 +3,6 @@ import logging
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from bing.config.models import BInGConfig
-
 logger = logging.getLogger(__name__)
 
 

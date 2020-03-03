@@ -6,8 +6,6 @@ from typing import Any, Dict, List, Optional
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from bing.config.models import BInGConfig
-
 from .constants import PlanFases, Toetswijzen
 
 logger = logging.getLogger(__name__)

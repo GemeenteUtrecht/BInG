@@ -1,8 +1,4 @@
-import base64
 import logging
-import os
-
-from django.utils import timezone
 
 from bing.config.models import BInGConfig
 from bing.projects.models import Project
