@@ -14,6 +14,7 @@ click==7.0
 coverage==4.5.3
 django-appconf==1.0.3
 django-axes==4.5.4
+django-camunda==0.5.0
 django-choices==1.6.2
 django-compat==1.0.15
 django-debug-toolbar==1.11
@@ -31,6 +32,7 @@ faker==1.0.5              # via factory-boy
 flower==0.9.3
 freezegun==0.3.11
 idna==2.8
+inflection==0.3.1
 isort==4.3.17
 kombu==4.5.0
 pip-tools==4.0.0

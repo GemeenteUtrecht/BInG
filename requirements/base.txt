@@ -12,6 +12,7 @@ chardet==3.0.4            # via requests
 click==7.0                # via pip-tools
 django-appconf==1.0.3     # via django-axes
 django-axes==4.5.4
+django-camunda==0.5.0
 django-choices==1.6.2
 django-compat==1.0.15     # via django-hijack, django-hijack-admin
 django-extra-views==0.12.0
@@ -24,6 +25,7 @@ django-sniplates==0.6.0
 django-solo==1.1.3
 django==2.2.9
 idna==2.8                 # via requests
+inflection==0.3.1         # via django-camunda
 kombu==4.5.0              # via celery
 pip-tools==4.0.0
 polib==1.1.0              # via django-rosetta
@@ -33,7 +35,7 @@ python-dotenv==0.10.1
 pytz==2019.1
 raven==6.10.0
 redis==3.2.1              # via django-redis
-requests==2.21.0          # via django-rosetta
+requests==2.21.0          # via django-camunda, django-rosetta
 six==1.12.0               # via django-appconf, django-compat, django-extra-views, django-rosetta, pip-tools, python-dateutil
 sqlparse==0.3.0           # via django
 urllib3==1.24.2           # via requests

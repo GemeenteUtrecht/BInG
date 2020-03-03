@@ -9,6 +9,7 @@ Django<3.0
 django-hijack
 django-hijack-admin
 django-axes
+django-camunda
 django-choices
 django-extra-views
 django-rosetta
