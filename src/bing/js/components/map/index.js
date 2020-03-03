@@ -5,18 +5,19 @@
 import * as L from 'leaflet';
 
 import { getFeatureInfo, getTile } from './features.js';
+import { RD_CRS } from './transform.js';
 
 const BASE_URL = 'https://geodata.nationaalgeoregister.nl/tiles/service';
 const attribution = 'Kaartgegevens &copy; <a href="https://www.kadaster.nl">Kadaster</a> | <a href="https://www.verbeterdekaart.nl">Verbeter de kaart</a>';
 
 // 3857 -> pseudo mercator = WGS 84
-const BRT_TILE_LAYER_URL = `${BASE_URL}/wmts/brtachtergrondkaart/EPSG:3857/{z}/{x}/{y}.png`;
+const BRT_TILE_LAYER_URL = `${BASE_URL}/wmts/brtachtergrondkaart/EPSG:28992/{z}/{x}/{y}.png`;
 const BGT_TILE_LAYER_URL = `${BASE_URL}/wmts/bgtachtergrond/EPSG:28992/{z}/{x}/{y}.png`;
 
 const CENTER = {
   latitude: 52.093249,
   longitude: 5.111994,
-  zoom: 13,
+  zoom: 3,
 };
 
 
@@ -25,13 +26,15 @@ class Map {
   constructor(node) {
     this.node = node;
     this._map = this.init(node);
+    window._map = this._map;
 
     this._zoomNode = document.getElementById('zoomLevel');
   }
 
   init(node) {
     const options = {
-      target: node,
+      continuousWorld: true,
+      crs: RD_CRS,
       attributionControl: false,
       center: [CENTER.latitude, CENTER.longitude],
       zoom: CENTER.zoom,

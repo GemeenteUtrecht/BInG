@@ -20,7 +20,8 @@
   "homepage": "https://maykinmedia.nl",
   "dependencies": {
     "font-awesome": "^4.7.0",
-    "leaflet": "^1.6.0"
+    "leaflet": "^1.6.0",
+    "proj4leaflet": "^1.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.2.0",
