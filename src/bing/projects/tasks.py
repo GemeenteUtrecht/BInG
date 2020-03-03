@@ -1,9 +1,9 @@
-from django_camunda.client import get_client
 import logging
 
 from django.utils import timezone
 
 from celery.result import AsyncResult, ResultSet
+from django_camunda.client import get_client
 
 from bing.camunda.interface import DocumentListVariable, ZaakVariable
 from bing.celery import app
@@ -128,5 +128,5 @@ def relate_created_zaak(project_id: int):
 
     # TODO fetch zaak
 
-    project.zaak = ''
+    project.zaak = ""
     project.save(update_fields=["zaak"])

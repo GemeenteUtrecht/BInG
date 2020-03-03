@@ -19,7 +19,6 @@ from bing.meetings.tasks import (
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project
 
-
 from .tasks import add_besluit, set_new_status, set_result
 
 

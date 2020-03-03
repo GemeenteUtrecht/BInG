@@ -1,16 +1,11 @@
-import uuid
 from datetime import timedelta
-from urllib.parse import urljoin
 
 from django.contrib.postgres.fields import ArrayField
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from solo.models import SingletonModel
-from zds_client import Client
-from zgw_consumers.constants import APITypes
 
 from bing.projects.constants import Toetswijzen
 

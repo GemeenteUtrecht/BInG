@@ -76,7 +76,7 @@ class StatusFormMixin(FormMixin):
         # current_status_type = fetch_status(zaak["status"])["statusType"]
         # current_resultaat = fetch_resultaat(zaak["resultaat"])
         zaak = {}
-        current_status_type = ''
+        current_status_type = ""
         current_resultaat = {}
         current_resultaat_type = (
             current_resultaat["resultaatType"] if current_resultaat else ""
