@@ -1,5 +1,5 @@
 import uuid
-from unittest.mock import patch
+from unittest import skip
 
 from django.test import TestCase
 
@@ -17,17 +17,12 @@ class ProjectTests(TestCase):
 
         self.assertEqual(documents, [])
 
-    @patch("bing.service.drc.get_drc_client")
-    @patch("bing.projects.models.get_aanvraag_iot")
-    def test_existing_documents(self, mock_get_aanvraag_iot, mock_get_drc_client):
+    @skip("documents are not supported now")
+    def test_existing_documents(self):
         project = ProjectFactory.create()
         attachment = ProjectAttachmentFactory.create(
             project=project, io_type=IO_TYPE_URL, eio_url=EIO_URL
         )
-        mock_get_aanvraag_iot.return_value = [(IO_TYPE_URL, "Bijlage")]
-        mock_get_drc_client.return_value.retrieve.side_effect = lambda r, url: {
-            "url": url
-        }
 
         documents = project.get_documents()
 
