@@ -198,3 +198,8 @@ class ConfirmationView(ProjectMixin, TemplateView):
         response = super().get(request, *args, **kwargs)
         del self.request.session[PROJECT_SESSION_KEY]
         return response
+
+
+class MapView(TemplateView):
+    template_name = "aanmeldformulier/map.html"
+    current_step = Steps.info

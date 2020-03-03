@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     ConfirmationView,
     InfoPageView,
+    MapView,
     MeetingView,
     PlanfaseView,
     SpecifyProjectView,
@@ -13,6 +14,7 @@ from .views import (
 app_name = "aanmeldformulier"
 
 urlpatterns = [
+    path("map/", MapView.as_view(), name="map"),
     path("", InfoPageView.as_view(), name="info"),
     path("start/", SpecifyProjectView.as_view(), name="specify-project"),
     path("toetswijze/", ToetswijzeView.as_view(), name="toetswijze"),
