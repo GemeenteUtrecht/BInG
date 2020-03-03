@@ -86,10 +86,6 @@ CACHES = {
 AXES_CACHE = "axes_cache"
 
 
-REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += [
-    "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer"
-]
-
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(
     "error",
