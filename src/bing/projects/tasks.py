@@ -2,13 +2,13 @@ import logging
 
 from django.utils import timezone
 
-from celery.result import AsyncResult, ResultSet
 from django_camunda.client import get_client
+from django_camunda.tasks import start_process
 
 from bing.celery import app
 from bing.config.models import BInGConfig
+from bing.projects.interface import ZaakVariable
 from bing.projects.models import Project, ProjectAttachment
-from bing.utils.interface import DocumentListVariable, ZaakVariable
 
 logger = logging.getLogger(__name__)
 
@@ -27,31 +27,11 @@ def upload_document(attachment_id: int, filename: str, temp_file: str):
 
 
 @app.task
-def start_camunda_process(project_id: int, attempt=0) -> None:
+def start_camunda_process(project_id: int) -> None:
     try:
         project = Project.objects.get(id=project_id)
     except Project.DoesNotExist:
         logger.error("Project %d not found in database", project_id)
-        return
-
-    attachments = list(
-        project.projectattachment_set.values("eio_url", "celery_task_id")
-    )
-
-    # check that the file uploads have completed
-    results = [
-        AsyncResult(str(attachment["celery_task_id"])) for attachment in attachments
-    ]
-    group_result = ResultSet(results=results)
-    if not group_result.ready():
-        # prevent endless scheduled tasks if the result is purged from the redis
-        # storage - which would result in state PENDING
-        if attempt >= 5:
-            logger.error("Attempted process start %d times, giving up", attempt)
-            return
-        start_camunda_process.apply_async(
-            args=(project_id,), kwargs={"attempt": attempt + 1}, countdown=2 ** attempt
-        )
         return
 
     if project.camunda_process_instance_id and project.camunda_process_instance_url:
@@ -59,44 +39,40 @@ def start_camunda_process(project_id: int, attempt=0) -> None:
         return
 
     config = BInGConfig.get_solo()
-    client = get_client()
+    if not config.camunda_process:
+        logger.error("Camunda process definition is not configured")
+        return
 
-    documents = [attachment["eio_url"] for attachment in attachments]
+    # TODO add uploaded documents
 
-    body = {
-        "businessKey": f"bing-aanvraag",
-        "withVariablesInReturn": False,
-        "variables": {
-            "zaak": ZaakVariable(
-                data={
-                    "bronorganisatie": config.organisatie_rsin,
-                    "identificatie": project.zaak_identificatie,
-                    "zaaktype": config.zaaktype_aanvraag,
-                    "verantwoordelijkeOrganisatie": config.organisatie_rsin,
-                    "startdatum": timezone.now().date().isoformat(),
-                    "omschrijving": f"BInG aanvraag voor {project.name}",
-                }
-            ).serialize(),
-            "projectId": {"value": project.project_id, "type": "String"},
-            "toetswijze": {"value": project.toetswijze, "type": "String"},
-            "documenten": DocumentListVariable(data=documents).serialize(),
-        },
+    variables = {
+        "zaak": ZaakVariable(
+            data={
+                "bronorganisatie": config.organisatie_rsin,
+                "identificatie": project.zaak_identificatie,
+                "zaaktype": config.zaaktype_aanvraag,
+                "verantwoordelijkeOrganisatie": config.organisatie_rsin,
+                "startdatum": timezone.now().date().isoformat(),
+                "omschrijving": f"BInG aanvraag voor {project.name}",
+            }
+        ).serialize(),
+        "projectId": {"value": project.project_id, "type": "String"},
+        "toetswijze": {"value": project.toetswijze, "type": "String"},
     }
 
-    response = client.request(
-        f"process-definition/key/{config.aanvraag_process_key}/start",
-        method="POST",
-        json=body,
+    process_instance = start_process(
+        process_id=config.camunda_process,
+        business_key="bing-aanvraag",
+        variables=variables,
     )
 
-    project.camunda_process_instance_id = response["id"]
-
-    self_rel = next((link for link in response["links"] if link["rel"] == "self"))
-    project.camunda_process_instance_url = self_rel["href"]
+    project.camunda_process_instance_id = process_instance["instance_id"]
+    project.camunda_process_instance_url = process_instance["instance_url"]
     project.save(
         update_fields=["camunda_process_instance_id", "camunda_process_instance_url"]
     )
 
+    # TODO fetch zaak
     relate_created_zaak.delay(project_id)
 
 
