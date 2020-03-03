@@ -5,10 +5,10 @@ from django.utils import timezone
 from celery.result import AsyncResult, ResultSet
 from django_camunda.client import get_client
 
-from bing.camunda.interface import DocumentListVariable, ZaakVariable
 from bing.celery import app
 from bing.config.models import BInGConfig
 from bing.projects.models import Project, ProjectAttachment
+from bing.utils.interface import DocumentListVariable, ZaakVariable
 
 logger = logging.getLogger(__name__)
 

@@ -65,7 +65,6 @@ INSTALLED_APPS = [
     # Project applications.
     "bing.config",
     "bing.accounts",
-    "bing.camunda",
     "bing.aanmeldformulier",
     "bing.projects",
     "bing.medewerkers",
