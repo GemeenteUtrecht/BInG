@@ -4,11 +4,8 @@
 #
 #    pip-compile --no-index requirements/base.in
 #
--e git+https://github.com/vbabiy/djangorestframework-camel-case.git@master#egg=djangorestframework-camel-case
 amqp==2.4.2               # via kombu
-attrs==19.1.0             # via glom
 billiard==3.6.0.0         # via celery
-boltons==19.1.0           # via face, glom
 celery==4.3.0
 certifi==2019.3.9         # via requests
 chardet==3.0.4            # via requests
@@ -26,27 +23,18 @@ django-rosetta==0.9.3
 django-sniplates==0.6.0
 django-solo==1.1.3
 django==2.2.9
-djangorestframework==3.10.2
-face==19.1.2              # via glom
-gemma-zds-client==0.11.0
-glom==19.2.0
 idna==2.8                 # via requests
-inflection==0.3.1
 kombu==4.5.0              # via celery
-pillow==6.0.0
 pip-tools==4.0.0
 polib==1.1.0              # via django-rosetta
 psycopg2==2.8.2
-pyjwt==1.7.1              # via gemma-zds-client
 python-dateutil==2.8.0
 python-dotenv==0.10.1
 pytz==2019.1
-pyyaml==5.1               # via gemma-zds-client
 raven==6.10.0
 redis==3.2.1              # via django-redis
-requests==2.21.0          # via django-rosetta, gemma-zds-client
+requests==2.21.0          # via django-rosetta
 six==1.12.0               # via django-appconf, django-compat, django-extra-views, django-rosetta, pip-tools, python-dateutil
 sqlparse==0.3.0           # via django
 urllib3==1.24.2           # via requests
 vine==1.3.0               # via amqp, celery
-zgw-consumers==0.2.1

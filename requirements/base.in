@@ -1,15 +1,9 @@
 pip-tools
-glom
-inflection
 psycopg2
-Pillow
 pytz
 raven
 python-dateutil
 python-dotenv
-
-gemma-zds-client
-zgw-consumers
 
 Django<3.0
 django-hijack
@@ -21,10 +15,5 @@ django-rosetta
 django-sniplates
 django-solo
 django-redis
-
-# API
-djangorestframework
-# djangorestframework-camel-case
--e git+https://github.com/vbabiy/djangorestframework-camel-case.git@master#egg=djangorestframework-camel-case
 
 celery
