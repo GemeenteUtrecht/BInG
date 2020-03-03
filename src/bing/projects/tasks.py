@@ -1,17 +1,12 @@
-import base64
-import json
+from django_camunda.client import get_client
 import logging
-import os
 
 from django.utils import timezone
 
 from celery.result import AsyncResult, ResultSet
 
-from bing.camunda.client import Camunda
-from bing.camunda.interface import DocumentListVariable, ZaakVariable
 from bing.celery import app
 from bing.config.models import BInGConfig
-from bing.config.service import get_drc_client, get_zrc_client
 from bing.projects.models import Project, ProjectAttachment
 
 logger = logging.getLogger(__name__)
@@ -27,36 +22,7 @@ def upload_document(attachment_id: int, filename: str, temp_file: str):
         logger.warning("Could not fetch ProjectAttachment %d", attachment_id)
         return
 
-    config = BInGConfig.get_solo()
-
-    with open(temp_file, "rb") as infile:
-        content = infile.read()
-
-    io_type = attachment.io_type
-
-    # create informatieobject
-    drc_client = get_drc_client(scopes=["zds.scopes.documenten.aanmaken"])
-    eio = drc_client.create(
-        "enkelvoudiginformatieobject",
-        {
-            "bronorganisatie": config.organisatie_rsin,
-            "informatieobjecttype": io_type,
-            "creatiedatum": timezone.now().date().isoformat(),
-            "bestandsnaam": filename,
-            "titel": os.path.splitext(filename)[0],
-            "auteur": "BInG formulier",
-            "taal": "dut",
-            "inhoud": base64.b64encode(content).decode("ascii"),
-            # TODO: This should not be set here by default. Please have a look at issue 224 for more information.
-            # https://github.com/GemeenteUtrecht/ZGW/issues/224
-            "indicatie_gebruiksrecht": False,
-        },
-    )
-
-    attachment.eio_url = eio["url"]
-    attachment.save(update_fields=["eio_url"])
-
-    os.remove(temp_file)
+    # TODO upload files
 
 
 @app.task
@@ -92,7 +58,7 @@ def start_camunda_process(project_id: int, attempt=0) -> None:
         return
 
     config = BInGConfig.get_solo()
-    client = Camunda()
+    client = get_client()
 
     documents = [attachment["eio_url"] for attachment in attachments]
 
@@ -151,31 +117,15 @@ def relate_created_zaak(project_id: int):
     if project.zaak:
         return
 
-    client = Camunda()
+    client = get_client()
     response = client.request(
         f"process-instance/{project.camunda_process_instance_id}/variables",
         params={"deserializeValues": "false"},
     )
 
     config = BInGConfig.get_solo()
-    zrc_client = get_zrc_client(
-        scopes=["zds.scopes.zaken.lezen", "zds.scopes.zaken.bijwerken"],
-        zaaktypes=[config.zaaktype_aanvraag, config.zaaktype_vergadering],
-    )
 
-    zaak_uuid = json.loads(response["zaak_id"]["value"])
-    zaak = zrc_client.retrieve("zaak", uuid=zaak_uuid)
+    # TODO fetch zaak
 
-    # TODO: should be respected by Camunda in the first place
-    # fix the identificatie
-    zrc_client.partial_update(
-        "zaak",
-        {
-            "identificatie": project.zaak_identificatie,
-            "omschrijving": f"BInG aanvraag voor {project.name}",
-        },
-        uuid=zaak_uuid,
-    )
-
-    project.zaak = zaak["url"]
+    project.zaak = ''
     project.save(update_fields=["zaak"])

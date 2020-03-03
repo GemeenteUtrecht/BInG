@@ -71,7 +71,6 @@ INSTALLED_APPS = [
     "bing.medewerkers",
     "bing.meetings",
     "bing.utils",
-    "bing.webhooks",
 ]
 
 MIDDLEWARE = [

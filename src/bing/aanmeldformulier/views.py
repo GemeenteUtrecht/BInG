@@ -8,11 +8,9 @@ from django.views.generic import FormView, TemplateView, UpdateView
 
 from extra_views import ModelFormSetView
 
-from bing.config.models import RequiredDocuments
 from bing.projects.constants import Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.projects.tasks import start_camunda_process
-from bing.service.ztc import get_aanvraag_iot
 
 from .constants import PROJECT_SESSION_KEY, Steps
 from .decorators import project_required
@@ -109,24 +107,25 @@ class UploadView(ProjectMixin, ModelFormSetView):
         if not self._req_doc_types:
             required_io_types = []
             project = self.get_project()
-            io_types = get_aanvraag_iot()
-
-            try:
-                io_types_config = RequiredDocuments.objects.get(
-                    toetswijze=project.toetswijze
-                )
-            except RequiredDocuments.DoesNotExist:
-                logger.warning(
-                    "No RequiredDocuments for toetswijze '%s' configured",
-                    project.toetswijze,
-                )
-            else:
-                required_io_types = [
-                    (io_type, label)
-                    for io_type, label in io_types
-                    if io_type in io_types_config.informatieobjecttypen
-                ]
-                self._req_doc_types = required_io_types
+            # FIXME get required types
+            # io_types = get_aanvraag_iot()
+            #
+            # try:
+            #     io_types_config = RequiredDocuments.objects.get(
+            #         toetswijze=project.toetswijze
+            #     )
+            # except RequiredDocuments.DoesNotExist:
+            #     logger.warning(
+            #         "No RequiredDocuments for toetswijze '%s' configured",
+            #         project.toetswijze,
+            #     )
+            # else:
+            #     required_io_types = [
+            #         (io_type, label)
+            #         for io_type, label in io_types
+            #         if io_type in io_types_config.informatieobjecttypen
+            #     ]
+            self._req_doc_types = required_io_types
         return self._req_doc_types
 
     def get_formset_kwargs(self):
