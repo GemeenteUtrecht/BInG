@@ -7,7 +7,6 @@ from django_camunda.tasks import start_process
 
 from bing.celery import app
 from bing.config.models import BInGConfig
-from bing.projects.interface import ZaakVariable
 from bing.projects.models import Project, ProjectAttachment
 
 logger = logging.getLogger(__name__)
@@ -46,16 +45,8 @@ def start_camunda_process(project_id: int) -> None:
     # TODO add uploaded documents
 
     variables = {
-        "zaak": ZaakVariable(
-            data={
-                "bronorganisatie": config.organisatie_rsin,
-                "identificatie": project.zaak_identificatie,
-                "zaaktype": config.zaaktype_aanvraag,
-                "verantwoordelijkeOrganisatie": config.organisatie_rsin,
-                "startdatum": timezone.now().date().isoformat(),
-                "omschrijving": f"BInG aanvraag voor {project.name}",
-            }
-        ).serialize(),
+        "organisatieRSIN": {"value": config.organisatie_rsin, "type": "String"},
+        "zaaktype": {"value": config.zaaktype_aanvraag, "type": "String"},
         "projectId": {"value": project.project_id, "type": "String"},
         "toetswijze": {"value": project.toetswijze, "type": "String"},
     }
