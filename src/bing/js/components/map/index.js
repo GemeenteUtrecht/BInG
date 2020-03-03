@@ -5,7 +5,7 @@
 import * as L from 'leaflet';
 
 import { getFeatureInfo, getTile } from './features.js';
-import { RD_CRS } from './transform.js';
+import { RD_CRS, toRD } from './transform.js';
 
 const BASE_URL = 'https://geodata.nationaalgeoregister.nl/tiles/service';
 const attribution = 'Kaartgegevens &copy; <a href="https://www.kadaster.nl">Kadaster</a> | <a href="https://www.verbeterdekaart.nl">Verbeter de kaart</a>';
@@ -17,8 +17,11 @@ const BGT_TILE_LAYER_URL = `${BASE_URL}/wmts/bgtachtergrond/EPSG:28992/{z}/{x}/{
 const CENTER = {
   latitude: 52.093249,
   longitude: 5.111994,
-  zoom: 3,
+  zoom: 13,
 };
+
+const rd_center = toRD([CENTER.longitude, CENTER.latitude]);
+console.log('RD Center:', rd_center);
 
 
 class Map {
@@ -45,9 +48,8 @@ class Map {
       BRT_TILE_LAYER_URL,
       {
         attribution: attribution,
-        minZoom: 6,
-        maxZoom: 19,
-        // type: 'wmts',
+        minZoom: 1,
+        maxZoom: 13,
       }
     );
 
@@ -66,6 +68,8 @@ class Map {
     const lng = event.latlng.lng;
     const lat = event.latlng.lat;
     const z = this._map.getZoom();
+
+    console.log("RD coords: ", toRD([lng, lat]));
 
     const {xTile, yTile} = getTile(lng, lat, z);
 

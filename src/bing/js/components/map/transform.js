@@ -4,6 +4,8 @@ import 'proj4leaflet';
 
 // From https://github.com/arbakker/pdok-js-map-examples/blob/master/leaflet-tms-epsg28992/index.js
 
+import proj4 from 'proj4';
+
 // see "Nederlandse richtlijn tiling"
 // https://www.geonovum.nl/uploads/standards/downloads/nederlandse_richtlijn_tiling_-_versie_1.1.pdf
 
@@ -25,10 +27,11 @@ const RES = [
     0.420,
 ];
 
+const RD = '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +towgs84=565.2369,50.0087,465.658,-0.406857330322398,0.350732676542563,-1.8703473836068,4.0812 +no_defs';
 
 const RD_CRS = new L.Proj.CRS(
     'EPSG:28992',
-    '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +towgs84=565.2369,50.0087,465.658,-0.406857330322398,0.350732676542563,-1.8703473836068,4.0812 +no_defs',
+    RD,
     {
         resolutions: RES,
         origin: [-285401.920, 903401.920],
@@ -40,4 +43,8 @@ const RD_CRS = new L.Proj.CRS(
     }
 );
 
-export { RD_CRS };
+const toRD = (coords) => {
+    return proj4('WGS84', RD, coords);
+};
+
+export { RD_CRS, toRD };
