@@ -82,7 +82,7 @@ class PlanfaseView(ProjectMixin, UpdateView):
     model = Project
     form_class = ProjectPlanfaseForm
     template_name = "aanmeldformulier/planfase.html"
-    success_url = reverse_lazy("aanmeldformulier:upload")
+    success_url = reverse_lazy("aanmeldformulier:vergadering")
     current_step = Steps.planfase
 
     def get_object(self, queryset=None):
@@ -98,7 +98,7 @@ class UploadView(ProjectMixin, ModelFormSetView):
     factory_kwargs = {"extra": 3}
     template_name = "aanmeldformulier/upload.html"
     success_url = reverse_lazy("aanmeldformulier:vergadering")
-    current_step = Steps.upload
+    # current_step = Steps.upload
 
     # TODO: Simple cache....
     _req_doc_types = []

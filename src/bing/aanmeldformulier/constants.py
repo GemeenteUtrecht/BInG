@@ -11,7 +11,7 @@ class Steps(DjangoChoices):
     info = ChoiceItem("info", _("Projectinfo"))
     toetswijze = ChoiceItem("toetswijze", _("Toetswijze"))
     planfase = ChoiceItem("planfase", _("Planfase"))
-    upload = ChoiceItem("upload", _("Upload"))
+    # upload = ChoiceItem("upload", _("Upload"))
     meeting = ChoiceItem(
         "meeting",
         _("Vergadering"),
