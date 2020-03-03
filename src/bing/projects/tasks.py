@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from celery.result import AsyncResult, ResultSet
 
+from bing.camunda.interface import DocumentListVariable, ZaakVariable
 from bing.celery import app
 from bing.config.models import BInGConfig
 from bing.projects.models import Project, ProjectAttachment

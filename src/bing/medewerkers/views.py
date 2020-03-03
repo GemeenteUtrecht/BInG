@@ -17,10 +17,6 @@ from django.views.generic.edit import FormMixin
 
 from bing.meetings.models import Meeting
 from bing.projects.models import Project, ProjectAttachment
-from bing.service.brc import fetch_besluiten
-from bing.service.camunda import get_aanvraag_tasks, get_task
-from bing.service.drc import fetch_document, stream_inhoud
-from bing.service.zrc import fetch_resultaat, fetch_status, fetch_zaak, fetch_zaken
 
 from .decorators import camunda_task
 from .forms import (
@@ -75,9 +71,13 @@ class StatusFormMixin(FormMixin):
         initial = super().get_initial()
 
         # fetch current status information
-        zaak = fetch_zaak(self.object.zaak)
-        current_status_type = fetch_status(zaak["status"])["statusType"]
-        current_resultaat = fetch_resultaat(zaak["resultaat"])
+        # FIXME fetch zaak, status and resultaat
+        # zaak = fetch_zaak(self.object.zaak)
+        # current_status_type = fetch_status(zaak["status"])["statusType"]
+        # current_resultaat = fetch_resultaat(zaak["resultaat"])
+        zaak = {}
+        current_status_type = ''
+        current_resultaat = {}
         current_resultaat_type = (
             current_resultaat["resultaatType"] if current_resultaat else ""
         )
@@ -120,12 +120,15 @@ class MeetingDetailView(LoginRequiredMixin, StatusFormMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        zaak = fetch_zaak(self.object.zaak)
-        context["zaak"] = zaak
+        # FIXME add zaak, project_zaken
+        # zaak = fetch_zaak(self.object.zaak)
 
-        project_zaken = {
-            zaak["url"]: zaak for zaak in fetch_zaken(zaak["relevanteAndereZaken"])
-        }
+        # context["zaak"] = zaak
+
+        # project_zaken = {
+        #     zaak["url"]: zaak for zaak in fetch_zaken(zaak["relevanteAndereZaken"])
+        # }
+        project_zaken = {}
         projects = {
             project.zaak: project
             for project in Project.objects.filter(zaak__in=project_zaken)
@@ -167,7 +170,8 @@ class ProjectDetailView(LoginRequiredMixin, StatusFormMixin, DetailView):
             documents = sorted(documents, key=lambda doc: (doc.get("document_type")))
             context["documents"] = documents
 
-        context["besluiten"] = fetch_besluiten(zaak=self.object.zaak)
+        # FIXME add besluiten
+        # context["besluiten"] = fetch_besluiten(zaak=self.object.zaak)
 
         return context
 
@@ -198,13 +202,16 @@ class AttachmentDownloadView(LoginRequiredMixin, BaseDetailView):
     def get(self, request, *args, **kwargs):
         attachment = self.get_object()
 
-        document = fetch_document(url=attachment.eio_url)
+        # document = fetch_document(url=attachment.eio_url)
+        # FIXME add document
+        document = {}
         content_type = document["formaat"] or "application/octet-stream"
 
         default = f"attachment{guess_extension(content_type)}"
         filename = document["bestandsnaam"] or default
 
-        content = stream_inhoud(document["inhoud"])
+        # FIXME add content
+        content = document["inhoud"]
         response = StreamingHttpResponse(
             streaming_content=content, content_type=content_type
         )
@@ -221,7 +228,8 @@ class UserTasksView(LoginRequiredMixin, TemplateView):
     template_name = "medewerkers/tasks.html"
 
     def get_context_data(self, **kwargs) -> dict:
-        kwargs["tasks"] = get_aanvraag_tasks()
+        # FIXME get tasks
+        # kwargs["tasks"] = get_aanvraag_tasks()
         return super().get_context_data(**kwargs)
 
 
@@ -238,5 +246,6 @@ class DetermineProcedureView(LoginRequiredMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["task"] = get_task(self.kwargs["task_id"])
+        # FIXME get task
+        # kwargs["task"] = get_task(self.kwargs["task_id"])
         return kwargs

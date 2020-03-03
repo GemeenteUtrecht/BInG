@@ -13,7 +13,6 @@ from bing.config.models import BInGConfig, RequiredDocuments
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.projects.tasks import upload_document
-from bing.service.ztc import get_aanvraag_iot
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +78,8 @@ class ProjectAttachmentForm(forms.ModelForm):
     def __init__(self, project: Project, *args, **kwargs):
         self.project = project
         super().__init__(*args, **kwargs)
-        io_types = get_aanvraag_iot()
+        io_types = []
+        # TODO get io_types
 
         try:
             io_types_config = RequiredDocuments.objects.get(

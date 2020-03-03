@@ -9,7 +9,6 @@ from django.template.defaultfilters import date
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from bing.camunda.client_models import Task
 from bing.config.models import RequiredDocuments
 from bing.meetings.models import Meeting
 from bing.meetings.tasks import (
@@ -19,14 +18,7 @@ from bing.meetings.tasks import (
 )
 from bing.projects.constants import PlanFases, Toetswijzen
 from bing.projects.models import Project
-from bing.service.ztc import (
-    get_aanvraag_besluittypen,
-    get_aanvraag_iot,
-    get_aanvraag_resultaattypen,
-    get_aanvraag_statustypen,
-    get_vergadering_resultaattypen,
-    get_vergadering_statustypen,
-)
+
 
 from .tasks import add_besluit, set_new_status, set_result
 
@@ -110,7 +102,9 @@ class ProjectUpdateForm(forms.ModelForm):
             )
             missing = set(io_types_config.informatieobjecttypen) - set(io_types)
             if missing:
-                io_types = get_aanvraag_iot()
+                # FIXME get io_types
+                io_types = []
+                # io_types = get_aanvraag_iot()
                 document_types = [label for url, label in io_types if url in missing]
                 msg = (
                     "De toetswijze is gewijzigd naar '{toetswijze}'. Hierdoor dient u "
@@ -149,7 +143,7 @@ class ProjectUpdateForm(forms.ModelForm):
 
 
 class ProjectProcedureForm(ProjectUpdateForm):
-    def __init__(self, task: Task, *args, **kwargs):
+    def __init__(self, task, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         del self.fields["planfase"]
@@ -226,13 +220,17 @@ class StatusForm(forms.Form):
 
 
 class ProjectStatusForm(StatusForm):
-    GET_STATUSTYPEN = staticmethod(get_aanvraag_statustypen)
-    GET_RESULTAATTYPEN = staticmethod(get_aanvraag_resultaattypen)
+    # FIXME add GET_STATUSTYPEN, GET_RESULTAATTYPEN
+    # GET_STATUSTYPEN = staticmethod(get_aanvraag_statustypen)
+    # GET_RESULTAATTYPEN = staticmethod(get_aanvraag_resultaattypen)
+    pass
 
 
 class MeetingStatusForm(StatusForm):
-    GET_STATUSTYPEN = staticmethod(get_vergadering_statustypen)
-    GET_RESULTAATTYPEN = staticmethod(get_vergadering_resultaattypen)
+    # FIXME add GET_STATUSTYPEN, GET_RESULTAATTYPEN
+    # GET_STATUSTYPEN = staticmethod(get_vergadering_statustypen)
+    # GET_RESULTAATTYPEN = staticmethod(get_vergadering_resultaattypen)
+    pass
 
 
 class ProjectBesluitForm(forms.ModelForm):
@@ -254,7 +252,8 @@ class ProjectBesluitForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["besluittype"].choices = get_aanvraag_besluittypen()
+        # FIXME add fields["besluittype"].choices
+        # self.fields["besluittype"].choices = get_aanvraag_besluittypen()
 
     def save(self, *args, **kwargs):
         obj = super().save(*args, **kwargs)
