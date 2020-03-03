@@ -5,7 +5,7 @@ from django.db import transaction
 from django.http import HttpRequest
 
 from .forms import DeploymentForm
-from .models import Deployment, ProcessDefinition
+from .models import Deployment
 
 
 @admin.register(Deployment)
@@ -18,11 +18,3 @@ class DeploymentAdmin(admin.ModelAdmin):
         deployment = super().save_form(request, form, change)
         transaction.on_commit(functools.partial(form.update_in_camunda, deployment))
         return deployment
-
-
-@admin.register(ProcessDefinition)
-class ProcessDefinitionAdmin(admin.ModelAdmin):
-    list_display = ("name", "version", "key", "camunda_id")
-    search_fields = ("name",)
-    list_filter = ("version",)
-    ordering = ("name", "-version")

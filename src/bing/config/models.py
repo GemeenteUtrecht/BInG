@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
+from django_camunda.fields import ProcessDefinitionField
 from solo.models import SingletonModel
 
 from bing.projects.constants import Toetswijzen
@@ -35,15 +36,7 @@ class BInGConfig(SingletonModel):
     )
 
     # camunda
-    aanvraag_process_key = models.CharField(
-        _("aanvraag process key"),
-        max_length=100,
-        blank=True,
-        help_text=_(
-            "Na het indienen van een BInG-aanvraag wordt een instantie "
-            "van een procesdefinitie met deze key opgestart."
-        ),
-    )
+    camunda_process = ProcessDefinitionField(_("camunda process to start"), blank=True)
 
     class Meta:
         verbose_name = _("BInG configuratie")

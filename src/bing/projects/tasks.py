@@ -23,7 +23,7 @@ def upload_document(attachment_id: int, filename: str, temp_file: str):
         logger.warning("Could not fetch ProjectAttachment %d", attachment_id)
         return
 
-    # TODO upload files
+    # FIXME upload files
 
 
 @app.task
@@ -126,7 +126,7 @@ def relate_created_zaak(project_id: int):
 
     config = BInGConfig.get_solo()
 
-    # TODO fetch zaak
+    # FIXME fetch zaak
 
     project.zaak = ""
     project.save(update_fields=["zaak"])
