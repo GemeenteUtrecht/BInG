@@ -2,7 +2,6 @@ import logging
 
 from bing.celery import app
 from bing.config.models import BInGConfig
-from bing.config.service import get_zrc_client
 from bing.projects.models import Project
 
 from .models import Meeting
@@ -36,23 +35,15 @@ def add_project_to_meeting(meeting_id: int, project_id: int) -> None:
     project.ensure_zaak()
 
     config = BInGConfig.get_solo()
-    zrc_client = get_zrc_client(
-        scopes=[
-            "zds.scopes.zaken.lezen",
-            "zds.scopes.zaken.aanmaken",
-            "zds.scopes.zaken.bijwerken",
-        ],
-        zaaktypes=[config.zaaktype_vergadering],
-    )
 
-    # fetch the current zaak so we can add gerelateerde zaken
-    zaak = zrc_client.retrieve("zaak", url=meeting.zaak)
-    relevante_andere_zaken = zaak["relevanteAndereZaken"] + [project.zaak]
-
-    # TODO: E-tag logic for concurrent updates
-    zrc_client.partial_update(
-        "zaak", {"relevanteAndereZaken": relevante_andere_zaken}, url=meeting.zaak
-    )
+    # FIXME fetch the current zaak so we can add gerelateerde zaken
+    # zaak = zrc_client.retrieve("zaak", url=meeting.zaak)
+    # relevante_andere_zaken = zaak["relevanteAndereZaken"] + [project.zaak]
+    #
+    # # TODO: E-tag logic for concurrent updates
+    # zrc_client.partial_update(
+    #     "zaak", {"relevanteAndereZaken": relevante_andere_zaken}, url=meeting.zaak
+    # )
 
 
 @app.task

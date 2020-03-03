@@ -5,11 +5,9 @@ import json
 from dataclasses import dataclass
 from typing import Union
 
-from bing.config.rewrites import URLRewriteMixin
-
 
 @dataclass
-class Variable(URLRewriteMixin):
+class Variable:
     data: Union[list, dict]
 
     serialization_data_format = "application/json"
@@ -20,7 +18,6 @@ class Variable(URLRewriteMixin):
             "serializationDataFormat": self.serialization_data_format,
             "objectTypeName": self.object_type_name,
         }
-        self.rewrite_urls(self.data)
         return {"type": "json", "value": json.dumps(self.data), "valueInfo": value_info}
 
 

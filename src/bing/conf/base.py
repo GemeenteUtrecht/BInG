@@ -3,7 +3,6 @@ import os
 # Django-hijack (and Django-hijack-admin)
 from django.urls import reverse_lazy
 
-from .api import *  # noqa
 from .utils import get_redis_db_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -57,14 +56,12 @@ INSTALLED_APPS = [
     # 'django.contrib.sitemaps',
     # External applications.
     "axes",
-    "rest_framework",
-    "rest_framework.authtoken",
     "sniplates",
     "solo",
     "hijack",
     "compat",  # Part of hijack
     "hijack_admin",
-    "zgw_consumers",
+    "django_camunda",
     # Project applications.
     "bing.config",
     "bing.accounts",
@@ -73,9 +70,7 @@ INSTALLED_APPS = [
     "bing.projects",
     "bing.medewerkers",
     "bing.meetings",
-    "bing.cache",
     "bing.utils",
-    "bing.webhooks",
 ]
 
 MIDDLEWARE = [

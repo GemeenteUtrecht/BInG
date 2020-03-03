@@ -3,7 +3,8 @@ from io import StringIO
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from .client import Camunda
+from django_camunda.client import get_client
+
 from .models import Deployment
 
 
@@ -19,7 +20,7 @@ class DeploymentForm(forms.ModelForm):
         fields = "__all__"
 
     def update_in_camunda(self, deployment: Deployment):
-        client = Camunda()
+        client = get_client()
         client.request(
             "deployment/create",
             method="POST",

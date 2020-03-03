@@ -6,7 +6,6 @@ from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 
 from bing.config.models import BInGConfig
-from bing.config.service import get_zrc_client
 
 MEETING_DAY = 4  # Thursday in ISO standard
 MEETING_FREQUENCY = "2 weeks"
@@ -23,12 +22,11 @@ def fetch_vergadering_zaken() -> List[dict]:
     TODO: include/exclude past zaken based on startdatum
     """
     config = BInGConfig.get_solo()
-    zrc_client = get_zrc_client(
-        scopes=["zds.scopes.zaken.lezen"], zaaktypes=[config.zaaktype_vergadering]
-    )
-    zaken = zrc_client.list(
-        "zaak", query_params={"zaaktype": config.zaaktype_vergadering}
-    )["results"]
+    # FIXME fetch zaken
+    zaken = []
+    # zaken = zrc_client.list(
+    #     "zaak", query_params={"zaaktype": config.zaaktype_vergadering}
+    # )["results"]
     today = timezone.make_naive(timezone.now()).date().isoformat()
     zaken = [zaak for zaak in zaken if zaak["startdatum"] >= today]
     return sorted(zaken, key=lambda zaak: zaak["startdatum"])
