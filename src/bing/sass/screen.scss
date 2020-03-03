@@ -8,6 +8,8 @@ $context : "site";
 $image-path : "../images/svg/";
 $image-ext : ".svg";
 
+@import "vendor/all";
+
 //  RESET AND NORMALIZE BROWSER STYLING
 @import "partials/normalize";
 
