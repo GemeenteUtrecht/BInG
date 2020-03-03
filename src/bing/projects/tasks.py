@@ -1,3 +1,4 @@
+import json
 import logging
 
 from django.utils import timezone
@@ -86,14 +87,14 @@ def relate_created_zaak(project_id: int):
         return
 
     client = get_client()
-    response = client.request(
+    variables = client.request(
         f"process-instance/{project.camunda_process_instance_id}/variables",
         params={"deserializeValues": "false"},
+        underscoreize=False,
     )
+    if "zaak" in variables:
+        assert variables["zaak"]["type"] == "Json"
+        zaak = json.loads(variables["zaak"]["value"])
 
-    config = BInGConfig.get_solo()
-
-    # FIXME fetch zaak
-
-    project.zaak = ""
-    project.save(update_fields=["zaak"])
+        project.zaak = zaak["zaakUrl"]
+        project.save(update_fields=["zaak"])
