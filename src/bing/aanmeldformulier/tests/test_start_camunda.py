@@ -89,6 +89,7 @@ class CamundaStartTests(TestCase):
                 "projectId": {"value": project.project_id, "type": "String"},
                 "toetswijze": {"value": project.toetswijze, "type": "String"},
                 "panden": {"value": "[]", "type": "Json"},
+                "services": {"value": "{}", "type": "Json"},
             },
         }
         self.assertEqual(request.json(), expected_body)

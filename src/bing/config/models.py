@@ -52,6 +52,15 @@ class BInGConfig(SingletonModel):
         return force_text(self._meta.verbose_name)
 
 
+class AliasCredential(models.Model):
+    alias = models.CharField(_("alias"), max_length=50, unique=True)
+    client_id = models.CharField(_("client ID"), max_length=255)
+    secret = models.CharField(_("secret"), max_length=255)
+
+    def __str__(self):
+        return self.alias
+
+
 class RequiredDocuments(models.Model):
     """
     Configure the documents required for a certain Toetswijze

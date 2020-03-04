@@ -7,6 +7,7 @@ from django_camunda.tasks import start_process
 
 from bing.celery import app
 from bing.config.models import BInGConfig
+from bing.config.utils import get_services
 from bing.projects.models import Project, ProjectAttachment
 
 logger = logging.getLogger(__name__)
@@ -52,6 +53,7 @@ def start_camunda_process(
         "projectId": {"value": project.project_id, "type": "String"},
         "toetswijze": {"value": project.toetswijze, "type": "String"},
         "panden": {"value": json.dumps(bag_urls or []), "type": "Json"},
+        "services": {"value": json.dumps(get_services("zrc", "ztc")), "type": "Json"},
     }
 
     process_instance = start_process(

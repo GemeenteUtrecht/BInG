@@ -2,6 +2,7 @@ pip-tools
 psycopg2
 pytz
 raven
+gemma-zds-client
 python-dateutil
 python-dotenv
 

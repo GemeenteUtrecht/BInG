@@ -33,6 +33,7 @@ factory-boy==2.11.1
 faker==1.0.5
 flower==0.9.3
 freezegun==0.3.11
+gemma-zds-client==0.13.1
 idna==2.8
 inflection==0.3.1
 isort==4.3.17
@@ -43,10 +44,12 @@ pep8==1.7.1
 pip-tools==4.0.0
 polib==1.1.0
 psycopg2==2.8.2
+pyjwt==1.7.1
 pylint==1.9.4
 python-dateutil==2.8.0
 python-dotenv==0.10.1
 pytz==2019.1
+pyyaml==5.3
 raven==6.10.0
 redis==3.2.1
 requests-mock==1.6.0

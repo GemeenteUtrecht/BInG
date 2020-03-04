@@ -29,6 +29,8 @@ these projects:
 * adding conclusions/results to the projects
 * connect with external parties for checks, such as the fire department
 
+https://www.utrecht.nl/ondernemen/vergunningen-en-regels/beheerinrichtinggebruik/handboek-openbare-ruimte/
+
 Documentation
 =============
 
