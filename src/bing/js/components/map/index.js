@@ -30,7 +30,6 @@ class Map {
   constructor(node) {
     this.node = node;
     this._map = this.init(node);
-    window._map = this._map;
 
     this._zoomNode = document.getElementById('zoomLevel');
   }
@@ -62,13 +61,15 @@ class Map {
       this._zoomNode.innerText = this._map.getZoom();
     });
 
+    this.featureLayer = L.geoJSON().addTo(map);
+
     return map;
   }
 
   onClick(event) {
     getFeatures(event.latlng)
       .then(json => {
-        console.log(json);
+        this.featureLayer.addData(json.features);
       });
   }
 }

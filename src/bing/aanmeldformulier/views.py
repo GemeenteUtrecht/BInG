@@ -13,6 +13,7 @@ from bing.projects.constants import Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.projects.tasks import start_camunda_process
 
+from .bag import get_panden
 from .constants import PROJECT_SESSION_KEY, Steps
 from .decorators import project_required
 from .forms import (
@@ -209,4 +210,6 @@ class MapView(TemplateView):
 class GetMapFeatures(View):
     def get(self, request, lng, lat, *args, **kwargs):
         data = {"query": {"lat": lat, "lng": lng}}
+        geojson_point = {"type": "Point", "coordinates": [lat, lng]}
+        data["features"] = get_panden(geojson_point)
         return JsonResponse(data)
