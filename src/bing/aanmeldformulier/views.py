@@ -1,9 +1,10 @@
 import logging
 
 from django.db import transaction
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.generic import FormView, TemplateView, UpdateView
 
 from extra_views import ModelFormSetView
@@ -12,11 +13,13 @@ from bing.projects.constants import Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.projects.tasks import start_camunda_process
 
+from .bag import get_panden
 from .constants import PROJECT_SESSION_KEY, Steps
 from .decorators import project_required
 from .forms import (
     ProjectAttachmentForm,
     ProjectAttachmentFormSet,
+    ProjectBAGForm,
     ProjectGetOrCreateForm,
     ProjectMeetingForm,
     ProjectPlanfaseForm,
@@ -46,7 +49,7 @@ class InfoPageView(TemplateView):
 class SpecifyProjectView(FormView):
     form_class = ProjectGetOrCreateForm
     template_name = "aanmeldformulier/specify_project.html"
-    success_url = reverse_lazy("aanmeldformulier:toetswijze")
+    success_url = reverse_lazy("aanmeldformulier:map")
     current_step = Steps.info
 
     def get_initial(self):
@@ -62,6 +65,18 @@ class SpecifyProjectView(FormView):
     def form_valid(self, form):
         project = form.save()
         self.request.session[PROJECT_SESSION_KEY] = project.id
+        return super().form_valid(form)
+
+
+@method_decorator(project_required, name="dispatch")
+class LocationView(ProjectMixin, FormView):
+    form_class = ProjectBAGForm
+    template_name = "aanmeldformulier/map.html"
+    success_url = reverse_lazy("aanmeldformulier:toetswijze")
+    current_step = Steps.location
+
+    def form_valid(self, form):
+        self.request.session["bag_urls"] = form.cleaned_data["bag_urls"]
         return super().form_valid(form)
 
 
@@ -152,7 +167,9 @@ class UploadView(ProjectMixin, ModelFormSetView):
         response = super().formset_valid(form)
         project = self.get_project()
         if project.toetswijze == Toetswijzen.versneld:
-            start_camunda_process.delay(project.id)
+            start_camunda_process.delay(
+                project.id, bag_urls=self.request.session.get("bag_urls", [])
+            )
         return response
 
 
@@ -178,7 +195,9 @@ class MeetingView(ProjectMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        start_camunda_process.delay(self.object.id)
+        start_camunda_process.delay(
+            self.object.id, bag_urls=self.request.session.get("bag_urls", [])
+        )
         return response
 
 
@@ -198,3 +217,11 @@ class ConfirmationView(ProjectMixin, TemplateView):
         response = super().get(request, *args, **kwargs)
         del self.request.session[PROJECT_SESSION_KEY]
         return response
+
+
+class GetMapFeatures(View):
+    def get(self, request, lng, lat, *args, **kwargs):
+        data = {"query": {"lat": lat, "lng": lng}}
+        geojson_point = {"type": "Point", "coordinates": [lat, lng]}
+        data["features"] = get_panden(geojson_point)
+        return JsonResponse(data)

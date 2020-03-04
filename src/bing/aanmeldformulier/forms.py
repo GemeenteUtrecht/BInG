@@ -3,6 +3,7 @@ import os
 
 from django import forms
 from django.conf import settings
+from django.contrib.postgres.forms.array import SimpleArrayField
 from django.core.files import temp as tempfile
 from django.template.defaultfilters import date
 from django.utils import timezone
@@ -157,3 +158,9 @@ class ProjectMeetingForm(forms.ModelForm):
         self.fields["meeting"].queryset = self.fields["meeting"].queryset.filter(
             start__gt=earliest_start
         )
+
+
+class ProjectBAGForm(forms.Form):
+    bag_urls = SimpleArrayField(
+        forms.URLField(), label=_("BAG URLs"), required=False, widget=forms.Textarea
+    )

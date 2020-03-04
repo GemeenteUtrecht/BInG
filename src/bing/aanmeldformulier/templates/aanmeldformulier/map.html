@@ -1,0 +1,25 @@
+{% extends "aanmeldformulier/base.html" %}
+{% load sniplates %}
+
+{% block page-content %}
+    {% load_widgets form='snippets/forms.html' %}
+    <form action="." method="post">
+        {% csrf_token %}
+        <p>Selecteer één of meerdere panden op de kaart.</p>
+
+        <p>Klikken op de kaart haalt de beschikbare panden op. Een pand aanklikken
+        selecteert het pand.</p>
+
+        {{ form.errors }}
+
+        <div class="map" data-target-input="#id_bag_urls"></div>
+
+        <div class="navigation_buttons">
+            {% widget 'form:submit' text=_("Doorgaan") %}
+        </div>
+
+        {{ form.bag_urls }}
+
+    </form>
+
+{% endblock %}
