@@ -1,8 +1,6 @@
 import json
 import logging
 
-from django.utils import timezone
-
 from django_camunda.client import get_client
 from django_camunda.tasks import start_process
 
