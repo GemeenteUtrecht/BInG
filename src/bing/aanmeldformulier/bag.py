@@ -1,17 +1,8 @@
 from dataclasses import dataclass
 
-from django.conf import settings
-
 import requests
 
-BASE = "https://bag.basisregistraties.overheid.nl/api/v1/"
-
-
-HEADERS = {
-    "X-Api-Key": settings.BAG_API_KEY,
-    # "Content-Crs": "urn:ogc:def:crs:OGC:1.3:CRS84",
-    # "Accept-Crs": "urn:ogc:def:crs:EPSG::28992",
-}
+from bing.config.models import BInGConfig
 
 
 @dataclass
@@ -47,6 +38,17 @@ class Pand:
 def get_panden(point: dict):
     point = point.copy()
 
+    config = BInGConfig.get_solo()
+    base = config.bag_root
+    if not base.endswith("/"):
+        base = f"{base}/"
+
+    headers = {}
+    if config.bag_api_key:
+        headers.update({"X-Api-Key": config.bag_api_key})
+    if config.bag_nlx_headers:
+        headers.update(config.bag_nlx_headers)
+
     # urn:ogc:def:crs:OGC:1.3:CRS84
     # urn:ogc:def:crs:EPSG::4326
     # urn:ogc:def:crs:EPSG::28992
@@ -58,7 +60,7 @@ def get_panden(point: dict):
     # }
 
     response = requests.post(
-        f"{BASE}panden", json={"geometrie": {"contains": point}}, headers=HEADERS
+        f"{base}panden", json={"geometrie": {"contains": point}}, headers=headers
     )
     response.raise_for_status()
     response_data = response.json()

@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
@@ -37,6 +37,13 @@ class BInGConfig(SingletonModel):
 
     # camunda
     camunda_process = ProcessDefinitionField(_("camunda process to start"), blank=True)
+
+    # BAG interaction
+    bag_root = models.URLField(
+        default="https://bag.basisregistraties.overheid.nl/api/v1/"
+    )
+    bag_api_key = models.CharField(_("API key"), max_length=255, blank=True)
+    bag_nlx_headers = JSONField(default=dict, blank=True)
 
     class Meta:
         verbose_name = _("BInG configuratie")
