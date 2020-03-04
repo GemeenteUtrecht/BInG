@@ -4,24 +4,25 @@
 
 import * as L from 'leaflet';
 
-import { getFeatureInfo, getTile } from './features.js';
-import { RD_CRS, toRD } from './transform.js';
+import { getFeatures } from './features.js';
+import { RD_CRS } from './transform.js';
 
 const BASE_URL = 'https://geodata.nationaalgeoregister.nl/tiles/service';
 const attribution = 'Kaartgegevens &copy; <a href="https://www.kadaster.nl">Kadaster</a> | <a href="https://www.verbeterdekaart.nl">Verbeter de kaart</a>';
 
 // 3857 -> pseudo mercator = WGS 84
+// 28992 -> RD
 const BRT_TILE_LAYER_URL = `${BASE_URL}/wmts/brtachtergrondkaart/EPSG:28992/{z}/{x}/{y}.png`;
-const BGT_TILE_LAYER_URL = `${BASE_URL}/wmts/bgtachtergrond/EPSG:28992/{z}/{x}/{y}.png`;
+// const BGT_TILE_LAYER_URL = `${BASE_URL}/wmts/bgtachtergrond/EPSG:28992/{z}/{x}/{y}.png`;
 
 const CENTER = {
   latitude: 52.093249,
   longitude: 5.111994,
-  zoom: 13,
+  zoom: 11,
 };
 
-const rd_center = toRD([CENTER.longitude, CENTER.latitude]);
-console.log('RD Center:', rd_center);
+// const rd_center = toRD([CENTER.longitude, CENTER.latitude]);
+// console.log('RD Center:', rd_center);
 
 
 class Map {
@@ -65,26 +66,14 @@ class Map {
   }
 
   onClick(event) {
-    const lng = event.latlng.lng;
-    const lat = event.latlng.lat;
-    const z = this._map.getZoom();
-
-    console.log("RD coords: ", toRD([lng, lat]));
-
-    const {xTile, yTile} = getTile(lng, lat, z);
-
-    const {x, y} = this._tileLayer.getTileSize();
-
-    const relativeX = event.containerPoint.x % x;
-    const relativeY = event.containerPoint.y % y;
-
-    console.log(relativeX, relativeY);
-
-    const features = getFeatureInfo(xTile, yTile, z, 0, 0);
-    console.log(features);
+    getFeatures(event.latlng)
+      .then(json => {
+        console.log(json);
+      });
   }
 }
 
 
 const maps = document.querySelectorAll('.map');
+
 Array.from(maps).forEach(node => new Map(node));

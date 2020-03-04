@@ -336,3 +336,5 @@ if SENTRY_DSN:
             }
         }
     )
+
+BAG_API_KEY = os.getenv("BAG_API_KEY")

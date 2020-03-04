@@ -1,9 +1,10 @@
 import logging
 
 from django.db import transaction
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.generic import FormView, TemplateView, UpdateView
 
 from extra_views import ModelFormSetView
@@ -203,3 +204,9 @@ class ConfirmationView(ProjectMixin, TemplateView):
 class MapView(TemplateView):
     template_name = "aanmeldformulier/map.html"
     current_step = Steps.info
+
+
+class GetMapFeatures(View):
+    def get(self, request, lng, lat, *args, **kwargs):
+        data = {"query": {"lat": lat, "lng": lng}}
+        return JsonResponse(data)

@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     ConfirmationView,
+    GetMapFeatures,
     InfoPageView,
     MapView,
     MeetingView,
@@ -15,6 +16,7 @@ app_name = "aanmeldformulier"
 
 urlpatterns = [
     path("map/", MapView.as_view(), name="map"),
+    path("map/features/<lng>/<lat>/", GetMapFeatures.as_view(), name="map-features"),
     path("", InfoPageView.as_view(), name="info"),
     path("start/", SpecifyProjectView.as_view(), name="specify-project"),
     path("toetswijze/", ToetswijzeView.as_view(), name="toetswijze"),
