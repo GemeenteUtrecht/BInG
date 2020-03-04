@@ -32,6 +32,8 @@ class Map {
     this._map = this.init(node);
 
     this._zoomNode = document.getElementById('zoomLevel');
+
+    this.bagObjects = {};
   }
 
   init(node) {
@@ -56,21 +58,37 @@ class Map {
     map.addLayer(tileLayer);
     this._tileLayer = tileLayer;
 
-    map.on('click', (e) => this.onClick(e));
+    map.on('click', (e) => this.drawFeatures(e));
     map.on('zoomend', () => {
       this._zoomNode.innerText = this._map.getZoom();
     });
 
-    this.featureLayer = L.geoJSON().addTo(map);
+    this.featureLayer = L.geoJSON(null, {
+        onEachFeature: (feature, layer) => {
+            layer.on('click', e => this.toggleFeature(e, feature, layer));
+        },
+    }).addTo(map);
 
     return map;
   }
 
-  onClick(event) {
+  drawFeatures(event) {
     getFeatures(event.latlng)
       .then(json => {
         this.featureLayer.addData(json.features);
       });
+  }
+
+  toggleFeature(event, feature, layer) {
+    L.DomEvent.stopPropagation(event);
+    feature.properties._selected = !feature.properties._selected;
+    if (feature.properties._selected) {
+      layer.setStyle({color: 'red'});
+      this.bagObjects[feature.properties.url] = feature.properties;
+    } else {
+      delete this.bagObjects[feature.properties.url];
+      this.featureLayer.resetStyle(layer);
+    }
   }
 }
 
