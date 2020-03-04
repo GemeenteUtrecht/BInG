@@ -30,10 +30,8 @@ class Map {
   constructor(node) {
     this.node = node;
     this._map = this.init(node);
-
-    this._zoomNode = document.getElementById('zoomLevel');
-
     this.bagObjects = {};
+    this.inputNode = document.querySelector(node.dataset.targetInput);
   }
 
   init(node) {
@@ -59,9 +57,6 @@ class Map {
     this._tileLayer = tileLayer;
 
     map.on('click', (e) => this.drawFeatures(e));
-    map.on('zoomend', () => {
-      this._zoomNode.innerText = this._map.getZoom();
-    });
 
     this.featureLayer = L.geoJSON(null, {
         onEachFeature: (feature, layer) => {
@@ -75,7 +70,12 @@ class Map {
   drawFeatures(event) {
     getFeatures(event.latlng)
       .then(json => {
-        this.featureLayer.addData(json.features);
+        if (json.features.length) {
+          this.featureLayer.addData(json.features);
+        } else {
+          alert('Geen panden gevonden');
+        }
+
       });
   }
 
@@ -89,6 +89,9 @@ class Map {
       delete this.bagObjects[feature.properties.url];
       this.featureLayer.resetStyle(layer);
     }
+
+    const urls = Object.keys(this.bagObjects).join(',');
+    this.inputNode.value = urls;
   }
 }
 

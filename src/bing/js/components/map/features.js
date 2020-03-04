@@ -4,7 +4,7 @@ const getFeatures = ({ lng, lat }) => {
     return window
         .fetch(url)
         .then(response => response.json())
-        .catch(console.error);
+        .catch(console.error)
     ;
 };
 

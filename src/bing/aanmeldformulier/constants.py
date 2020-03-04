@@ -9,6 +9,7 @@ PROJECT_SESSION_KEY = "project_id"
 
 class Steps(DjangoChoices):
     info = ChoiceItem("info", _("Projectinfo"))
+    location = ChoiceItem("location", _("Location"))
     toetswijze = ChoiceItem("toetswijze", _("Toetswijze"))
     planfase = ChoiceItem("planfase", _("Planfase"))
     # upload = ChoiceItem("upload", _("Upload"))

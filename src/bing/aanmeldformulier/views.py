@@ -19,6 +19,7 @@ from .decorators import project_required
 from .forms import (
     ProjectAttachmentForm,
     ProjectAttachmentFormSet,
+    ProjectBAGForm,
     ProjectGetOrCreateForm,
     ProjectMeetingForm,
     ProjectPlanfaseForm,
@@ -48,7 +49,7 @@ class InfoPageView(TemplateView):
 class SpecifyProjectView(FormView):
     form_class = ProjectGetOrCreateForm
     template_name = "aanmeldformulier/specify_project.html"
-    success_url = reverse_lazy("aanmeldformulier:toetswijze")
+    success_url = reverse_lazy("aanmeldformulier:map")
     current_step = Steps.info
 
     def get_initial(self):
@@ -64,6 +65,20 @@ class SpecifyProjectView(FormView):
     def form_valid(self, form):
         project = form.save()
         self.request.session[PROJECT_SESSION_KEY] = project.id
+        return super().form_valid(form)
+
+
+@method_decorator(project_required, name="dispatch")
+class LocationView(ProjectMixin, FormView):
+    form_class = ProjectBAGForm
+    template_name = "aanmeldformulier/map.html"
+    success_url = reverse_lazy("aanmeldformulier:toetswijze")
+    current_step = Steps.location
+
+    def form_valid(self, form):
+        import bpdb
+
+        bpdb.set_trace()
         return super().form_valid(form)
 
 
@@ -200,11 +215,6 @@ class ConfirmationView(ProjectMixin, TemplateView):
         response = super().get(request, *args, **kwargs)
         del self.request.session[PROJECT_SESSION_KEY]
         return response
-
-
-class MapView(TemplateView):
-    template_name = "aanmeldformulier/map.html"
-    current_step = Steps.info
 
 
 class GetMapFeatures(View):
