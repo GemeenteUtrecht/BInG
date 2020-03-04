@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import List, Optional
 
 from django_camunda.client import get_client
 from django_camunda.tasks import start_process
@@ -25,7 +26,9 @@ def upload_document(attachment_id: int, filename: str, temp_file: str):
 
 
 @app.task
-def start_camunda_process(project_id: int) -> None:
+def start_camunda_process(
+    project_id: int, bag_urls: Optional[List[str]] = None
+) -> None:
     try:
         project = Project.objects.get(id=project_id)
     except Project.DoesNotExist:
@@ -48,6 +51,7 @@ def start_camunda_process(project_id: int) -> None:
         "zaaktype": {"value": config.zaaktype_aanvraag, "type": "String"},
         "projectId": {"value": project.project_id, "type": "String"},
         "toetswijze": {"value": project.toetswijze, "type": "String"},
+        "panden": {"value": json.dumps(bag_urls or []), "type": "Json"},
     }
 
     process_instance = start_process(

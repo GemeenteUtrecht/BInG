@@ -76,9 +76,7 @@ class LocationView(ProjectMixin, FormView):
     current_step = Steps.location
 
     def form_valid(self, form):
-        import bpdb
-
-        bpdb.set_trace()
+        self.request.session["bag_urls"] = form.cleaned_data["bag_urls"]
         return super().form_valid(form)
 
 
@@ -169,7 +167,9 @@ class UploadView(ProjectMixin, ModelFormSetView):
         response = super().formset_valid(form)
         project = self.get_project()
         if project.toetswijze == Toetswijzen.versneld:
-            start_camunda_process.delay(project.id)
+            start_camunda_process.delay(
+                project.id, bag_urls=self.request.session.get("bag_urls", [])
+            )
         return response
 
 
@@ -195,7 +195,9 @@ class MeetingView(ProjectMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        start_camunda_process.delay(self.object.id)
+        start_camunda_process.delay(
+            self.object.id, bag_urls=self.request.session.get("bag_urls", [])
+        )
         return response
 
 

@@ -85,9 +85,10 @@ class CamundaStartTests(TestCase):
             "withVariablesInReturn": False,
             "variables": {
                 "organisatieRSIN": {"value": config.organisatie_rsin, "type": "String"},
-                "zaaktype": {"value": config.zaaktype_aanvraag, "type": "String",},
+                "zaaktype": {"value": config.zaaktype_aanvraag, "type": "String"},
                 "projectId": {"value": project.project_id, "type": "String"},
                 "toetswijze": {"value": project.toetswijze, "type": "String"},
+                "panden": {"value": "[]", "type": "Json"},
             },
         }
         self.assertEqual(request.json(), expected_body)
