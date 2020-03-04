@@ -103,6 +103,15 @@ class PlanfaseView(ProjectMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.get_project(queryset=queryset)
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        project = self.get_project()
+        if project.toetswijze == Toetswijzen.versneld:
+            start_camunda_process.delay(
+                project.id, bag_urls=self.request.session.get("bag_urls", [])
+            )
+        return response
+
 
 @method_decorator(project_required, name="dispatch")
 class UploadView(ProjectMixin, ModelFormSetView):
