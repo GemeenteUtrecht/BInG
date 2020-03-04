@@ -6,12 +6,14 @@ from typing import Any, Dict, List, Optional
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from django_camunda.models import ProcessInstanceMixin
+
 from .constants import PlanFases, Toetswijzen
 
 logger = logging.getLogger(__name__)
 
 
-class Project(models.Model):
+class Project(ProcessInstanceMixin, models.Model):
     project_id = models.CharField(_("project id"), max_length=50, unique=True)
     name = models.CharField(_("name"), max_length=50)
 
@@ -34,19 +36,6 @@ class Project(models.Model):
         blank=True,
         verbose_name=_("meeting"),
         help_text=_("Specify during which meeting the project will be discussed."),
-    )
-
-    # track camunda references
-    camunda_process_instance_id = models.CharField(
-        _("process instance ID"),
-        max_length=100,
-        unique=True,
-        blank=True,
-        null=True,
-        default=None,
-    )
-    camunda_process_instance_url = models.URLField(
-        _("process instance URL"), unique=True, blank=True, null=True, default=None
     )
 
     class Meta:

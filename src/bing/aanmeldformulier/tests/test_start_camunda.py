@@ -26,6 +26,7 @@ class CamundaStartTests(TestCase):
         bing_config = BInGConfig.get_solo()
         bing_config.zaaktype_aanvraag = cls.zaaktype
         bing_config.aanvraag_process_key = "bing"
+        bing_config.camunda_process = "camunda_id"
         bing_config.save()
 
     def setUp(self):
@@ -35,7 +36,6 @@ class CamundaStartTests(TestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
 
-    @skip("skip until the integration with camunda is set")
     @freeze_time("2019-07-30 14:00")
     def test_full_project(self):
         """
@@ -52,7 +52,7 @@ class CamundaStartTests(TestCase):
         with requests_mock.Mocker() as m:
             instance_id = str(uuid.uuid4())
             m.post(
-                "http://camunda.utrecht.nl/engine-rest/process-definition/key/bing/start",
+                "https://camunda.example.com/engine-rest/process-definition/camunda_id/start",
                 json={
                     "links": [
                         {
@@ -69,8 +69,7 @@ class CamundaStartTests(TestCase):
                     "suspended": False,
                 },
             )
-            with patch("bing.projects.tasks.ResultSet.ready", return_value=True):
-                start_camunda_process(project.id)
+            start_camunda_process(project.id)
 
         request = m.last_request
         self.assertIsNotNone(request)
@@ -78,42 +77,17 @@ class CamundaStartTests(TestCase):
         # check request contents
         self.assertEqual(
             request.url,
-            "http://camunda.utrecht.nl/engine-rest/process-definition/key/bing/start",
+            "https://camunda.example.com/engine-rest/process-definition/camunda_id/start",
         )
 
         expected_body = {
-            "businessKey": f"bing-aanvraag",
+            "businessKey": "bing-aanvraag",
             "withVariablesInReturn": False,
             "variables": {
-                "zaak": {
-                    "type": "json",
-                    "value": json.dumps(
-                        {
-                            "bronorganisatie": config.organisatie_rsin,
-                            "identificatie": f"BInG-{project.project_id}",
-                            "zaaktype": config.zaaktype_aanvraag,
-                            "verantwoordelijkeOrganisatie": config.organisatie_rsin,
-                            "startdatum": "2019-07-30",
-                            "omschrijving": f"BInG aanvraag voor {project.name}",
-                        }
-                    ),
-                    "valueInfo": {
-                        "serializationDataFormat": "application/json",
-                        "objectTypeName": "com.gemeenteutrecht.processplatform.domain.impl.ZaakImpl",
-                    },
-                },
+                "organisatieRSIN": {"value": config.organisatie_rsin, "type": "String"},
+                "zaaktype": {"value": config.zaaktype_aanvraag, "type": "String",},
                 "projectId": {"value": project.project_id, "type": "String"},
                 "toetswijze": {"value": project.toetswijze, "type": "String"},
-                "documenten": {
-                    "value": json.dumps([attachment.eio_url]),
-                    "type": "json",
-                    "valueInfo": {
-                        "serializationDataFormat": "application/json",
-                        "objectTypeName": (
-                            "com.gemeenteutrecht.processplatform.domain.document.impl.DocumentImpl"
-                        ),
-                    },
-                },
             },
         }
         self.assertEqual(request.json(), expected_body)
