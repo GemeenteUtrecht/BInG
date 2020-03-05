@@ -4,7 +4,7 @@
 
 import * as L from 'leaflet';
 
-import { getFeatures } from './features.js';
+import { getFeatures, getFeaturesInBBox } from './features.js';
 import { RD_CRS } from './transform.js';
 
 const BASE_URL = 'https://geodata.nationaalgeoregister.nl/tiles/service';
@@ -31,7 +31,11 @@ class Map {
     this.node = node;
     this._map = this.init(node);
     this.bagObjects = {};
+
     this.inputNode = document.querySelector(node.dataset.targetInput);
+
+    const searchFeaturesBtn = document.querySelector(node.dataset.searchBtn);
+    searchFeaturesBtn.addEventListener('click', (e) => this.searchFeatures(e));
   }
 
   init(node) {
@@ -65,6 +69,16 @@ class Map {
     }).addTo(map);
 
     return map;
+  }
+
+  searchFeatures(event) {
+    event.preventDefault();
+    const bb = this._map.getBounds();
+    getFeaturesInBBox(bb)
+        .then(json => {
+            this.featureLayer.addData(json.features);
+        })
+    ;
   }
 
   drawFeatures(event) {

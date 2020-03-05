@@ -7,8 +7,10 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import FormView, TemplateView, UpdateView
 
+import requests
 from extra_views import ModelFormSetView
 
+from bing.config.models import BInGConfig
 from bing.projects.constants import Toetswijzen
 from bing.projects.models import Project, ProjectAttachment
 from bing.projects.tasks import start_camunda_process
@@ -235,10 +237,25 @@ class GetMapFeatures(View):
         data["features"] = get_panden(geojson_point)
         return JsonResponse(data)
 
-    def post(self, request, *args, **kwargs):
+
+class GetMapFeaturesBB(View):
+    def get(self, request, bbox, *args, **kwargs):
         """
         Relay a GeoJSON query to BPTL.
         """
+        config = BInGConfig.get_solo()
+
+        response = requests.post(
+            f"{config.bptl_root}/api/v1/work-unit",
+            json={"topic": "TODO", "vars": {}},
+            headers={"Authorization": f"Token {config.bptl_token}"},
+        )
+
+        response.raise_for_status()
+
         import bpdb
 
         bpdb.set_trace()
+
+        data = {"features": []}
+        return JsonResponse(data)

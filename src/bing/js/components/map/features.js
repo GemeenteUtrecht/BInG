@@ -9,4 +9,14 @@ const getFeatures = ({ lng, lat }) => {
 };
 
 
-export { getFeatures };
+const getFeaturesInBBox = (bb) => {
+    const url = `/aanmelden/map/features/bb/${bb.toBBoxString()}/`;
+    return window
+        .fetch(url)
+        .then(response => response.json())
+        .catch(console.error)
+    ;
+};
+
+
+export { getFeatures, getFeaturesInBBox };

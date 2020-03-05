@@ -12,13 +12,17 @@
 
         {{ form.errors }}
 
-        <div class="map" data-target-input="#id_bag_urls"></div>
+        <div class="map" data-target-input="#id_bag_urls" data-search-btn="#search-features"></div>
+
+        <div>
+            <button id="search-features">Zoek features</button>
+        </div>
+
+        {{ form.bag_urls }}
 
         <div class="navigation_buttons">
             {% widget 'form:submit' text=_("Doorgaan") %}
         </div>
-
-        {{ form.bag_urls }}
 
     </form>
 
