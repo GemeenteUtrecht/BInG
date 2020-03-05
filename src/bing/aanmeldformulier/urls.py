@@ -18,6 +18,7 @@ urlpatterns = [
     path("", InfoPageView.as_view(), name="info"),
     path("start/", SpecifyProjectView.as_view(), name="specify-project"),
     path("map/", LocationView.as_view(), name="map"),
+    path("map/features/", GetMapFeatures.as_view(), name="map-features"),
     path("map/features/<lng>/<lat>/", GetMapFeatures.as_view(), name="map-features"),
     path("toetswijze/", ToetswijzeView.as_view(), name="toetswijze"),
     path("planfase/", PlanfaseView.as_view(), name="planfase"),

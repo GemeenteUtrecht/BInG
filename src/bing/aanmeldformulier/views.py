@@ -234,3 +234,11 @@ class GetMapFeatures(View):
         geojson_point = {"type": "Point", "coordinates": [lat, lng]}
         data["features"] = get_panden(geojson_point)
         return JsonResponse(data)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Relay a GeoJSON query to BPTL.
+        """
+        import bpdb
+
+        bpdb.set_trace()

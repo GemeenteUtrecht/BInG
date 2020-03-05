@@ -45,6 +45,10 @@ class BInGConfig(SingletonModel):
     bag_api_key = models.CharField(_("API key"), max_length=255, blank=True)
     bag_nlx_headers = JSONField(default=dict, blank=True)
 
+    # BPTL config
+    bptl_root = models.URLField(default="https://bptl.utrechtproeftuin.nl")
+    bptl_token = models.CharField(max_length=255, blank=True)
+
     class Meta:
         verbose_name = _("BInG configuratie")
 
