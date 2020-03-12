@@ -7,6 +7,7 @@ python-dateutil
 python-dotenv
 
 Django<3.0
+django-auth-adfs-db
 django-hijack
 django-hijack-admin
 django-axes
