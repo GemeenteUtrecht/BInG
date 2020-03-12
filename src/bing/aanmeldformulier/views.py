@@ -245,17 +245,30 @@ class GetMapFeaturesBB(View):
         """
         config = BInGConfig.get_solo()
 
+        sw_lng, sw_lat, ne_lng, ne_lat = [float(x) for x in bbox.split(",")]
+
+        geojson = {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [ne_lng, ne_lat],
+                    [sw_lng, ne_lat],
+                    [sw_lng, sw_lat],
+                    [ne_lng, sw_lat],
+                    [ne_lng, ne_lat],
+                ]
+            ],
+        }
+
         response = requests.post(
             f"{config.bptl_root}/api/v1/work-unit",
-            json={"topic": "TODO", "vars": {}},
+            json={
+                "topic": "get-brt-features",
+                "vars": {"geometry": geojson, "BRTKey": config.bag_api_key},
+            },
             headers={"Authorization": f"Token {config.bptl_token}"},
         )
-
         response.raise_for_status()
 
-        import bpdb
-
-        bpdb.set_trace()
-
-        data = {"features": []}
-        return JsonResponse(data)
+        result_data = response.json()["resultVars"]
+        return JsonResponse(result_data)

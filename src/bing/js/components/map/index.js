@@ -76,8 +76,9 @@ class Map {
     const bb = this._map.getBounds();
     getFeaturesInBBox(bb)
         .then(json => {
-            this.featureLayer.addData(json.features);
+            L.geoJSON(json.features, {color: '#ea1993'}).addTo(this._map);
         })
+        .catch(console.error);
     ;
   }
 
@@ -90,7 +91,8 @@ class Map {
           alert('Geen panden gevonden');
         }
 
-      });
+      })
+      .catch(console.error);
   }
 
   toggleFeature(event, feature, layer) {
