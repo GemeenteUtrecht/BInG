@@ -34,6 +34,8 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
+    # SSO
+    path("adfs/", include("django_auth_adfs.urls")),
     # web views
     path("", TemplateView.as_view(template_name="index.html"), name="index"),
     path("aanmelden/", include("bing.aanmeldformulier.urls")),

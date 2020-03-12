@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     "compat",  # Part of hijack
     "hijack_admin",
     "django_camunda",
+    "django_auth_adfs",
+    "django_auth_adfs_db",
     # Project applications.
     "bing.config",
     "bing.accounts",
@@ -248,11 +250,13 @@ AUTH_USER_MODEL = "accounts.User"
 
 # Allow logging in with both username+password and email+password
 AUTHENTICATION_BACKENDS = [
+    "django_auth_adfs_db.backends.AdfsAuthCodeBackend",
     "bing.accounts.backends.UserModelEmailBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
 LOGIN_URL = "medewerkers:login"
+LOGIN_REDIRECT_URL = reverse_lazy("index")
 
 SESSION_COOKIE_NAME = "bing_sessionid"
 
@@ -338,3 +342,8 @@ if SENTRY_DSN:
     )
 
 BAG_API_KEY = os.getenv("BAG_API_KEY")
+
+#
+# DJANGO-AUTH-ADFS
+#
+AUTH_ADFS = {"SETTINGS_CLASS": "django_auth_adfs_db.settings.Settings"}
