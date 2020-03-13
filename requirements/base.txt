@@ -13,7 +13,7 @@ chardet==3.0.4            # via requests
 click==7.0                # via pip-tools
 cryptography==2.8         # via django-auth-adfs
 django-appconf==1.0.3     # via django-axes
-django-auth-adfs-db==0.1.1
+django-auth-adfs-db==0.2.0
 django-auth-adfs==1.3.1   # via django-auth-adfs-db
 django-axes==4.5.4
 django-camunda==0.5.0
