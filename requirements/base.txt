@@ -4,47 +4,132 @@
 #
 #    pip-compile --no-index requirements/base.in
 #
-amqp==2.4.2               # via kombu
-billiard==3.6.0.0         # via celery
+amqp==2.4.2
+    # via kombu
+billiard==3.6.0.0
+    # via celery
 celery==4.3.0
-certifi==2019.3.9         # via requests
-cffi==1.14.0              # via cryptography
-chardet==3.0.4            # via requests
-click==7.0                # via pip-tools
-cryptography==2.8         # via django-auth-adfs
-django-appconf==1.0.3     # via django-axes
+    # via
+    #   -r base.in
+    #   django-camunda
+certifi==2019.3.9
+    # via requests
+cffi==1.14.0
+    # via cryptography
+chardet==3.0.4
+    # via requests
+click==7.0
+    # via pip-tools
+cryptography==2.8
+    # via django-auth-adfs
+django-appconf==1.0.3
+    # via django-axes
 django-auth-adfs-db==0.2.0
-django-auth-adfs==1.3.1   # via django-auth-adfs-db
+    # via -r base.in
+django-auth-adfs==1.3.1
+    # via django-auth-adfs-db
 django-axes==4.5.4
+    # via -r base.in
 django-camunda==0.5.0
+    # via -r base.in
 django-choices==1.6.2
-django-compat==1.0.15     # via django-hijack, django-hijack-admin
+    # via -r base.in
+django-compat==1.0.15
+    # via
+    #   django-hijack
+    #   django-hijack-admin
 django-extra-views==0.12.0
+    # via -r base.in
 django-hijack-admin==2.1.10
+    # via -r base.in
 django-hijack==2.1.10
-django-ipware==2.1.0      # via django-axes
+    # via
+    #   -r base.in
+    #   django-hijack-admin
+django-ipware==2.1.0
+    # via django-axes
 django-redis==4.10.0
+    # via -r base.in
 django-rosetta==0.9.3
+    # via -r base.in
 django-sniplates==0.6.0
+    # via -r base.in
 django-solo==1.1.3
+    # via
+    #   -r base.in
+    #   django-auth-adfs-db
+    #   django-camunda
 django==2.2.9
+    # via
+    #   -r base.in
+    #   django-appconf
+    #   django-auth-adfs
+    #   django-auth-adfs-db
+    #   django-axes
+    #   django-camunda
+    #   django-choices
+    #   django-extra-views
+    #   django-redis
+    #   django-rosetta
+    #   django-sniplates
 gemma-zds-client==0.13.1
-idna==2.8                 # via requests
-inflection==0.3.1         # via django-camunda
-kombu==4.5.0              # via celery
+    # via -r base.in
+idna==2.8
+    # via requests
+inflection==0.3.1
+    # via django-camunda
+kombu==4.5.0
+    # via celery
 pip-tools==4.0.0
-polib==1.1.0              # via django-rosetta
+    # via -r base.in
+polib==1.1.0
+    # via django-rosetta
 psycopg2==2.8.2
-pycparser==2.20           # via cffi
-pyjwt==1.7.1              # via django-auth-adfs, gemma-zds-client
+    # via -r base.in
+pycparser==2.20
+    # via cffi
+pyjwt==1.7.1
+    # via
+    #   django-auth-adfs
+    #   gemma-zds-client
 python-dateutil==2.8.0
+    # via
+    #   -r base.in
+    #   django-camunda
 python-dotenv==0.10.1
+    # via -r base.in
 pytz==2019.1
-pyyaml==5.3               # via gemma-zds-client
+    # via
+    #   -r base.in
+    #   celery
+    #   django
+    #   django-axes
+pyyaml==5.4
+    # via gemma-zds-client
 raven==6.10.0
-redis==3.2.1              # via django-redis
-requests==2.21.0          # via django-auth-adfs, django-camunda, django-rosetta, gemma-zds-client
-six==1.12.0               # via cryptography, django-appconf, django-compat, django-extra-views, django-rosetta, pip-tools, python-dateutil
-sqlparse==0.3.0           # via django
-urllib3==1.24.2           # via requests
-vine==1.3.0               # via amqp, celery
+    # via -r base.in
+redis==3.2.1
+    # via django-redis
+requests==2.21.0
+    # via
+    #   django-auth-adfs
+    #   django-camunda
+    #   django-rosetta
+    #   gemma-zds-client
+six==1.12.0
+    # via
+    #   cryptography
+    #   django-appconf
+    #   django-compat
+    #   django-extra-views
+    #   django-rosetta
+    #   pip-tools
+    #   python-dateutil
+sqlparse==0.3.0
+    # via django
+urllib3==1.24.2
+    # via requests
+vine==1.3.0
+    # via
+    #   amqp
+    #   celery
