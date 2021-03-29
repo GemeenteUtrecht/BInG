@@ -1,4 +1,8 @@
 ================================
+This repository is no longer in use, it will be an archived repository and won't be maintained
+================================
+
+================================
 BInG - Beheer Inrichting Gebruik
 ================================
 
